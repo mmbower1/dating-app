@@ -19,6 +19,7 @@ export interface IUser extends Document {
   ghostCount: number;
   gracefulExitCount: number;
   totalConversations: number;
+  agePreference: { min: number; max: number };
   isAdmin: boolean;
   pushSubscription: Record<string, unknown> | null;
   likedUsers: mongoose.Types.ObjectId[];
@@ -48,6 +49,10 @@ const UserSchema = new Schema<IUser>(
     ghostCount: { type: Number, default: 0 },
     gracefulExitCount: { type: Number, default: 0 },
     totalConversations: { type: Number, default: 0 },
+    agePreference: {
+      min: { type: Number, default: 18 },
+      max: { type: Number, default: 99 },
+    },
     isAdmin: { type: Boolean, default: false },
     pushSubscription: { type: Schema.Types.Mixed, default: null },
     likedUsers: [{ type: Schema.Types.ObjectId }],

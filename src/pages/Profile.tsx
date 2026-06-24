@@ -16,6 +16,8 @@ const Profile = () => {
   const { user, logout, updateUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [bio, setBio] = useState(user?.bio || '');
+  const [ageMin, setAgeMin] = useState(user?.agePreference?.min ?? 18);
+  const [ageMax, setAgeMax] = useState(user?.agePreference?.max ?? 60);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -24,8 +26,10 @@ const Profile = () => {
 
   const save = async (e: FormEvent) => {
     e.preventDefault();
-    await api.patch<User>('/users/me', { bio });
-    updateUser({ bio });
+    const clampedMin = Math.min(ageMin, ageMax - 1);
+    const clampedMax = Math.max(ageMax, ageMin + 1);
+    await api.patch<User>('/users/me', { bio, agePreference: { min: clampedMin, max: clampedMax } });
+    updateUser({ bio, agePreference: { min: clampedMin, max: clampedMax } });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -154,6 +158,34 @@ const Profile = () => {
           rows={4}
           placeholder="Tell people about yourself..."
         />
+
+        <div className="age-pref-section">
+          <label className="age-pref-label">
+            Age range
+            <span className="age-pref-range">{ageMin} – {ageMax}</span>
+          </label>
+          <div className="age-slider-row">
+            <span className="age-slider-cap">18</span>
+            <div className="age-sliders">
+              <input
+                type="range"
+                min={18}
+                max={80}
+                value={ageMin}
+                onChange={(e) => setAgeMin(Math.min(Number(e.target.value), ageMax - 1))}
+              />
+              <input
+                type="range"
+                min={18}
+                max={80}
+                value={ageMax}
+                onChange={(e) => setAgeMax(Math.max(Number(e.target.value), ageMin + 1))}
+              />
+            </div>
+            <span className="age-slider-cap">80</span>
+          </div>
+        </div>
+
         <button type="submit">{saved ? 'Saved!' : 'Save changes'}</button>
       </form>
 

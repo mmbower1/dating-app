@@ -12,6 +12,7 @@ export interface User {
   responseRate: number;
   ghostCount: number;
   gracefulExitCount: number;
+  agePreference?: { min: number; max: number };
   isAdmin?: boolean;
 }
 
