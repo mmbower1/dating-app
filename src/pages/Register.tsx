@@ -68,7 +68,7 @@ const Register = () => {
             <Logo size="lg" showText={true} />
           </div>
           <h1>Create account</h1>
-          <p className="auth-subtitle">Genuine connection begins here</p>
+          <p className="auth-subtitle">Genuine connection begins here.</p>
           {error && <p className="error">{error}</p>}
           <form onSubmit={handleSubmit}>
             <input
