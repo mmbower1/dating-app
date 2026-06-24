@@ -1,14 +1,18 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+interface IMatchUser {
+  userId: mongoose.Types.ObjectId;
+  model: 'MaleUser' | 'FemaleUser' | 'OtherUser';
+}
+
 export interface IMatch extends Document {
-  users: [mongoose.Types.ObjectId, mongoose.Types.ObjectId];
+  users: IMatchUser[];
   active: boolean;
-  // Conversation health tracking
   lastMessageAt: Date | null;
   conversationEndedAt: Date | null;
   endedBy: mongoose.Types.ObjectId | null;
   endReason: 'graceful_exit' | 'ghosted' | 'mutual' | null;
-  ghostedUserId: mongoose.Types.ObjectId | null;  // who got ghosted
+  ghostedUserId: mongoose.Types.ObjectId | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,9 +20,11 @@ export interface IMatch extends Document {
 const MatchSchema = new Schema<IMatch>(
   {
     users: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'User' }] as unknown as [
-        typeof Schema.Types.ObjectId,
-        typeof Schema.Types.ObjectId
+      type: [
+        {
+          userId: { type: Schema.Types.ObjectId, refPath: 'users.model', required: true },
+          model: { type: String, enum: ['MaleUser', 'FemaleUser', 'OtherUser'], required: true },
+        },
       ],
       validate: (v: unknown[]) => v.length === 2,
       required: true,
@@ -26,13 +32,13 @@ const MatchSchema = new Schema<IMatch>(
     active: { type: Boolean, default: true },
     lastMessageAt: { type: Date, default: null },
     conversationEndedAt: { type: Date, default: null },
-    endedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+    endedBy: { type: Schema.Types.ObjectId, default: null },
     endReason: {
       type: String,
       enum: ['graceful_exit', 'ghosted', 'mutual', null],
       default: null,
     },
-    ghostedUserId: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+    ghostedUserId: { type: Schema.Types.ObjectId, default: null },
   },
   { timestamps: true }
 );

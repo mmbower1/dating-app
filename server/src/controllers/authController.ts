@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import { getUserModel, MaleUser, FemaleUser, OtherUser } from '../models/User';
+import type { AuthRequest } from '../middleware/auth';
 
-const signToken = (id: string) =>
-  jwt.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+const signToken = (id: string, gender: string) =>
+  jwt.sign({ id, gender }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -15,16 +16,22 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const existing = await User.findOne({ email });
-    if (existing) {
+    // Check across all collections for duplicate email
+    const [existingMale, existingFemale, existingOther] = await Promise.all([
+      MaleUser.findOne({ email }),
+      FemaleUser.findOne({ email }),
+      OtherUser.findOne({ email }),
+    ]);
+    if (existingMale || existingFemale || existingOther) {
       res.status(400).json({ message: 'Email already in use' });
       return;
     }
 
     const hashed = await bcrypt.hash(password, 12);
-    const user = await User.create({ name, email, password: hashed, age, gender, interestedIn });
+    const UserModel = getUserModel(gender);
+    const user = await UserModel.create({ name, email, password: hashed, age, gender, interestedIn });
 
-    const token = signToken(user._id.toString());
+    const token = signToken(user._id.toString(), user.gender);
     res.status(201).json({
       token,
       user: {
@@ -53,7 +60,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const user = await User.findOne({ email });
+    // Search all three collections
+    const [maleUser, femaleUser, otherUser] = await Promise.all([
+      MaleUser.findOne({ email }),
+      FemaleUser.findOne({ email }),
+      OtherUser.findOne({ email }),
+    ]);
+    const user = maleUser ?? femaleUser ?? otherUser;
+
     if (!user) {
       res.status(401).json({ message: 'Invalid credentials' });
       return;
@@ -65,7 +79,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const token = signToken(user._id.toString());
+    const token = signToken(user._id.toString(), user.gender);
     res.json({
       token,
       user: {
@@ -85,9 +99,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const getMe = async (req: Request & { userId?: string }, res: Response): Promise<void> => {
+export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const user = await User.findById(req.userId).select('-password -likedUsers -passedUsers -blockedUsers');
+    const UserModel = getUserModel(req.userGender!);
+    const user = await UserModel.findById(req.userId).select('-password -likedUsers -passedUsers -blockedUsers');
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;

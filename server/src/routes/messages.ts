@@ -9,12 +9,11 @@ const router = Router();
 // Get messages for a match
 router.get('/:matchId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const match = await Match.findOne({ _id: req.params.matchId, users: req.userId });
+    const match = await Match.findOne({ _id: req.params.matchId as string, 'users.userId': req.userId });
     if (!match) { res.status(404).json({ message: 'Match not found' }); return; }
 
     const messages = await Message.find({ matchId: req.params.matchId }).sort({ createdAt: 1 });
 
-    // Mark messages as read
     await Message.updateMany(
       { matchId: req.params.matchId, senderId: { $ne: req.userId }, read: false },
       { read: true }
@@ -29,7 +28,7 @@ router.get('/:matchId', protect, async (req: AuthRequest, res: Response): Promis
 // Send a message
 router.post('/:matchId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const match = await Match.findOne({ _id: req.params.matchId, users: req.userId, active: true });
+    const match = await Match.findOne({ _id: req.params.matchId as string, 'users.userId': req.userId, active: true });
     if (!match) { res.status(404).json({ message: 'Match not found or closed' }); return; }
 
     const { text } = req.body;

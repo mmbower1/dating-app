@@ -1,6 +1,6 @@
 import { Router, Response } from 'express';
 import { protect, AuthRequest } from '../middleware/auth';
-import User from '../models/User';
+import { getUserModel, getModelName, findUserById } from '../models/User';
 import Match from '../models/Match';
 import mongoose from 'mongoose';
 
@@ -9,8 +9,9 @@ const router = Router();
 // Like a user — creates a match if mutual
 router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const me = await User.findById(req.userId);
-    const target = await User.findById(req.params.targetId);
+    const UserModel = getUserModel(req.userGender!);
+    const me = await UserModel.findById(req.userId);
+    const target = await findUserById(req.params.targetId as string);
     if (!me || !target) { res.status(404).json({ message: 'User not found' }); return; }
 
     me.likedUsers.push(target._id as mongoose.Types.ObjectId);
@@ -18,7 +19,12 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 
     const mutualLike = target.likedUsers.some((id) => id.equals(me._id as mongoose.Types.ObjectId));
     if (mutualLike) {
-      const match = await Match.create({ users: [me._id, target._id] });
+      const match = await Match.create({
+        users: [
+          { userId: me._id, model: getModelName(me.gender) },
+          { userId: target._id, model: getModelName(target.gender) },
+        ],
+      });
       res.json({ matched: true, matchId: match._id });
     } else {
       res.json({ matched: false });
@@ -31,7 +37,8 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 // Pass on a user
 router.post('/pass/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const me = await User.findById(req.userId);
+    const UserModel = getUserModel(req.userGender!);
+    const me = await UserModel.findById(req.userId);
     if (!me) { res.status(404).json({ message: 'User not found' }); return; }
 
     me.passedUsers.push(new mongoose.Types.ObjectId(req.params.targetId as string));
@@ -45,8 +52,8 @@ router.post('/pass/:targetId', protect, async (req: AuthRequest, res: Response):
 // Get all my matches
 router.get('/', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const matches = await Match.find({ users: req.userId, active: true })
-      .populate('users', 'name photos accountabilityScore bio age')
+    const matches = await Match.find({ 'users.userId': req.userId, active: true })
+      .populate({ path: 'users.userId', select: 'name photos accountabilityScore bio age gender' })
       .sort({ updatedAt: -1 });
     res.json(matches);
   } catch (err) {
@@ -57,7 +64,7 @@ router.get('/', protect, async (req: AuthRequest, res: Response): Promise<void> 
 // Graceful exit — politely close a match
 router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const match = await Match.findOne({ _id: req.params.matchId, users: req.userId });
+    const match = await Match.findOne({ _id: req.params.matchId, 'users.userId': req.userId });
     if (!match) { res.status(404).json({ message: 'Match not found' }); return; }
 
     match.active = false;
@@ -66,11 +73,9 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     match.endReason = 'graceful_exit';
     await match.save();
 
-    // Reward sender: increment gracefulExitCount, recalculate score
-    await User.findByIdAndUpdate(req.userId, {
-      $inc: { gracefulExitCount: 1 },
-    });
-    await recalculateScore(req.userId!);
+    const UserModel = getUserModel(req.userGender!);
+    await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
+    await recalculateScore(req.userId!, req.userGender!);
 
     res.json({ success: true });
   } catch (err) {
@@ -78,9 +83,9 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
   }
 });
 
-// Internal: recalculate accountability score
-async function recalculateScore(userId: string) {
-  const user = await User.findById(userId);
+async function recalculateScore(userId: string, gender: string) {
+  const UserModel = getUserModel(gender);
+  const user = await UserModel.findById(userId);
   if (!user) return;
 
   const ghostPenalty = Math.min(user.ghostCount * 5, 40);

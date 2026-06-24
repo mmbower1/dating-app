@@ -13,13 +13,11 @@ export interface IUser extends Document {
     city: string;
     state: string;
   };
-  // Accountability system
-  accountabilityScore: number;    // 0-100, affects match visibility
-  responseRate: number;           // percentage of messages replied to
-  ghostCount: number;             // times user went silent mid-conversation
-  gracefulExitCount: number;      // times user sent a polite "not interested"
+  accountabilityScore: number;
+  responseRate: number;
+  ghostCount: number;
+  gracefulExitCount: number;
   totalConversations: number;
-  // Swipe state
   likedUsers: mongoose.Types.ObjectId[];
   passedUsers: mongoose.Types.ObjectId[];
   blockedUsers: mongoose.Types.ObjectId[];
@@ -46,11 +44,37 @@ const UserSchema = new Schema<IUser>(
     ghostCount: { type: Number, default: 0 },
     gracefulExitCount: { type: Number, default: 0 },
     totalConversations: { type: Number, default: 0 },
-    likedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    passedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    blockedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    likedUsers: [{ type: Schema.Types.ObjectId }],
+    passedUsers: [{ type: Schema.Types.ObjectId }],
+    blockedUsers: [{ type: Schema.Types.ObjectId }],
   },
   { timestamps: true }
 );
 
-export default mongoose.model<IUser>('User', UserSchema);
+// Three collections: males, females, others (covers non-binary + other)
+export const MaleUser = mongoose.model<IUser>('MaleUser', UserSchema, 'males');
+export const FemaleUser = mongoose.model<IUser>('FemaleUser', UserSchema, 'females');
+export const OtherUser = mongoose.model<IUser>('OtherUser', UserSchema, 'others');
+
+export type GenderModel = typeof MaleUser;
+
+export function getUserModel(gender: string): GenderModel {
+  if (gender === 'male') return MaleUser;
+  if (gender === 'female') return FemaleUser;
+  return OtherUser;
+}
+
+export function getModelName(gender: string): 'MaleUser' | 'FemaleUser' | 'OtherUser' {
+  if (gender === 'male') return 'MaleUser';
+  if (gender === 'female') return 'FemaleUser';
+  return 'OtherUser';
+}
+
+// Search all collections when we only have an ID (e.g. cross-collection lookups)
+export async function findUserById(id: string): Promise<IUser | null> {
+  return (
+    (await MaleUser.findById(id)) ??
+    (await FemaleUser.findById(id)) ??
+    (await OtherUser.findById(id))
+  );
+}

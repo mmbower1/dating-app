@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export interface AuthRequest extends Request {
   userId?: string;
+  userGender?: string;
 }
 
 export const protect = (req: AuthRequest, res: Response, next: NextFunction): void => {
@@ -14,8 +15,9 @@ export const protect = (req: AuthRequest, res: Response, next: NextFunction): vo
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string; gender: string };
     req.userId = decoded.id;
+    req.userGender = decoded.gender;
     next();
   } catch {
     res.status(401).json({ message: 'Not authorized, token invalid' });
