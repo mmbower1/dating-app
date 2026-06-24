@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import Footer from '../components/Footer';
 
 const Login = () => {
   const { login } = useAuth();
@@ -58,6 +59,7 @@ const Login = () => {
           No account? <Link to="/register">Create one</Link>
         </p>
       </div>
+      <Footer />
     </div>
   );
 };

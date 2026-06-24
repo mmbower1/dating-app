@@ -837,7 +837,7 @@ form button[type="submit"]:disabled {
 
 .site-footer {
   margin-top: auto;
-  padding: 40px 24px calc(var(--nav-height) + 24px);
+  padding: 40px 24px;
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
 }

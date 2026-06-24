@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import Footer from '../components/Footer';
 
 const GENDERS = ['male', 'female', 'non-binary', 'other'];
 
@@ -120,6 +121,7 @@ const Register = () => {
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>
+      <Footer />
     </div>
   );
 };
