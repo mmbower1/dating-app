@@ -7,6 +7,7 @@ export interface IUser extends Document {
   age: number;
   gender: 'male' | 'female' | 'non-binary' | 'other';
   interestedIn: ('male' | 'female' | 'non-binary' | 'other')[];
+  phone: string;
   bio: string;
   photos: string[];
   location: {
@@ -33,6 +34,7 @@ const UserSchema = new Schema<IUser>(
     age: { type: Number, required: true, min: 18 },
     gender: { type: String, enum: ['male', 'female', 'non-binary', 'other'], required: true },
     interestedIn: [{ type: String, enum: ['male', 'female', 'non-binary', 'other'] }],
+    phone: { type: String, default: '' },
     bio: { type: String, maxlength: 500, default: '' },
     photos: [{ type: String }],
     location: {

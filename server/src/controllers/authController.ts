@@ -9,7 +9,7 @@ const signToken = (id: string, gender: string) =>
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password, age, gender, interestedIn } = req.body;
+    const { name, email, password, age, gender, interestedIn, phone } = req.body;
 
     if (!name || !email || !password || !age || !gender || !interestedIn) {
       res.status(400).json({ message: 'All fields are required' });
@@ -29,7 +29,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const hashed = await bcrypt.hash(password, 12);
     const UserModel = getUserModel(gender);
-    const user = await UserModel.create({ name, email, password: hashed, age, gender, interestedIn });
+    const user = await UserModel.create({ name, email, password: hashed, age, gender, interestedIn, phone });
 
     const token = signToken(user._id.toString(), user.gender);
     res.status(201).json({

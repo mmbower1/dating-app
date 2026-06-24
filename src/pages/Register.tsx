@@ -34,11 +34,14 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
+    phone: '',
     age: '',
     gender: '',
     interestedIn: [] as string[],
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -53,11 +56,16 @@ const Register = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    if (form.password !== form.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
     if (!form.gender) { setError('Please select your gender'); return; }
     if (!form.interestedIn.length) { setError('Please select who you are interested in'); return; }
     setLoading(true);
     try {
-      await register({ ...form, age: Number(form.age) });
+      const { confirmPassword, ...rest } = form;
+      await register({ ...rest, age: Number(rest.age) });
       navigate('/');
     } catch {
       setError('Registration failed. Email may already be in use.');
@@ -90,6 +98,13 @@ const Register = () => {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
             />
+            <input
+              type="tel"
+              placeholder="Phone number"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              required
+            />
             <div className="password-field">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -106,6 +121,24 @@ const Register = () => {
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 <EyeIcon open={showPassword} />
+              </button>
+            </div>
+            <div className="password-field">
+              <input
+                type={showConfirm ? 'text' : 'password'}
+                placeholder="Confirm password"
+                value={form.confirmPassword}
+                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirm((v) => !v)}
+                aria-label={showConfirm ? 'Hide password' : 'Show password'}
+              >
+                <EyeIcon open={showConfirm} />
               </button>
             </div>
             <input
@@ -138,7 +171,7 @@ const Register = () => {
                   className={`pill ${form.interestedIn.includes(g) ? 'active' : ''}`}
                   onClick={() => toggle(g)}
                 >
-                  {g}
+                  {GENDER_LABELS[g]}
                 </button>
               ))}
             </div>
