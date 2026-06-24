@@ -7,6 +7,10 @@
   --accent-light: #a8cdf8;
   --accent-dark: #5a94e8;
   --accent-glow: rgba(126, 179, 245, 0.15);
+  --accent-purple: #a78bfa;
+  --accent-purple-glow: rgba(167, 139, 250, 0.15);
+  --gradient: linear-gradient(135deg, #7eb3f5 0%, #a78bfa 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(126,179,245,0.15) 0%, rgba(167,139,250,0.15) 100%);
   --text-primary: #f0f4f8;
   --text-secondary: #8892a4;
   --text-muted: #4a5568;
@@ -29,6 +33,10 @@
   --accent-light: #6fa0ec;
   --accent-dark: #2f6bc9;
   --accent-glow: rgba(74, 134, 224, 0.12);
+  --accent-purple: #7c3aed;
+  --accent-purple-glow: rgba(124, 58, 237, 0.1);
+  --gradient: linear-gradient(135deg, #4a86e0 0%, #7c3aed 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(74,134,224,0.12) 0%, rgba(124,58,237,0.12) 100%);
   --text-primary: #0d1117;
   --text-secondary: #4a5568;
   --text-muted: #8892a4;
@@ -86,6 +94,9 @@ body {
   flex-direction: column;
   position: relative;
   background: var(--bg-primary);
+  background-image:
+    radial-gradient(ellipse at 85% 5%, rgba(167,139,250,0.07) 0%, transparent 45%),
+    radial-gradient(ellipse at 15% 95%, rgba(126,179,245,0.07) 0%, transparent 45%);
 }
 
 /* ── Logo ───────────────────────────────────────────── */
@@ -99,9 +110,12 @@ body {
 .logo-text {
   font-family: 'Great Vibes', cursive;
   font-weight: 400;
-  color: var(--text-primary);
   letter-spacing: 0;
   line-height: 1;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .auth-logo {
@@ -160,17 +174,17 @@ form button[type="submit"],
 .btn-primary {
   width: 100%;
   padding: 15px;
-  background: var(--accent);
-  color: #0d1117;
+  background: var(--gradient);
+  color: #fff;
   font-size: 16px;
   font-weight: 600;
   border-radius: 12px;
-  transition: background 0.2s, transform 0.1s;
+  transition: opacity 0.2s, transform 0.1s;
 }
 
 form button[type="submit"]:hover,
 .btn-primary:hover {
-  background: var(--accent-light);
+  opacity: 0.88;
 }
 
 form button[type="submit"]:active,
@@ -190,6 +204,9 @@ form button[type="submit"]:disabled {
   grid-template-rows: 1fr auto;
   min-height: 100dvh;
   width: 100%;
+  background-image:
+    radial-gradient(ellipse at 75% 10%, rgba(167,139,250,0.09) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 85%, rgba(126,179,245,0.09) 0%, transparent 50%);
 }
 
 .auth-content {
@@ -312,9 +329,9 @@ form button[type="submit"]:disabled {
 }
 
 .pill.active {
-  background: var(--accent-glow);
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--gradient-subtle);
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
   font-weight: 500;
 }
 
@@ -329,12 +346,23 @@ form button[type="submit"]:disabled {
   max-width: 1200px;
   height: var(--nav-height);
   background: var(--bg-secondary);
-  border-top: 1px solid var(--border);
+  border-top: none;
   display: flex;
   align-items: center;
   justify-content: space-around;
   z-index: 100;
   backdrop-filter: blur(12px);
+}
+
+.bottom-nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient);
+  opacity: 0.6;
 }
 
 .nav-item {
@@ -353,7 +381,14 @@ form button[type="submit"]:disabled {
 }
 
 .nav-item.active {
-  color: var(--accent);
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-item.active svg {
+  color: var(--accent-purple);
 }
 
 /* ── Page Utilities ─────────────────────────────────── */
@@ -395,8 +430,8 @@ form button[type="submit"]:disabled {
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--accent);
-  color: #0d1117;
+  background: var(--gradient);
+  color: #fff;
   font-weight: 600;
   padding: 12px 24px;
   border-radius: 30px;
@@ -404,6 +439,7 @@ form button[type="submit"]:disabled {
   z-index: 200;
   animation: slideDown 0.3s ease;
   white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(167,139,250,0.35);
 }
 
 @keyframes slideDown {
@@ -470,9 +506,10 @@ form button[type="submit"]:disabled {
 }
 
 .score-badge {
-  background: var(--accent-glow);
-  border: 1px solid var(--accent);
-  color: var(--accent);
+  background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+              var(--gradient) border-box;
+  border: 1px solid transparent;
+  color: var(--accent-purple);
   font-size: 12px;
   font-weight: 700;
   padding: 4px 10px;
@@ -514,13 +551,16 @@ form button[type="submit"]:disabled {
 }
 
 .like-btn {
-  background: var(--accent-glow);
-  border: 2px solid var(--accent);
-  color: var(--accent);
+  background: var(--gradient-subtle);
+  border: 2px solid transparent;
+  background-image: var(--gradient-subtle), var(--gradient);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  color: var(--accent-purple);
 }
 
 .pass-btn:hover  { transform: scale(1.08); }
-.like-btn:hover  { transform: scale(1.08); box-shadow: 0 0 20px var(--accent-glow); }
+.like-btn:hover  { transform: scale(1.08); box-shadow: 0 0 20px rgba(167,139,250,0.3); }
 .pass-btn:active { transform: scale(0.95); }
 .like-btn:active { transform: scale(0.95); }
 
