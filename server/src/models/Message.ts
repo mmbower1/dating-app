@@ -12,7 +12,7 @@ export interface IMessage extends Document {
 const MessageSchema = new Schema<IMessage>(
   {
     matchId: { type: Schema.Types.ObjectId, ref: 'Match', required: true },
-    senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    senderId: { type: Schema.Types.ObjectId, required: true },
     text: { type: String, required: true, maxlength: 1000 },
     read: { type: Boolean, default: false },
     type: { type: String, enum: ['text', 'graceful_exit'], default: 'text' },
