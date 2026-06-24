@@ -172,7 +172,7 @@ button {
 /* Primary button */
 form button[type="submit"],
 .btn-primary {
-  width: 100%;
+  /* width: 100%; */
   padding: 15px;
   background: var(--gradient);
   color: #fff;
