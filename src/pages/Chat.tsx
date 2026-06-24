@@ -58,14 +58,20 @@ const Chat = () => {
       </div>
 
       <div className="chat-messages">
-        {messages.map((msg) => (
-          <div
-            key={msg._id}
-            className={`message ${msg.senderId === user?._id ? 'mine' : 'theirs'}`}
-          >
-            <p>{msg.text}</p>
-          </div>
-        ))}
+        {messages.map((msg) =>
+          msg.type === 'graceful_exit' ? (
+            <div key={msg._id} className="system-message">
+              <span>{msg.text}</span>
+            </div>
+          ) : (
+            <div
+              key={msg._id}
+              className={`message ${msg.senderId === user?._id ? 'mine' : 'theirs'}`}
+            >
+              <p>{msg.text}</p>
+            </div>
+          )
+        )}
         <div ref={bottomRef} />
       </div>
 

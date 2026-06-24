@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { getUserModel, MaleUser, FemaleUser, OtherUser } from '../models/User';
 import type { AuthRequest } from '../middleware/auth';
+import { checkStaleMatches } from '../utils/ghostCheck';
 
 const signToken = (id: string, gender: string, isAdmin = false) =>
   jwt.sign({ id, gender, isAdmin }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
@@ -104,6 +105,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const UserModel = getUserModel(req.userGender!);
+    // Run ghost check in background — don't await so it doesn't slow down app load
+    checkStaleMatches(req.userId!, req.userGender!).catch(() => {});
     const user = await UserModel.findById(req.userId).select('-password -likedUsers -passedUsers -blockedUsers');
     if (!user) {
       res.status(404).json({ message: 'User not found' });

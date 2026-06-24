@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { protect, AuthRequest } from '../middleware/auth';
 import { getUserModel, getModelName, findUserById } from '../models/User';
 import Match from '../models/Match';
+import Message from '../models/Message';
 import mongoose from 'mongoose';
 import { sendPush } from '../utils/push';
 import type webpush from 'web-push';
@@ -93,6 +94,28 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     const UserModel = getUserModel(req.userGender!);
     await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
     await recalculateScore(req.userId!, req.userGender!);
+
+    // Post a system message visible to both parties
+    const me = await UserModel.findById(req.userId);
+    await Message.create({
+      matchId: match._id,
+      senderId: new mongoose.Types.ObjectId(req.userId as string),
+      text: `${me?.name ?? 'Your match'} chose not to continue this conversation.`,
+      type: 'graceful_exit',
+    });
+
+    // Push-notify the other person
+    const otherEntry = match.users.find((u) => u.userId.toString() !== req.userId);
+    if (otherEntry) {
+      const other = await findUserById(otherEntry.userId.toString());
+      if (other?.pushSubscription) {
+        sendPush(
+          other.pushSubscription as unknown as webpush.PushSubscription,
+          'Connection closed',
+          `${me?.name ?? 'Your match'} has ended this conversation. You're free to connect again.`
+        );
+      }
+    }
 
     res.json({ success: true });
   } catch (err) {
