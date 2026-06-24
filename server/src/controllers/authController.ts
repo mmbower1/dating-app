@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken';
 import { getUserModel, MaleUser, FemaleUser, OtherUser } from '../models/User';
 import type { AuthRequest } from '../middleware/auth';
 
-const signToken = (id: string, gender: string) =>
-  jwt.sign({ id, gender }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+const signToken = (id: string, gender: string, isAdmin = false) =>
+  jwt.sign({ id, gender, isAdmin }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -31,7 +31,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const UserModel = getUserModel(gender);
     const user = await UserModel.create({ name, email, password: hashed, age, gender, interestedIn, phone });
 
-    const token = signToken(user._id.toString(), user.gender);
+    const token = signToken(user._id.toString(), user.gender, user.isAdmin);
     res.status(201).json({
       token,
       user: {
@@ -44,6 +44,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         bio: user.bio,
         photos: user.photos,
         accountabilityScore: user.accountabilityScore,
+        isAdmin: user.isAdmin,
       },
     });
   } catch (err) {
@@ -79,7 +80,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const token = signToken(user._id.toString(), user.gender);
+    const token = signToken(user._id.toString(), user.gender, user.isAdmin);
     res.json({
       token,
       user: {
@@ -92,6 +93,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         bio: user.bio,
         photos: user.photos,
         accountabilityScore: user.accountabilityScore,
+        isAdmin: user.isAdmin,
       },
     });
   } catch (err) {

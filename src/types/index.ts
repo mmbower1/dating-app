@@ -12,6 +12,7 @@ export interface User {
   responseRate: number;
   ghostCount: number;
   gracefulExitCount: number;
+  isAdmin?: boolean;
 }
 
 export interface MatchUser {

@@ -19,6 +19,7 @@ export interface IUser extends Document {
   ghostCount: number;
   gracefulExitCount: number;
   totalConversations: number;
+  isAdmin: boolean;
   likedUsers: mongoose.Types.ObjectId[];
   passedUsers: mongoose.Types.ObjectId[];
   blockedUsers: mongoose.Types.ObjectId[];
@@ -46,6 +47,7 @@ const UserSchema = new Schema<IUser>(
     ghostCount: { type: Number, default: 0 },
     gracefulExitCount: { type: Number, default: 0 },
     totalConversations: { type: Number, default: 0 },
+    isAdmin: { type: Boolean, default: false },
     likedUsers: [{ type: Schema.Types.ObjectId }],
     passedUsers: [{ type: Schema.Types.ObjectId }],
     blockedUsers: [{ type: Schema.Types.ObjectId }],
