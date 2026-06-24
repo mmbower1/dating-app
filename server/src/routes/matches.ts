@@ -3,6 +3,8 @@ import { protect, AuthRequest } from '../middleware/auth';
 import { getUserModel, getModelName, findUserById } from '../models/User';
 import Match from '../models/Match';
 import mongoose from 'mongoose';
+import { sendPush } from '../utils/push';
+import type webpush from 'web-push';
 
 const router = Router();
 
@@ -25,6 +27,15 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
           { userId: target._id, model: getModelName(target.gender), name: target.name, photo: target.photos[0] ?? '' },
         ],
       });
+
+      // Notify both users
+      if (target.pushSubscription) {
+        sendPush(target.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", `You matched with ${me.name}`);
+      }
+      if (me.pushSubscription) {
+        sendPush(me.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", `You matched with ${target.name}`);
+      }
+
       res.json({ matched: true, matchId: match._id });
     } else {
       res.json({ matched: false });

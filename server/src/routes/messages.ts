@@ -2,7 +2,10 @@ import { Router, Response } from 'express';
 import { protect, AuthRequest } from '../middleware/auth';
 import Message from '../models/Message';
 import Match from '../models/Match';
+import { findUserById } from '../models/User';
 import mongoose from 'mongoose';
+import { sendPush } from '../utils/push';
+import type webpush from 'web-push';
 
 const router = Router();
 
@@ -42,6 +45,20 @@ router.post('/:matchId', protect, async (req: AuthRequest, res: Response): Promi
 
     match.lastMessageAt = new Date();
     await match.save();
+
+    // Notify the other user
+    const otherEntry = match.users.find((u) => u.userId.toString() !== req.userId);
+    if (otherEntry) {
+      const otherUser = await findUserById(otherEntry.userId.toString());
+      if (otherUser?.pushSubscription) {
+        const sender = await findUserById(req.userId!);
+        sendPush(
+          otherUser.pushSubscription as unknown as webpush.PushSubscription,
+          `New message from ${sender?.name ?? 'Someone'}`,
+          text.trim().slice(0, 80)
+        );
+      }
+    }
 
     res.status(201).json(message);
   } catch (err) {
