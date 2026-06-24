@@ -47,6 +47,7 @@ const Register = () => {
 
   return (
     <div className="auth-page">
+      <div className="auth-content">
       <div className="auth-card">
         <div className="auth-logo">
           <Logo size="lg" showText={true} />
@@ -120,6 +121,7 @@ const Register = () => {
         <p className="auth-link">
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
+      </div>
       </div>
       <Footer />
     </div>

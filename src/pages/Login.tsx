@@ -29,6 +29,7 @@ const Login = () => {
 
   return (
     <div className="auth-page">
+      <div className="auth-content">
       <div className="auth-card">
         <div className="auth-logo">
           <Logo size="lg" showText={true} />
@@ -58,6 +59,8 @@ const Login = () => {
         <p className="auth-link">
           No account? <Link to="/register">Create one</Link>
         </p>
+      </div>
+      </div>
       </div>
       <Footer />
     </div>
