@@ -30,37 +30,36 @@ const Login = () => {
   return (
     <div className="auth-page">
       <div className="auth-content">
-      <div className="auth-card">
-        <div className="auth-logo">
-          <Logo size="lg" showText={true} />
+        <div className="auth-card">
+          <div className="auth-logo">
+            <Logo size="lg" showText={true} />
+          </div>
+          <h1>Welcome back</h1>
+          <p className="auth-subtitle">Good to see you here</p>
+          {error && <p className="error">{error}</p>}
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button type="submit" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
+          <p className="auth-link">
+            No account? <Link to="/register">Create one</Link>
+          </p>
         </div>
-        <h1>Welcome back</h1>
-        <p className="auth-subtitle">Good to see you here</p>
-        {error && <p className="error">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
-        <p className="auth-link">
-          No account? <Link to="/register">Create one</Link>
-        </p>
-      </div>
-      </div>
       </div>
       <Footer />
     </div>
