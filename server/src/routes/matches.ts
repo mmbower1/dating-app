@@ -21,8 +21,8 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
     if (mutualLike) {
       const match = await Match.create({
         users: [
-          { userId: me._id, model: getModelName(me.gender) },
-          { userId: target._id, model: getModelName(target.gender) },
+          { userId: me._id, model: getModelName(me.gender), name: me.name, photo: me.photos[0] ?? '' },
+          { userId: target._id, model: getModelName(target.gender), name: target.name, photo: target.photos[0] ?? '' },
         ],
       });
       res.json({ matched: true, matchId: match._id });

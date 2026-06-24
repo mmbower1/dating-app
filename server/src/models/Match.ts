@@ -3,6 +3,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 interface IMatchUser {
   userId: mongoose.Types.ObjectId;
   model: 'MaleUser' | 'FemaleUser' | 'OtherUser';
+  name: string;
+  photo: string;
 }
 
 export interface IMatch extends Document {
@@ -24,6 +26,8 @@ const MatchSchema = new Schema<IMatch>(
         {
           userId: { type: Schema.Types.ObjectId, refPath: 'users.model', required: true },
           model: { type: String, enum: ['MaleUser', 'FemaleUser', 'OtherUser'], required: true },
+          name: { type: String, required: true },
+          photo: { type: String, default: '' },
         },
       ],
       validate: (v: unknown[]) => v.length === 2,
