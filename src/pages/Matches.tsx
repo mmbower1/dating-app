@@ -31,7 +31,8 @@ const Matches = () => {
       <h2>Your Matches</h2>
       <div className="match-list">
         {matches.map((match) => {
-          const other = match.users.find((u) => u._id !== user?._id);
+          const otherEntry = match.users.find((u) => u.userId._id !== user?._id);
+          const other = otherEntry?.userId;
           if (!other) return null;
           return (
             <div

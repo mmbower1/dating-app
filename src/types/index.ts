@@ -14,9 +14,14 @@ export interface User {
   gracefulExitCount: number;
 }
 
+export interface MatchUser {
+  userId: User;
+  model: 'MaleUser' | 'FemaleUser' | 'OtherUser';
+}
+
 export interface Match {
   _id: string;
-  users: User[];
+  users: MatchUser[];
   active: boolean;
   lastMessageAt: string | null;
   endReason: 'graceful_exit' | 'ghosted' | 'mutual' | null;

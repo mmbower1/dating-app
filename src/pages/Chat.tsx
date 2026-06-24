@@ -43,7 +43,7 @@ const Chat = () => {
     navigate('/matches');
   };
 
-  const other = match?.users.find((u) => u._id !== user?._id);
+  const other = match?.users.find((u) => u.userId._id !== user?._id)?.userId;
 
   if (loading) return <div className="page-center">Loading chat...</div>;
 
