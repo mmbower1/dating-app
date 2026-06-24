@@ -11,6 +11,9 @@ const router = Router();
 // Like a user — creates a match if mutual
 router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    const activeMatch = await Match.findOne({ 'users.userId': req.userId, active: true });
+    if (activeMatch) { res.status(403).json({ message: 'Swiping is locked while you have an active match.' }); return; }
+
     const UserModel = getUserModel(req.userGender!);
     const me = await UserModel.findById(req.userId);
     const target = await findUserById(req.params.targetId as string);
@@ -48,6 +51,9 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 // Pass on a user
 router.post('/pass/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    const activeMatch = await Match.findOne({ 'users.userId': req.userId, active: true });
+    if (activeMatch) { res.status(403).json({ message: 'Swiping is locked while you have an active match.' }); return; }
+
     const UserModel = getUserModel(req.userGender!);
     const me = await UserModel.findById(req.userId);
     if (!me) { res.status(404).json({ message: 'User not found' }); return; }

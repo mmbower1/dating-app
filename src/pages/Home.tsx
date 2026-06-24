@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import type { User } from '../types';
 
@@ -6,11 +7,19 @@ const Home = () => {
   const [candidates, setCandidates] = useState<User[]>([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    api.get<User[]>('/users/discover')
-      .then((res) => setCandidates(res.data))
+    api.get<User[] | { locked: boolean }>('/users/discover')
+      .then((res) => {
+        if (!Array.isArray(res.data) && res.data.locked) {
+          setLocked(true);
+        } else {
+          setCandidates(res.data as User[]);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -33,6 +42,21 @@ const Home = () => {
   };
 
   if (loading) return <div className="page-center">Finding people near you...</div>;
+
+  if (locked) {
+    return (
+      <div className="page-center locked-state">
+        <div className="locked-icon">💜</div>
+        <h2 className="locked-title">You have an active connection</h2>
+        <p className="locked-body">
+          Pearl is built for genuine connections. Focus on the person you matched with before exploring more.
+        </p>
+        <button className="locked-cta" onClick={() => navigate('/matches')}>
+          Go to your match
+        </button>
+      </div>
+    );
+  }
 
   if (!profile)
     return (

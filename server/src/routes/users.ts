@@ -4,6 +4,7 @@ import multer from 'multer';
 import { Readable } from 'stream';
 import { protect, AuthRequest } from '../middleware/auth';
 import { getUserModel, getModelName } from '../models/User';
+import Match from '../models/Match';
 import { vapidPublicKey } from '../utils/push';
 
 cloudinary.config({
@@ -22,6 +23,9 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
     const UserModel = getUserModel(req.userGender!);
     const me = await UserModel.findById(req.userId);
     if (!me) { res.status(404).json({ message: 'User not found' }); return; }
+
+    const activeMatch = await Match.findOne({ 'users.userId': me._id, active: true });
+    if (activeMatch) { res.json({ locked: true }); return; }
 
     const hardExcluded = [me._id, ...me.likedUsers, ...me.blockedUsers];
     const excluded = [...hardExcluded, ...me.passedUsers];

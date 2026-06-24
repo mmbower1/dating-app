@@ -406,6 +406,39 @@ form button[type="submit"]:disabled {
   font-size: 15px;
 }
 
+.locked-state { gap: 16px; padding: 32px; }
+
+.locked-icon { font-size: 52px; }
+
+.locked-title {
+  font-size: 22px;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.locked-body {
+  font-size: 15px;
+  color: var(--text-secondary);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.locked-cta {
+  margin-top: 8px;
+  padding: 14px 32px;
+  border-radius: 50px;
+  background: var(--gradient);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  width: auto;
+}
+
 .loading {
   flex: 1;
   display: flex;
