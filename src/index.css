@@ -97,9 +97,11 @@ body {
 }
 
 .logo-text {
-  font-weight: 700;
+  font-family: 'Great Vibes', cursive;
+  font-weight: 400;
   color: var(--text-primary);
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
+  line-height: 1;
 }
 
 .auth-logo {

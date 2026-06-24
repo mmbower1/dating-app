@@ -10,7 +10,7 @@ const Footer = () => (
       <div className="footer-links">
         <div className="footer-col">
           <h4>App</h4>
-          <a href="#">About Atlas</a>
+          <a href="#">About Pearl</a>
           <a href="#">How it works</a>
           <a href="#">Accountability Score</a>
         </div>
@@ -29,7 +29,7 @@ const Footer = () => (
       </div>
     </div>
     <div className="footer-bottom">
-      <span>© {new Date().getFullYear()} Atlas. All rights reserved.</span>
+      <span>© {new Date().getFullYear()} Pearl. All rights reserved.</span>
       <span className="footer-motto">Show up. Stay present.</span>
     </div>
   </footer>
