@@ -6,6 +6,12 @@ import Logo from '../components/Logo';
 import Footer from '../components/Footer';
 
 const GENDERS = ['male', 'female', 'non-binary', 'other'];
+const GENDER_LABELS: Record<string, string> = {
+  male: 'Male',
+  female: 'Female',
+  'non-binary': 'Non-Binary',
+  other: 'Other',
+};
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
@@ -119,7 +125,7 @@ const Register = () => {
                   className={`pill ${form.gender === g ? 'active' : ''}`}
                   onClick={() => setForm({ ...form, gender: g })}
                 >
-                  {g}
+                  {GENDER_LABELS[g]}
                 </button>
               ))}
             </div>
