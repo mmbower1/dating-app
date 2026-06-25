@@ -1,3 +1,16 @@
+export interface DiscoverFilters {
+  ethnicities: string[];
+  religions: string[];
+  heightMin: number | null;
+  heightMax: number | null;
+  hasChildren: 'yes' | 'no' | 'any';
+  drinks: string[];
+  smokes: string[];
+  politicalAssociations: string[];
+  educationLevels: string[];
+  maxDistance: number | null;
+}
+
 export interface User {
   _id: string;
   name: string;
@@ -7,12 +20,21 @@ export interface User {
   interestedIn: string[];
   bio: string;
   photos: string[];
-  location?: { city: string; state: string };
+  location?: { city: string; state: string; lat?: number | null; lng?: number | null };
+  ethnicity?: string;
+  religion?: string;
+  height?: number | null;
+  hasChildren?: boolean | null;
+  drinks?: string;
+  smokes?: string;
+  politicalAssociation?: string;
+  educationLevel?: string;
   accountabilityScore: number;
   responseRate: number;
   ghostCount: number;
   gracefulExitCount: number;
   agePreference?: { min: number; max: number };
+  filters?: DiscoverFilters;
   isAdmin?: boolean;
 }
 

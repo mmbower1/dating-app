@@ -17,6 +17,16 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 *
 
 const router = Router();
 
+function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 3959;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 // Get potential matches across the relevant gender collections
 router.get('/discover', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -41,18 +51,51 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
         modelsToQuery.map((modelName) => {
           const Model = getUserModel(modelName === 'MaleUser' ? 'male' : modelName === 'FemaleUser' ? 'female' : 'other');
           const ageFilter = (ageMin > 18 || ageMax < 99) ? { age: { $gte: ageMin, $lte: ageMax } } : {};
-          return Model.find({
-            _id: { $nin: excludeList },
-            ...ageFilter,
-          })
+          return Model.find({ _id: { $nin: excludeList }, ...ageFilter })
             .select('-password -likedUsers -passedUsers -blockedUsers')
-            .limit(20);
+            .limit(50);
         })
       );
 
     let candidates = (await query(excluded)).flat();
-    if (candidates.length === 0) {
-      candidates = (await query(hardExcluded)).flat();
+    if (candidates.length === 0) candidates = (await query(hardExcluded)).flat();
+
+    // Apply optional filters (only when the preference is set AND candidate has the field set)
+    const f = me.filters;
+    if (f) {
+      candidates = candidates.filter((c) => {
+        if (f.ethnicities?.length && c.ethnicity) {
+          if (!f.ethnicities.includes(c.ethnicity)) return false;
+        }
+        if (f.religions?.length && c.religion) {
+          if (!f.religions.includes(c.religion)) return false;
+        }
+        if (f.heightMin != null && c.height != null && c.height < f.heightMin) return false;
+        if (f.heightMax != null && c.height != null && c.height > f.heightMax) return false;
+        if (f.hasChildren && f.hasChildren !== 'any' && c.hasChildren != null) {
+          const want = f.hasChildren === 'yes';
+          if (c.hasChildren !== want) return false;
+        }
+        if (f.drinks?.length && c.drinks) {
+          if (!f.drinks.includes(c.drinks)) return false;
+        }
+        if (f.smokes?.length && c.smokes) {
+          if (!f.smokes.includes(c.smokes)) return false;
+        }
+        if (f.politicalAssociations?.length && c.politicalAssociation) {
+          if (!f.politicalAssociations.includes(c.politicalAssociation)) return false;
+        }
+        if (f.educationLevels?.length && c.educationLevel) {
+          if (!f.educationLevels.includes(c.educationLevel)) return false;
+        }
+        if (f.maxDistance != null && me.location?.lat != null && me.location?.lng != null) {
+          if (c.location?.lat != null && c.location?.lng != null) {
+            const dist = haversineDistance(me.location.lat, me.location.lng, c.location.lat!, c.location.lng!);
+            if (dist > f.maxDistance) return false;
+          }
+        }
+        return true;
+      });
     }
 
     res.json(candidates.slice(0, 20));
@@ -64,7 +107,11 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
 // Update own profile
 router.patch('/me', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const allowed = ['name', 'bio', 'photos', 'location', 'age', 'agePreference', 'interestedIn'];
+    const allowed = [
+      'name', 'bio', 'photos', 'location', 'age', 'agePreference', 'interestedIn',
+      'ethnicity', 'religion', 'height', 'hasChildren', 'drinks', 'smokes',
+      'politicalAssociation', 'educationLevel', 'filters',
+    ];
     const updates: Record<string, unknown> = {};
     for (const key of allowed) {
       if (req.body[key] !== undefined) updates[key] = req.body[key];

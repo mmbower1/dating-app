@@ -16,16 +16,7 @@ const Profile = () => {
   const { user, logout, updateUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [bio, setBio] = useState(user?.bio || '');
-  const [ageMin, setAgeMin] = useState(user?.agePreference?.min ?? 18);
-  const [ageMax, setAgeMax] = useState(user?.agePreference?.max ?? 60);
-  const [interests, setInterests] = useState<string[]>(user?.interestedIn ?? []);
   const [saved, setSaved] = useState(false);
-
-  const GENDERS = ['male', 'female', 'non-binary', 'other'];
-  const GENDER_LABELS: Record<string, string> = { male: 'Male', female: 'Female', 'non-binary': 'Non-Binary', other: 'Other' };
-
-  const toggleInterest = (g: string) =>
-    setInterests((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [notifStatus, setNotifStatus] = useState<'idle' | 'enabled' | 'denied'>('idle');
@@ -33,10 +24,8 @@ const Profile = () => {
 
   const save = async (e: FormEvent) => {
     e.preventDefault();
-    const clampedMin = Math.min(ageMin, ageMax - 1);
-    const clampedMax = Math.max(ageMax, ageMin + 1);
-    await api.patch<User>('/users/me', { bio, agePreference: { min: clampedMin, max: clampedMax }, interestedIn: interests });
-    updateUser({ bio, agePreference: { min: clampedMin, max: clampedMax }, interestedIn: interests });
+    await api.patch<User>('/users/me', { bio });
+    updateUser({ bio });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -165,49 +154,6 @@ const Profile = () => {
           rows={4}
           placeholder="Tell people about yourself..."
         />
-
-        <div className="age-pref-section">
-          <label className="age-pref-label">Interested in</label>
-          <div className="pill-group" style={{ marginTop: 8 }}>
-            {GENDERS.map((g) => (
-              <button
-                key={g}
-                type="button"
-                className={`pill ${interests.includes(g) ? 'active' : ''}`}
-                onClick={() => toggleInterest(g)}
-              >
-                {GENDER_LABELS[g]}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="age-pref-section">
-          <label className="age-pref-label">
-            Age range
-            <span className="age-pref-range">{ageMin} – {ageMax}</span>
-          </label>
-          <div className="age-slider-row">
-            <span className="age-slider-cap">18</span>
-            <div className="age-sliders">
-              <input
-                type="range"
-                min={18}
-                max={80}
-                value={ageMin}
-                onChange={(e) => setAgeMin(Math.min(Number(e.target.value), ageMax - 1))}
-              />
-              <input
-                type="range"
-                min={18}
-                max={80}
-                value={ageMax}
-                onChange={(e) => setAgeMax(Math.max(Number(e.target.value), ageMin + 1))}
-              />
-            </div>
-            <span className="age-slider-cap">80</span>
-          </div>
-        </div>
 
         <button type="submit">{saved ? 'Saved!' : 'Save changes'}</button>
       </form>
