@@ -20,6 +20,8 @@ export interface IUser extends Document {
   smokes?: string;
   politicalAssociation?: string;
   educationLevel?: string;
+  zodiacSign?: string;
+  pets?: string;
   accountabilityScore: number;
   responseRate: number;
   ghostCount: number;
@@ -73,6 +75,8 @@ const UserSchema = new Schema<IUser>(
     smokes: { type: String, default: '' },
     politicalAssociation: { type: String, default: '' },
     educationLevel: { type: String, default: '' },
+    zodiacSign: { type: String, default: '' },
+    pets: { type: String, default: '' },
     accountabilityScore: { type: Number, default: 75, min: 0, max: 100 },
     responseRate: { type: Number, default: 100, min: 0, max: 100 },
     ghostCount: { type: Number, default: 0 },

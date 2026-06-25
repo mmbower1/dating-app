@@ -781,7 +781,7 @@ form button[type="submit"]:disabled {
   width: 100%;
   background: var(--bg-card);
   border-radius: 20px;
-  border: 1px solid var(--border);
+  /* border: 1px solid var(--border); */
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
@@ -1573,6 +1573,31 @@ form button[type="submit"]:disabled {
   font-weight: 500;
   color: var(--text-secondary);
 }
+
+.profile-selects-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.profile-select-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-select {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  appearance: none;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+.profile-select:focus { outline: none; border-color: var(--accent-purple); }
 
 /* ── Age Range Filter ───────────────────────────────── */
 

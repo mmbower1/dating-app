@@ -35,13 +35,28 @@ function inToDisplay(inches: number) {
 
 interface DetailChip { icon: string; label: string; }
 
+const ZODIAC_GLYPHS: Record<string, string> = {
+  Aries: '♈', Taurus: '♉', Gemini: '♊', Cancer: '♋', Leo: '♌', Virgo: '♍',
+  Libra: '♎', Scorpio: '♏', Sagittarius: '♐', Capricorn: '♑', Aquarius: '♒', Pisces: '♓',
+};
+
+function buildAbout(profile: User): DetailChip[] {
+  const chips: DetailChip[] = [];
+  chips.push({ icon: '🎂', label: `${profile.age} yrs` });
+  chips.push({ icon: '👤', label: profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1) });
+  if (profile.height) chips.push({ icon: '↕', label: inToDisplay(profile.height) });
+  if (profile.location?.city) chips.push({ icon: '📍', label: `${profile.location.city}${profile.location.state ? `, ${profile.location.state}` : ''}` });
+  if (profile.hasChildren != null) chips.push({ icon: '👶', label: profile.hasChildren ? 'Has kids' : 'No kids' });
+  if (profile.pets) chips.push({ icon: '🐾', label: profile.pets });
+  if (profile.zodiacSign) chips.push({ icon: ZODIAC_GLYPHS[profile.zodiacSign] ?? '✦', label: profile.zodiacSign });
+  return chips;
+}
+
 function buildDetails(profile: User): DetailChip[] {
   const chips: DetailChip[] = [];
-  if (profile.height) chips.push({ icon: '↕', label: inToDisplay(profile.height) });
   if (profile.educationLevel) chips.push({ icon: '🎓', label: profile.educationLevel });
   if (profile.drinks) chips.push({ icon: '🍷', label: profile.drinks });
   if (profile.smokes) chips.push({ icon: '🚬', label: profile.smokes });
-  if (profile.hasChildren != null) chips.push({ icon: '👶', label: profile.hasChildren ? 'Has kids' : 'No kids' });
   if (profile.religion) chips.push({ icon: '✦', label: profile.religion });
   if (profile.politicalAssociation) chips.push({ icon: '🗳', label: profile.politicalAssociation });
   return chips;
@@ -210,11 +225,13 @@ const Home = () => {
             <p>Check back later!</p>
           </div>
         ) : (() => {
+          const about = buildAbout(profile);
           const details = buildDetails(profile);
+          const extraPhotos = profile.photos.slice(1);
           return (
             <div className="pcard-stack">
 
-              {/* Primary photo */}
+              {/* Photo 1 */}
               <div className="pcard-item pcard-item--photo">
                 {profile.photos.length > 0 ? (
                   <img src={profile.photos[0]} alt={profile.name} className="pcard-photo-img" />
@@ -227,18 +244,32 @@ const Home = () => {
               {/* Identity */}
               <div className="pcard-item pcard-item--identity">
                 <div className="pcard-name-row">
-                  <span className="pcard-name">{profile.name}, {profile.age}</span>
+                  <span className="pcard-name">{profile.name}</span>
                   <span className="pcard-score" title="Accountability score">{profile.accountabilityScore}</span>
                 </div>
-                {profile.location?.city && (
-                  <span className="pcard-location">
-                    <LocationIcon />
-                    {profile.location.city}{profile.location.state ? `, ${profile.location.state}` : ''}
-                  </span>
-                )}
               </div>
 
-              {/* Bio */}
+              {/* About — age, gender, height, location, kids, pets, zodiac */}
+              <div className="pcard-item pcard-item--text">
+                <div className="pcard-detail-chips">
+                  {about.map((d) => (
+                    <span key={d.label} className="pcard-detail-chip">
+                      <span className="pcard-chip-icon">{d.icon}</span>
+                      {d.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Photo 2 */}
+              {extraPhotos[0] && (
+                <div className="pcard-item pcard-item--photo">
+                  <img src={extraPhotos[0]} alt={`${profile.name} 2`} className="pcard-photo-img" />
+                  <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
+                </div>
+              )}
+
+              {/* Bio — below photo 2 */}
               {profile.bio && (
                 <div className="pcard-item pcard-item--text">
                   <div className="pcard-section-heart-row">
@@ -248,15 +279,15 @@ const Home = () => {
                 </div>
               )}
 
-              {/* Additional photos interspersed */}
-              {profile.photos.slice(1).map((photo, i) => (
+              {/* Photo 3+ */}
+              {extraPhotos.slice(1).map((photo, i) => (
                 <div key={i} className="pcard-item pcard-item--photo">
-                  <img src={photo} alt={`${profile.name} ${i + 2}`} className="pcard-photo-img" />
+                  <img src={photo} alt={`${profile.name} ${i + 3}`} className="pcard-photo-img" />
                   <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
                 </div>
               ))}
 
-              {/* Details chips */}
+              {/* Lifestyle details */}
               {details.length > 0 && (
                 <div className="pcard-item pcard-item--text">
                   <div className="pcard-section-heart-row">

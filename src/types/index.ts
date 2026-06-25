@@ -29,6 +29,8 @@ export interface User {
   smokes?: string;
   politicalAssociation?: string;
   educationLevel?: string;
+  zodiacSign?: string;
+  pets?: string;
   accountabilityScore: number;
   responseRate: number;
   ghostCount: number;

@@ -16,6 +16,8 @@ const Profile = () => {
   const { user, logout, updateUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [bio, setBio] = useState(user?.bio || '');
+  const [zodiacSign, setZodiacSign] = useState(user?.zodiacSign || '');
+  const [pets, setPets] = useState(user?.pets || '');
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -24,8 +26,8 @@ const Profile = () => {
 
   const save = async (e: FormEvent) => {
     e.preventDefault();
-    await api.patch<User>('/users/me', { bio });
-    updateUser({ bio });
+    await api.patch<User>('/users/me', { bio, zodiacSign, pets });
+    updateUser({ bio, zodiacSign, pets });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -154,6 +156,28 @@ const Profile = () => {
           rows={4}
           placeholder="Tell people about yourself..."
         />
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Zodiac sign</label>
+            <select className="profile-select" value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)}>
+              <option value="">Select…</option>
+              {['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'].map((z) => (
+                <option key={z} value={z}>{z}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="profile-select-wrap">
+            <label className="field-label">Pets</label>
+            <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
+              <option value="">Select…</option>
+              {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         <button type="submit">{saved ? 'Saved!' : 'Save changes'}</button>
       </form>
