@@ -240,14 +240,19 @@ const Home = () => {
               {/* Bio */}
               {profile.bio && (
                 <div className="pcard-section pcard-bio-section">
+                  <div className="pcard-section-heart-row">
+                    <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s bio`)} />
+                  </div>
                   <p className="pcard-bio">{profile.bio}</p>
-                  <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s bio`)} />
                 </div>
               )}
 
               {/* Details chips */}
               {details.length > 0 && (
                 <div className="pcard-section pcard-details-section">
+                  <div className="pcard-section-heart-row">
+                    <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s details`)} />
+                  </div>
                   <div className="pcard-detail-chips">
                     {details.map((d) => (
                       <span key={d.label} className="pcard-detail-chip">
@@ -256,7 +261,6 @@ const Home = () => {
                       </span>
                     ))}
                   </div>
-                  <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s details`)} />
                 </div>
               )}
 

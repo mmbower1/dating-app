@@ -961,17 +961,20 @@ form button[type="submit"]:disabled {
 .pcard-bio-section,
 .pcard-details-section {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 0;
 }
 
-.pcard-bio-section .pcard-bio {
-  flex: 1;
+.pcard-section-heart-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
 }
 
 .pcard-detail-chips {
-  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* ── Pass button — fixed bottom left ────────────────── */
