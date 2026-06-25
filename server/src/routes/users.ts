@@ -40,9 +40,10 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
       Promise.all(
         modelsToQuery.map((modelName) => {
           const Model = getUserModel(modelName === 'MaleUser' ? 'male' : modelName === 'FemaleUser' ? 'female' : 'other');
+          const ageFilter = (ageMin > 18 || ageMax < 99) ? { age: { $gte: ageMin, $lte: ageMax } } : {};
           return Model.find({
             _id: { $nin: excludeList },
-            age: { $gte: ageMin, $lte: ageMax },
+            ...ageFilter,
           })
             .select('-password -likedUsers -passedUsers -blockedUsers')
             .limit(20);
