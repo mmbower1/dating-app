@@ -106,7 +106,6 @@ const Home = () => {
   const { user } = useAuth();
   const [candidates, setCandidates] = useState<User[]>([]);
   const [current, setCurrent] = useState(0);
-  const [photoIndex, setPhotoIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState('');
@@ -123,7 +122,6 @@ const Home = () => {
         } else {
           setCandidates(res.data as User[]);
           setCurrent(0);
-          setPhotoIndex(0);
         }
       })
       .finally(() => setLoading(false));
@@ -154,7 +152,6 @@ const Home = () => {
 
   const advance = () => {
     setCurrent((c) => c + 1);
-    setPhotoIndex(0);
     setLikeTarget(null);
   };
 
@@ -176,15 +173,6 @@ const Home = () => {
     advance();
   };
 
-  const tapPhoto = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!profile || profile.photos.length <= 1) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    if (e.clientX - rect.left < rect.width / 2) {
-      setPhotoIndex((i) => Math.max(0, i - 1));
-    } else {
-      setPhotoIndex((i) => Math.min(profile.photos.length - 1, i + 1));
-    }
-  }, [profile]);
 
   if (loading) return <div className="page-center">Finding people near you...</div>;
 
@@ -225,19 +213,12 @@ const Home = () => {
           const details = buildDetails(profile);
           return (
             <div className="pcard">
-              {/* Photo with tap zones + heart */}
-              <div className="pcard-photo-wrap" onClick={tapPhoto}>
+              {/* Primary photo */}
+              <div className="pcard-photo-wrap">
                 {profile.photos.length > 0 ? (
-                  <img src={profile.photos[photoIndex]} alt={profile.name} className="pcard-photo-img" />
+                  <img src={profile.photos[0]} alt={profile.name} className="pcard-photo-img" />
                 ) : (
                   <div className="pcard-no-photo">{profile.name[0]}</div>
-                )}
-                {profile.photos.length > 1 && (
-                  <div className="pcard-photo-bars">
-                    {profile.photos.map((_, i) => (
-                      <span key={i} className={`pcard-bar ${i === photoIndex ? 'active' : ''}`} />
-                    ))}
-                  </div>
                 )}
                 <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
               </div>
