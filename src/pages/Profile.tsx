@@ -18,7 +18,14 @@ const Profile = () => {
   const [bio, setBio] = useState(user?.bio || '');
   const [ageMin, setAgeMin] = useState(user?.agePreference?.min ?? 18);
   const [ageMax, setAgeMax] = useState(user?.agePreference?.max ?? 60);
+  const [interests, setInterests] = useState<string[]>(user?.interestedIn ?? []);
   const [saved, setSaved] = useState(false);
+
+  const GENDERS = ['male', 'female', 'non-binary', 'other'];
+  const GENDER_LABELS: Record<string, string> = { male: 'Male', female: 'Female', 'non-binary': 'Non-Binary', other: 'Other' };
+
+  const toggleInterest = (g: string) =>
+    setInterests((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [notifStatus, setNotifStatus] = useState<'idle' | 'enabled' | 'denied'>('idle');
@@ -28,8 +35,8 @@ const Profile = () => {
     e.preventDefault();
     const clampedMin = Math.min(ageMin, ageMax - 1);
     const clampedMax = Math.max(ageMax, ageMin + 1);
-    await api.patch<User>('/users/me', { bio, agePreference: { min: clampedMin, max: clampedMax } });
-    updateUser({ bio, agePreference: { min: clampedMin, max: clampedMax } });
+    await api.patch<User>('/users/me', { bio, agePreference: { min: clampedMin, max: clampedMax }, interestedIn: interests });
+    updateUser({ bio, agePreference: { min: clampedMin, max: clampedMax }, interestedIn: interests });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -158,6 +165,22 @@ const Profile = () => {
           rows={4}
           placeholder="Tell people about yourself..."
         />
+
+        <div className="age-pref-section">
+          <label className="age-pref-label">Interested in</label>
+          <div className="pill-group" style={{ marginTop: 8 }}>
+            {GENDERS.map((g) => (
+              <button
+                key={g}
+                type="button"
+                className={`pill ${interests.includes(g) ? 'selected' : ''}`}
+                onClick={() => toggleInterest(g)}
+              >
+                {GENDER_LABELS[g]}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="age-pref-section">
           <label className="age-pref-label">

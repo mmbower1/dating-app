@@ -30,7 +30,8 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
     const hardExcluded = [me._id, ...me.likedUsers, ...me.blockedUsers];
     const excluded = [...hardExcluded, ...me.passedUsers];
 
-    const modelsToQuery = [...new Set(me.interestedIn.map((g) => getModelName(g)))];
+    const interests = me.interestedIn.length > 0 ? me.interestedIn : ['male', 'female', 'non-binary', 'other'];
+    const modelsToQuery = [...new Set(interests.map((g) => getModelName(g)))];
 
     const ageMin = me.agePreference?.min ?? 18;
     const ageMax = me.agePreference?.max ?? 99;
@@ -62,7 +63,7 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
 // Update own profile
 router.patch('/me', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const allowed = ['name', 'bio', 'photos', 'location', 'age', 'agePreference'];
+    const allowed = ['name', 'bio', 'photos', 'location', 'age', 'agePreference', 'interestedIn'];
     const updates: Record<string, unknown> = {};
     for (const key of allowed) {
       if (req.body[key] !== undefined) updates[key] = req.body[key];
