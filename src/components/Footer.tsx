@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
 const Footer = () => (
@@ -10,21 +11,17 @@ const Footer = () => (
       <div className="footer-links">
         <div className="footer-col">
           <h4>App</h4>
-          <a href="#">About Pearl</a>
-          <a href="#">How it works</a>
-          <a href="#">Accountability Score</a>
+          <Link to="/welcome">About Pearl</Link>
+          <Link to="/welcome">How it works</Link>
         </div>
         <div className="footer-col">
           <h4>Support</h4>
-          <a href="#">Help Center</a>
-          <a href="#">Safety Tips</a>
-          <a href="#">Contact Us</a>
+          <a href="mailto:support@pearlapp.com">Contact Us</a>
         </div>
         <div className="footer-col">
           <h4>Legal</h4>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Cookie Policy</a>
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/terms">Terms of Service</Link>
         </div>
       </div>
     </div>

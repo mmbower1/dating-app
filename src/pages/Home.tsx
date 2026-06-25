@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import type { User } from '../types';
@@ -6,6 +6,7 @@ import type { User } from '../types';
 const Home = () => {
   const [candidates, setCandidates] = useState<User[]>([]);
   const [current, setCurrent] = useState(0);
+  const [photoIndex, setPhotoIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState('');
@@ -33,13 +34,26 @@ const Home = () => {
       setTimeout(() => setFeedback(''), 3000);
     }
     setCurrent((c) => c + 1);
+    setPhotoIndex(0);
   };
 
   const pass = async () => {
     if (!profile) return;
     await api.post(`/matches/pass/${profile._id}`);
     setCurrent((c) => c + 1);
+    setPhotoIndex(0);
   };
+
+  const prevPhoto = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPhotoIndex((i) => Math.max(0, i - 1));
+  }, []);
+
+  const nextPhoto = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!profile) return;
+    setPhotoIndex((i) => Math.min(profile.photos.length - 1, i + 1));
+  }, [profile]);
 
   if (loading) return <div className="page-center">Finding people near you...</div>;
 
@@ -71,8 +85,25 @@ const Home = () => {
       {feedback && <div className="match-toast">{feedback}</div>}
       <div className="swipe-card">
         <div className="card-photo">
-          {profile.photos[0] ? (
-            <img src={profile.photos[0]} alt={profile.name} />
+          {profile.photos.length > 0 ? (
+            <>
+              <img src={profile.photos[photoIndex]} alt={profile.name} />
+              {profile.photos.length > 1 && (
+                <>
+                  <div className="photo-dots">
+                    {profile.photos.map((_, i) => (
+                      <span key={i} className={`photo-dot ${i === photoIndex ? 'active' : ''}`} />
+                    ))}
+                  </div>
+                  {photoIndex > 0 && (
+                    <button className="photo-nav photo-nav-left" onClick={prevPhoto}>‹</button>
+                  )}
+                  {photoIndex < profile.photos.length - 1 && (
+                    <button className="photo-nav photo-nav-right" onClick={nextPhoto}>›</button>
+                  )}
+                </>
+              )}
+            </>
           ) : (
             <div className="no-photo">{profile.name[0]}</div>
           )}

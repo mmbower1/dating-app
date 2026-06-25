@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { SocketProvider } from './context/SocketContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Logo from './components/Logo';
 import Login from './pages/Login';
@@ -10,6 +11,9 @@ import Matches from './pages/Matches';
 import Chat from './pages/Chat';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
+import Welcome from './pages/Welcome';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 import './App.css';
 
 const TopHeader = () => {
@@ -74,6 +78,9 @@ const ThemedApp = () => {
     <div className="app" data-theme={theme}>
       <TopHeader />
       <Routes>
+        <Route path="/welcome" element={<Welcome />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
@@ -91,9 +98,11 @@ const ThemedApp = () => {
 const App = () => (
   <ThemeProvider>
     <AuthProvider>
-      <BrowserRouter>
-        <ThemedApp />
-      </BrowserRouter>
+      <SocketProvider>
+        <BrowserRouter>
+          <ThemedApp />
+        </BrowserRouter>
+      </SocketProvider>
     </AuthProvider>
   </ThemeProvider>
 );

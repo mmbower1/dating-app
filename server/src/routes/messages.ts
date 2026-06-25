@@ -6,6 +6,7 @@ import { findUserById } from '../models/User';
 import mongoose from 'mongoose';
 import { sendPush } from '../utils/push';
 import type webpush from 'web-push';
+import { io } from '../index';
 
 const router = Router();
 
@@ -45,6 +46,9 @@ router.post('/:matchId', protect, async (req: AuthRequest, res: Response): Promi
 
     match.lastMessageAt = new Date();
     await match.save();
+
+    // Broadcast to everyone in the match room in real time
+    io.to(req.params.matchId as string).emit('new_message', message);
 
     // Notify the other user
     const otherEntry = match.users.find((u) => u.userId.toString() !== req.userId);
