@@ -14,7 +14,6 @@ import Admin from './pages/Admin';
 import Welcome from './pages/Welcome';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
-import './App.css';
 
 const TopHeader = () => {
   const { user } = useAuth();
