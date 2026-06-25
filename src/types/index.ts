@@ -58,7 +58,7 @@ export interface Match {
   users: MatchUser[];
   active: boolean;
   lastMessageAt: string | null;
-  endReason: 'graceful_exit' | 'ghosted' | 'mutual' | null;
+  endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | null;
   createdAt: string;
 }
 

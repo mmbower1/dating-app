@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Matches from './pages/Matches';
 import Chat from './pages/Chat';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import Admin from './pages/Admin';
 import Welcome from './pages/Welcome';
 import Terms from './pages/Terms';
@@ -86,6 +87,7 @@ const ThemedApp = () => {
         <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
         <Route path="/chat/:matchId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

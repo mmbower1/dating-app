@@ -92,9 +92,29 @@ router.post('/pass/:targetId', protect, async (req: AuthRequest, res: Response):
   }
 });
 
-// Get all my matches
+// Undo a pass — remove target from passedUsers
+router.delete('/pass/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const UserModel = getUserModel(req.userGender!);
+    await UserModel.findByIdAndUpdate(req.userId, {
+      $pull: { passedUsers: new mongoose.Types.ObjectId(req.params.targetId as string) },
+    });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Get all my matches — expire any stale ones first (no message in 72 hrs)
 router.get('/', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    const expiryMs = 72 * 60 * 60 * 1000;
+    const expiryThreshold = new Date(Date.now() - expiryMs);
+    await Match.updateMany(
+      { 'users.userId': req.userId, active: true, lastMessageAt: null, createdAt: { $lt: expiryThreshold } },
+      { $set: { active: false, endReason: 'expired', conversationEndedAt: new Date() } }
+    );
+
     const matches = await Match.find({ 'users.userId': req.userId, active: true })
       .populate({ path: 'users.userId', select: 'name photos accountabilityScore bio age gender' })
       .sort({ updatedAt: -1 });

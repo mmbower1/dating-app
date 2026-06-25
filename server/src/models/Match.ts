@@ -13,7 +13,7 @@ export interface IMatch extends Document {
   lastMessageAt: Date | null;
   conversationEndedAt: Date | null;
   endedBy: mongoose.Types.ObjectId | null;
-  endReason: 'graceful_exit' | 'ghosted' | 'mutual' | null;
+  endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | null;
   ghostedUserId: mongoose.Types.ObjectId | null;
   createdAt: Date;
   updatedAt: Date;
@@ -39,7 +39,7 @@ const MatchSchema = new Schema<IMatch>(
     endedBy: { type: Schema.Types.ObjectId, default: null },
     endReason: {
       type: String,
-      enum: ['graceful_exit', 'ghosted', 'mutual', null],
+      enum: ['graceful_exit', 'ghosted', 'mutual', 'expired', null],
       default: null,
     },
     ghostedUserId: { type: Schema.Types.ObjectId, default: null },

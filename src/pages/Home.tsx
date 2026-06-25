@@ -116,6 +116,8 @@ const Home = () => {
   const [feedback, setFeedback] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [likeTarget, setLikeTarget] = useState<string | null>(null);
+  const [undoTarget, setUndoTarget] = useState<{ profile: User; idx: number } | null>(null);
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
 
   const fetchCandidates = useCallback(() => {
@@ -174,8 +176,29 @@ const Home = () => {
 
   const pass = async () => {
     if (!profile) return;
-    await api.post(`/matches/pass/${profile._id}`);
+    const passed = profile;
+    const idx = current;
     advance();
+    setUndoTarget({ profile: passed, idx });
+    if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+    undoTimerRef.current = setTimeout(() => setUndoTarget(null), 5000);
+    await api.post(`/matches/pass/${passed._id}`);
+  };
+
+  const undoPass = async () => {
+    if (!undoTarget) return;
+    if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+    try {
+      await api.delete(`/matches/pass/${undoTarget.profile._id}`);
+      setCandidates((prev) => {
+        const next = [...prev];
+        next.splice(undoTarget.idx, 0, undoTarget.profile);
+        return next;
+      });
+      setCurrent(undoTarget.idx);
+    } finally {
+      setUndoTarget(null);
+    }
   };
 
 
@@ -200,6 +223,12 @@ const Home = () => {
     <>
       <div className="home-page">
         {feedback && <div className="match-toast">{feedback}</div>}
+        {undoTarget && (
+          <div className="undo-toast">
+            <span>Passed on {undoTarget.profile.name}</span>
+            <button className="undo-toast-btn" onClick={undoPass}>Undo</button>
+          </div>
+        )}
 
         <div className="discover-topbar">
           <button className="filter-btn" onClick={() => setShowFilters(true)}>

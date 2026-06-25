@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 import { Readable } from 'stream';
+import bcrypt from 'bcryptjs';
 import { protect, AuthRequest } from '../middleware/auth';
 import { getUserModel, getModelName } from '../models/User';
 import Match from '../models/Match';
@@ -122,6 +123,54 @@ router.patch('/me', protect, async (req: AuthRequest, res: Response): Promise<vo
     const UserModel = getUserModel(req.userGender!);
     const user = await UserModel.findByIdAndUpdate(req.userId, updates, { new: true }).select('-password');
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Change email
+router.patch('/me/email', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { email } = req.body as { email: string };
+    if (!email || !email.includes('@')) { res.status(400).json({ message: 'Valid email required' }); return; }
+    const UserModel = getUserModel(req.userGender!);
+    const user = await UserModel.findByIdAndUpdate(req.userId, { email: email.toLowerCase().trim() }, { new: true }).select('-password');
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Change password
+router.patch('/me/password', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body as { currentPassword: string; newPassword: string };
+    if (!currentPassword || !newPassword || newPassword.length < 6) {
+      res.status(400).json({ message: 'New password must be at least 6 characters' }); return;
+    }
+    const UserModel = getUserModel(req.userGender!);
+    const user = await UserModel.findById(req.userId);
+    if (!user) { res.status(404).json({ message: 'User not found' }); return; }
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) { res.status(401).json({ message: 'Current password is incorrect' }); return; }
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Delete account
+router.delete('/me', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    await Match.updateMany(
+      { 'users.userId': req.userId, active: true },
+      { $set: { active: false, endReason: 'mutual', conversationEndedAt: new Date() } }
+    );
+    const UserModel = getUserModel(req.userGender!);
+    await UserModel.findByIdAndDelete(req.userId);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
