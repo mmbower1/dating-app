@@ -1,8 +1,8 @@
 :root {
-  --bg-primary: #0d1117;
-  --bg-secondary: #161c2d;
-  --bg-card: #1e2637;
-  --bg-input: #252f42;
+  --bg-primary: #0d0f1a;
+  --bg-secondary: #13162a;
+  --bg-card: #1a1f35;
+  --bg-input: #222840;
   --accent: #7eb3f5;
   --accent-light: #a8cdf8;
   --accent-dark: #5a94e8;
@@ -95,8 +95,9 @@ body {
   position: relative;
   background: var(--bg-primary);
   background-image:
-    radial-gradient(ellipse at 85% 5%, rgba(167,139,250,0.07) 0%, transparent 45%),
-    radial-gradient(ellipse at 15% 95%, rgba(126,179,245,0.07) 0%, transparent 45%);
+    radial-gradient(ellipse at 85% 5%, rgba(167,139,250,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 15% 95%, rgba(126,179,245,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.07) 0%, transparent 70%);
 }
 
 /* ── Logo ───────────────────────────────────────────── */
