@@ -9,7 +9,7 @@ import type webpush from 'web-push';
 
 const router = Router();
 
-// Like a user — creates a match if mutual
+// Like a user — creates a match if mutual. Optional comment becomes first message.
 router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const activeMatch = await Match.findOne({ 'users.userId': req.userId, active: true });
@@ -19,6 +19,8 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
     const me = await UserModel.findById(req.userId);
     const target = await findUserById(req.params.targetId as string);
     if (!me || !target) { res.status(404).json({ message: 'User not found' }); return; }
+
+    const comment = typeof req.body.comment === 'string' ? req.body.comment.trim() : '';
 
     me.likedUsers.push(target._id as mongoose.Types.ObjectId);
     await me.save();
@@ -32,9 +34,24 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
         ],
       });
 
-      // Notify both users
+      // If the liker included a comment, post it as the opening message
+      if (comment) {
+        const { io } = await import('../index');
+        const msg = await Message.create({
+          matchId: match._id,
+          senderId: new mongoose.Types.ObjectId(req.userId as string),
+          text: comment,
+          type: 'text',
+        });
+        io.to((match._id as mongoose.Types.ObjectId).toString()).emit('new_message', msg);
+      }
+
+      const pushBody = comment
+        ? `${me.name} said: "${comment}"`
+        : `You matched with ${me.name}`;
+
       if (target.pushSubscription) {
-        sendPush(target.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", `You matched with ${me.name}`);
+        sendPush(target.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", pushBody);
       }
       if (me.pushSubscription) {
         sendPush(me.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", `You matched with ${target.name}`);
@@ -42,6 +59,14 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 
       res.json({ matched: true, matchId: match._id });
     } else {
+      // Not a match yet — if they left a comment, push-notify the target
+      if (comment && target.pushSubscription) {
+        sendPush(
+          target.pushSubscription as unknown as webpush.PushSubscription,
+          `${me.name} liked your profile 💜`,
+          `"${comment}"`
+        );
+      }
       res.json({ matched: false });
     }
   } catch (err) {

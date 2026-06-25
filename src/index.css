@@ -921,48 +921,172 @@ form button[type="submit"]:disabled {
   height: 8px;
 }
 
-/* ── Fixed action buttons ───────────────────────────── */
-.swipe-actions-fixed {
+/* ── Heart buttons on card sections ─────────────────── */
+.heart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-light);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  transition: color 0.18s, border-color 0.18s, background 0.18s, transform 0.12s;
+  flex-shrink: 0;
+}
+.heart-btn:hover {
+  color: #f472b6;
+  border-color: #f472b6;
+  background: rgba(244,114,182,0.08);
+}
+.heart-btn:active { transform: scale(0.9); }
+
+.heart-btn--photo {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  z-index: 3;
+  background: rgba(13,15,26,0.55);
+  backdrop-filter: blur(4px);
+  border-color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.85);
+}
+.heart-btn--photo:hover {
+  background: rgba(244,114,182,0.25);
+  border-color: #f472b6;
+  color: #f472b6;
+}
+
+.pcard-bio-section,
+.pcard-details-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pcard-bio-section .pcard-bio {
+  flex: 1;
+}
+
+.pcard-detail-chips {
+  flex: 1;
+}
+
+/* ── Pass button — fixed bottom left ────────────────── */
+.pass-bar {
   position: fixed;
-  bottom: calc(var(--nav-height) + 16px);
+  bottom: calc(var(--nav-height) + 20px);
   left: 50%;
   transform: translateX(-50%);
+  width: 100%;
+  max-width: 440px;
   display: flex;
-  gap: 28px;
-  z-index: 20;
-  padding: 10px 24px 10px;
-  background: linear-gradient(to top, var(--bg-primary) 60%, transparent);
+  justify-content: flex-start;
+  padding: 0 20px;
   pointer-events: none;
+  z-index: 20;
 }
-.swipe-actions-fixed > * { pointer-events: all; }
 
-.pass-btn, .like-btn {
-  width: 62px;
-  height: 62px;
+.pass-btn {
+  pointer-events: all;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.pass-btn {
   background: var(--bg-card);
   border: 2px solid var(--border-light);
   color: var(--text-secondary);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.15s, border-color 0.15s, color 0.15s;
+}
+.pass-btn:hover  { border-color: #fc8181; color: #fc8181; transform: scale(1.08); }
+.pass-btn:active { transform: scale(0.93); }
+
+/* ── Like sheet ──────────────────────────────────────── */
+.like-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: flex-end;
 }
 
-.like-btn {
-  background: var(--gradient);
+.like-sheet {
+  width: 100%;
+  background: var(--bg-secondary);
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: slideUp 0.24s cubic-bezier(0.32,0.72,0,1);
+}
+
+.like-sheet-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.like-sheet-heart {
+  color: #f472b6;
+  display: flex;
+}
+
+.like-sheet-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 16px;
+  color: var(--text-primary);
+  font-size: 15px;
+  resize: none;
+  line-height: 1.5;
+  transition: border-color 0.2s;
+}
+.like-sheet-input:focus { outline: none; border-color: #f472b6; }
+.like-sheet-input::placeholder { color: var(--text-muted); }
+
+.like-sheet-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.like-sheet-cancel {
+  flex: 1;
+  padding: 13px;
+  border-radius: 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.like-sheet-send {
+  flex: 2;
+  padding: 13px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #f472b6 0%, #a78bfa 100%);
   border: none;
   color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s;
 }
-
-.pass-btn:hover  { transform: scale(1.08); border-color: #fc8181; color: #fc8181; }
-.like-btn:hover  { transform: scale(1.08); box-shadow: 0 6px 28px rgba(167,139,250,0.45); }
-.pass-btn:active { transform: scale(0.95); }
-.like-btn:active { transform: scale(0.95); }
+.like-sheet-send:hover { opacity: 0.9; }
 
 /* legacy selectors kept for no-photo placeholder in other pages */
 .no-photo {

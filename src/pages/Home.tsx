@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import FiltersModal from '../components/FiltersModal';
 import type { User } from '../types';
 
+/* ── Icons ──────────────────────────────────────────── */
 const SlidersIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
@@ -21,34 +22,86 @@ const LocationIcon = () => (
   </svg>
 );
 
+const HeartIcon = ({ filled = false }: { filled?: boolean }) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+  </svg>
+);
+
+/* ── Helpers ─────────────────────────────────────────── */
 function inToDisplay(inches: number) {
   return `${Math.floor(inches / 12)}'${inches % 12}"`;
 }
-
-const DETAIL_ICONS: Record<string, string> = {
-  height: '↕',
-  education: '🎓',
-  drinks: '🍷',
-  smokes: '🚬',
-  children: '👶',
-  religion: '✦',
-  politics: '🗳',
-};
 
 interface DetailChip { icon: string; label: string; }
 
 function buildDetails(profile: User): DetailChip[] {
   const chips: DetailChip[] = [];
-  if (profile.height) chips.push({ icon: DETAIL_ICONS.height, label: inToDisplay(profile.height) });
-  if (profile.educationLevel) chips.push({ icon: DETAIL_ICONS.education, label: profile.educationLevel });
-  if (profile.drinks) chips.push({ icon: DETAIL_ICONS.drinks, label: profile.drinks });
-  if (profile.smokes) chips.push({ icon: DETAIL_ICONS.smokes, label: profile.smokes });
-  if (profile.hasChildren != null) chips.push({ icon: DETAIL_ICONS.children, label: profile.hasChildren ? 'Has kids' : 'No kids' });
-  if (profile.religion) chips.push({ icon: DETAIL_ICONS.religion, label: profile.religion });
-  if (profile.politicalAssociation) chips.push({ icon: DETAIL_ICONS.politics, label: profile.politicalAssociation });
+  if (profile.height) chips.push({ icon: '↕', label: inToDisplay(profile.height) });
+  if (profile.educationLevel) chips.push({ icon: '🎓', label: profile.educationLevel });
+  if (profile.drinks) chips.push({ icon: '🍷', label: profile.drinks });
+  if (profile.smokes) chips.push({ icon: '🚬', label: profile.smokes });
+  if (profile.hasChildren != null) chips.push({ icon: '👶', label: profile.hasChildren ? 'Has kids' : 'No kids' });
+  if (profile.religion) chips.push({ icon: '✦', label: profile.religion });
+  if (profile.politicalAssociation) chips.push({ icon: '🗳', label: profile.politicalAssociation });
   return chips;
 }
 
+/* ── Like sheet ──────────────────────────────────────── */
+interface LikeSheetProps {
+  label: string;
+  onSend: (comment: string) => void;
+  onCancel: () => void;
+}
+
+const LikeSheet = ({ label, onSend, onCancel }: LikeSheetProps) => {
+  const [comment, setComment] = useState('');
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setTimeout(() => inputRef.current?.focus(), 120);
+  }, []);
+
+  return (
+    <div className="like-sheet-overlay" onClick={onCancel}>
+      <div className="like-sheet" onClick={(e) => e.stopPropagation()}>
+        <div className="like-sheet-label">
+          <span className="like-sheet-heart"><HeartIcon filled /></span>
+          <span>{label}</span>
+        </div>
+        <textarea
+          ref={inputRef}
+          className="like-sheet-input"
+          placeholder="Add a comment… (optional)"
+          maxLength={200}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          rows={3}
+          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend(comment); } }}
+        />
+        <div className="like-sheet-actions">
+          <button className="like-sheet-cancel" onClick={onCancel}>Cancel</button>
+          <button className="like-sheet-send" onClick={() => onSend(comment)}>
+            <HeartIcon filled /> Send
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── Heart button ─────────────────────────────────────── */
+const HeartBtn = ({ onClick, onPhoto = false }: { onClick: () => void; onPhoto?: boolean }) => (
+  <button
+    className={`heart-btn ${onPhoto ? 'heart-btn--photo' : ''}`}
+    onClick={(e) => { e.stopPropagation(); onClick(); }}
+    aria-label="Like"
+  >
+    <HeartIcon />
+  </button>
+);
+
+/* ── Main component ───────────────────────────────────── */
 const Home = () => {
   const { user } = useAuth();
   const [candidates, setCandidates] = useState<User[]>([]);
@@ -58,6 +111,7 @@ const Home = () => {
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [likeTarget, setLikeTarget] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchCandidates = useCallback(() => {
@@ -98,29 +152,34 @@ const Home = () => {
 
   const profile = candidates[current];
 
-  const like = async () => {
-    if (!profile) return;
-    const res = await api.post<{ matched: boolean; matchId?: string }>(`/matches/like/${profile._id}`);
-    if (res.data.matched) {
-      setFeedback(`It's a match with ${profile.name}! 🎉`);
-      setTimeout(() => setFeedback(''), 3000);
-    }
+  const advance = () => {
     setCurrent((c) => c + 1);
     setPhotoIndex(0);
+    setLikeTarget(null);
+  };
+
+  const sendLike = async (comment: string) => {
+    if (!profile) return;
+    const res = await api.post<{ matched: boolean }>(`/matches/like/${profile._id}`, {
+      comment: comment.trim() || undefined,
+    });
+    if (res.data.matched) {
+      setFeedback(`It's a match with ${profile.name}! 💜`);
+      setTimeout(() => setFeedback(''), 3500);
+    }
+    advance();
   };
 
   const pass = async () => {
     if (!profile) return;
     await api.post(`/matches/pass/${profile._id}`);
-    setCurrent((c) => c + 1);
-    setPhotoIndex(0);
+    advance();
   };
 
   const tapPhoto = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!profile || profile.photos.length <= 1) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    if (x < rect.width / 2) {
+    if (e.clientX - rect.left < rect.width / 2) {
       setPhotoIndex((i) => Math.max(0, i - 1));
     } else {
       setPhotoIndex((i) => Math.min(profile.photos.length - 1, i + 1));
@@ -166,7 +225,7 @@ const Home = () => {
           const details = buildDetails(profile);
           return (
             <div className="pcard">
-              {/* Primary photo with tap zones */}
+              {/* Photo with tap zones + heart */}
               <div className="pcard-photo-wrap" onClick={tapPhoto}>
                 {profile.photos.length > 0 ? (
                   <img src={profile.photos[photoIndex]} alt={profile.name} className="pcard-photo-img" />
@@ -180,6 +239,7 @@ const Home = () => {
                     ))}
                   </div>
                 )}
+                <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
               </div>
 
               {/* Identity */}
@@ -200,6 +260,7 @@ const Home = () => {
               {profile.bio && (
                 <div className="pcard-section pcard-bio-section">
                   <p className="pcard-bio">{profile.bio}</p>
+                  <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s bio`)} />
                 </div>
               )}
 
@@ -214,37 +275,42 @@ const Home = () => {
                       </span>
                     ))}
                   </div>
+                  <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s details`)} />
                 </div>
               )}
 
-              {/* Additional photos shown below as sections */}
+              {/* Additional photos */}
               {profile.photos.slice(1).map((photo, i) => (
                 <div key={i} className="pcard-extra-photo">
                   <img src={photo} alt={`${profile.name} ${i + 2}`} />
+                  <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
                 </div>
               ))}
 
-              {/* Spacer so content isn't hidden behind fixed buttons */}
               <div className="pcard-bottom-space" />
             </div>
           );
         })()}
       </div>
 
-      {/* Fixed action bar */}
+      {/* Fixed pass button — bottom left */}
       {profile && (
-        <div className="swipe-actions-fixed">
+        <div className="pass-bar">
           <button className="pass-btn" onClick={pass} aria-label="Pass">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
-          <button className="like-btn" onClick={like} aria-label="Like">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-          </button>
         </div>
+      )}
+
+      {/* Like sheet */}
+      {likeTarget && (
+        <LikeSheet
+          label={likeTarget}
+          onSend={sendLike}
+          onCancel={() => setLikeTarget(null)}
+        />
       )}
 
       {showFilters && (
