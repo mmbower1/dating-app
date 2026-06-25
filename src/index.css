@@ -485,7 +485,7 @@ form button[type="submit"]:disabled {
 /* ── Discover topbar ─────────────────────────────────── */
 .discover-topbar {
   width: 100%;
-  max-width: 420px;
+  max-width: 600px;
   display: flex;
   justify-content: flex-end;
   margin-bottom: 10px;
@@ -771,7 +771,7 @@ form button[type="submit"]:disabled {
 
 .pcard {
   width: 100%;
-  max-width: 440px;
+  max-width: 600px;
   background: var(--bg-card);
   border-radius: 20px;
   overflow: hidden;
@@ -981,7 +981,7 @@ form button[type="submit"]:disabled {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 440px;
+  max-width: 600px;
   display: flex;
   justify-content: flex-start;
   padding: 0 20px;
