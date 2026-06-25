@@ -64,6 +64,13 @@ const Admin = () => {
     setMessages((prev) => prev.filter((m) => m._id !== id));
   };
 
+  const fullWipe = async () => {
+    if (!window.confirm('⚠️ Full wipe: delete ALL matches, messages, and swipe history for every user? This cannot be undone.')) return;
+    await api.delete('/admin/wipe');
+    setMatches([]);
+    setMessages([]);
+  };
+
   if (!user?.isAdmin) return null;
   if (loading) return <div className="page-center">Loading...</div>;
   if (error) return <div className="page-center">{error}</div>;
@@ -75,6 +82,9 @@ const Admin = () => {
         <p className="admin-counts">
           {matches.length} matches &nbsp;·&nbsp; {messages.length} messages
         </p>
+        <button className="admin-wipe-btn" onClick={fullWipe}>
+          🗑 Full wipe
+        </button>
       </div>
 
       <div className="admin-tabs">

@@ -1424,6 +1424,23 @@ form button[type="submit"]:disabled {
   margin-top: 4px;
 }
 
+.admin-wipe-btn {
+  margin-top: 14px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: rgba(252,129,129,0.1);
+  border: 1px solid rgba(252,129,129,0.35);
+  color: var(--error);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+  width: auto;
+}
+
+.admin-wipe-btn:hover {
+  background: rgba(252,129,129,0.2);
+}
+
 .admin-tabs {
   display: flex;
   gap: 8px;

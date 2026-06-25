@@ -74,6 +74,22 @@ router.delete('/messages/:messageId', protect, requireAdmin, async (req: AuthReq
   }
 });
 
+// Full wipe — clears all matches, messages, and swipe history for every user
+router.delete('/wipe', protect, requireAdmin, async (_req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    await Promise.all([
+      Match.deleteMany({}),
+      Message.deleteMany({}),
+      MaleUser.updateMany({}, { $set: { likedUsers: [], passedUsers: [] } }),
+      FemaleUser.updateMany({}, { $set: { likedUsers: [], passedUsers: [] } }),
+      OtherUser.updateMany({}, { $set: { likedUsers: [], passedUsers: [] } }),
+    ]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
 // Get all users across all collections
 router.get('/users', protect, requireAdmin, async (_req: AuthRequest, res: Response): Promise<void> => {
   try {
