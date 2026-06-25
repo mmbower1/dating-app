@@ -1061,6 +1061,11 @@ form button[type="submit"]:disabled {
   font-size: 15px;
   font-weight: 600;
   transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
 }
 
 .notif-btn:hover { opacity: 0.8; }
@@ -1261,6 +1266,10 @@ form button[type="submit"]:disabled {
   font-size: 15px;
   font-weight: 500;
   transition: background 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .theme-toggle-btn:hover {
