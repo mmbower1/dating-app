@@ -44,16 +44,9 @@
   --border-light: #b0c4dc;
 }
 
-[data-theme="light"] .card-info {
-  background: linear-gradient(to top, rgba(240,244,248,0.95) 0%, transparent 100%);
-}
-
-[data-theme="light"] .card-name {
-  color: #0d1117;
-}
-
-[data-theme="light"] .card-bio {
-  color: rgba(13,17,23,0.7);
+[data-theme="light"] .pcard-detail-chip {
+  background: #f0f4f8;
+  border-color: #cbd5e0;
 }
 
 [data-theme="light"] .message.mine {
@@ -481,11 +474,12 @@ form button[type="submit"]:disabled {
 
 .home-page {
   flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 12px 16px calc(var(--nav-height) + 20px);
+  padding: 12px 16px calc(var(--nav-height) + 100px);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ── Discover topbar ─────────────────────────────────── */
@@ -773,80 +767,204 @@ form button[type="submit"]:disabled {
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-.swipe-card {
+/* ── Profile card (Hinge-style) ─────────────────────── */
+
+.pcard {
   width: 100%;
-  max-width: 480px;
+  max-width: 440px;
   background: var(--bg-card);
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
   border: 1px solid var(--border);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.35);
 }
 
-.card-photo {
+.pcard-photo-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 3/4;
+  aspect-ratio: 4/5;
   background: var(--bg-secondary);
+  cursor: pointer;
+  overflow: hidden;
 }
 
-.card-photo img {
+.pcard-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.15s;
+}
+
+.pcard-no-photo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  font-weight: 700;
+  color: var(--accent);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+}
+
+.pcard-photo-bars {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+}
+
+.pcard-bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.3);
+  transition: background 0.2s;
+}
+
+.pcard-bar.active {
+  background: #fff;
+}
+
+.pcard-identity {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pcard-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.pcard-name {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.pcard-score {
+  background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+              var(--gradient) border-box;
+  border: 1.5px solid transparent;
+  color: var(--accent-purple);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.pcard-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.pcard-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pcard-bio-section .pcard-bio {
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.pcard-detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pcard-detail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pcard-chip-icon {
+  font-size: 13px;
+}
+
+.pcard-extra-photo {
+  width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+}
+
+.pcard-extra-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-/* ── Photo carousel ─────────────────────────────────── */
+.pcard-bottom-space {
+  height: 8px;
+}
 
-.photo-dots {
-  position: absolute;
-  top: 10px;
+/* ── Fixed action buttons ───────────────────────────── */
+.swipe-actions-fixed {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 16px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 5px;
-  z-index: 2;
+  gap: 28px;
+  z-index: 20;
+  padding: 10px 24px 10px;
+  background: linear-gradient(to top, var(--bg-primary) 60%, transparent);
+  pointer-events: none;
 }
+.swipe-actions-fixed > * { pointer-events: all; }
 
-.photo-dot {
-  width: 6px;
-  height: 6px;
+.pass-btn, .like-btn {
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.45);
-  transition: background 0.2s;
-}
-
-.photo-dot.active {
-  background: #fff;
-}
-
-.photo-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.35);
-  color: #fff;
-  font-size: 22px;
-  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  cursor: pointer;
-  z-index: 2;
-  transition: background 0.2s;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
-.photo-nav:hover { background: rgba(0,0,0,0.6); }
-.photo-nav-left { left: 10px; }
-.photo-nav-right { right: 10px; }
+.pass-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
+  color: var(--text-secondary);
+}
 
-/* ── No photo placeholder ───────────────────────────── */
+.like-btn {
+  background: var(--gradient);
+  border: none;
+  color: #fff;
+}
 
+.pass-btn:hover  { transform: scale(1.08); border-color: #fc8181; color: #fc8181; }
+.like-btn:hover  { transform: scale(1.08); box-shadow: 0 6px 28px rgba(167,139,250,0.45); }
+.pass-btn:active { transform: scale(0.95); }
+.like-btn:active { transform: scale(0.95); }
+
+/* legacy selectors kept for no-photo placeholder in other pages */
 .no-photo {
   width: 100%;
   height: 100%;
@@ -858,87 +976,6 @@ form button[type="submit"]:disabled {
   color: var(--accent);
   background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
 }
-
-.card-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 60px 20px 20px;
-  background: linear-gradient(to top, rgba(13,17,23,0.95) 0%, transparent 100%);
-}
-
-.card-name-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.card-name {
-  font-size: 22px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.score-badge {
-  background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-              var(--gradient) border-box;
-  border: 1px solid transparent;
-  color: var(--accent-purple);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-.card-bio {
-  color: rgba(255,255,255,0.75);
-  font-size: 14px;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.swipe-actions {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  padding: 20px;
-}
-
-.pass-btn, .like-btn {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-
-.pass-btn {
-  background: var(--bg-input);
-  border: 2px solid var(--border-light);
-  color: var(--text-secondary);
-}
-
-.like-btn {
-  background: var(--gradient-subtle);
-  border: 2px solid transparent;
-  background-image: var(--gradient-subtle), var(--gradient);
-  background-origin: padding-box, border-box;
-  background-clip: padding-box, border-box;
-  color: var(--accent-purple);
-}
-
-.pass-btn:hover  { transform: scale(1.08); }
-.like-btn:hover  { transform: scale(1.08); box-shadow: 0 0 20px rgba(167,139,250,0.3); }
-.pass-btn:active { transform: scale(0.95); }
-.like-btn:active { transform: scale(0.95); }
 
 /* ── Matches ────────────────────────────────────────── */
 

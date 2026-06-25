@@ -6,7 +6,7 @@ import FiltersModal from '../components/FiltersModal';
 import type { User } from '../types';
 
 const SlidersIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
     <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
     <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
@@ -14,6 +14,40 @@ const SlidersIcon = () => (
     <line x1="17" y1="16" x2="23" y2="16"/>
   </svg>
 );
+
+const LocationIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+  </svg>
+);
+
+function inToDisplay(inches: number) {
+  return `${Math.floor(inches / 12)}'${inches % 12}"`;
+}
+
+const DETAIL_ICONS: Record<string, string> = {
+  height: '↕',
+  education: '🎓',
+  drinks: '🍷',
+  smokes: '🚬',
+  children: '👶',
+  religion: '✦',
+  politics: '🗳',
+};
+
+interface DetailChip { icon: string; label: string; }
+
+function buildDetails(profile: User): DetailChip[] {
+  const chips: DetailChip[] = [];
+  if (profile.height) chips.push({ icon: DETAIL_ICONS.height, label: inToDisplay(profile.height) });
+  if (profile.educationLevel) chips.push({ icon: DETAIL_ICONS.education, label: profile.educationLevel });
+  if (profile.drinks) chips.push({ icon: DETAIL_ICONS.drinks, label: profile.drinks });
+  if (profile.smokes) chips.push({ icon: DETAIL_ICONS.smokes, label: profile.smokes });
+  if (profile.hasChildren != null) chips.push({ icon: DETAIL_ICONS.children, label: profile.hasChildren ? 'Has kids' : 'No kids' });
+  if (profile.religion) chips.push({ icon: DETAIL_ICONS.religion, label: profile.religion });
+  if (profile.politicalAssociation) chips.push({ icon: DETAIL_ICONS.politics, label: profile.politicalAssociation });
+  return chips;
+}
 
 const Home = () => {
   const { user } = useAuth();
@@ -82,15 +116,15 @@ const Home = () => {
     setPhotoIndex(0);
   };
 
-  const prevPhoto = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setPhotoIndex((i) => Math.max(0, i - 1));
-  }, []);
-
-  const nextPhoto = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!profile) return;
-    setPhotoIndex((i) => Math.min(profile.photos.length - 1, i + 1));
+  const tapPhoto = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!profile || profile.photos.length <= 1) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    if (x < rect.width / 2) {
+      setPhotoIndex((i) => Math.max(0, i - 1));
+    } else {
+      setPhotoIndex((i) => Math.min(profile.photos.length - 1, i + 1));
+    }
   }, [profile]);
 
   if (loading) return <div className="page-center">Finding people near you...</div>;
@@ -128,48 +162,90 @@ const Home = () => {
             <p>No more profiles right now.</p>
             <p>Check back later!</p>
           </div>
-        ) : (
-          <div className="swipe-card">
-            <div className="card-photo">
-              {profile.photos.length > 0 ? (
-                <>
-                  <img src={profile.photos[photoIndex]} alt={profile.name} />
-                  {profile.photos.length > 1 && (
-                    <>
-                      <div className="photo-dots">
-                        {profile.photos.map((_, i) => (
-                          <span key={i} className={`photo-dot ${i === photoIndex ? 'active' : ''}`} />
-                        ))}
-                      </div>
-                      {photoIndex > 0 && (
-                        <button className="photo-nav photo-nav-left" onClick={prevPhoto}>‹</button>
-                      )}
-                      {photoIndex < profile.photos.length - 1 && (
-                        <button className="photo-nav photo-nav-right" onClick={nextPhoto}>›</button>
-                      )}
-                    </>
-                  )}
-                </>
-              ) : (
-                <div className="no-photo">{profile.name[0]}</div>
-              )}
-              <div className="card-info">
-                <div className="card-name-row">
-                  <span className="card-name">{profile.name}, {profile.age}</span>
-                  <span className="score-badge" title="Accountability score">
-                    {profile.accountabilityScore}
-                  </span>
-                </div>
-                {profile.bio && <p className="card-bio">{profile.bio}</p>}
+        ) : (() => {
+          const details = buildDetails(profile);
+          return (
+            <div className="pcard">
+              {/* Primary photo with tap zones */}
+              <div className="pcard-photo-wrap" onClick={tapPhoto}>
+                {profile.photos.length > 0 ? (
+                  <img src={profile.photos[photoIndex]} alt={profile.name} className="pcard-photo-img" />
+                ) : (
+                  <div className="pcard-no-photo">{profile.name[0]}</div>
+                )}
+                {profile.photos.length > 1 && (
+                  <div className="pcard-photo-bars">
+                    {profile.photos.map((_, i) => (
+                      <span key={i} className={`pcard-bar ${i === photoIndex ? 'active' : ''}`} />
+                    ))}
+                  </div>
+                )}
               </div>
+
+              {/* Identity */}
+              <div className="pcard-identity">
+                <div className="pcard-name-row">
+                  <span className="pcard-name">{profile.name}, {profile.age}</span>
+                  <span className="pcard-score" title="Accountability score">{profile.accountabilityScore}</span>
+                </div>
+                {profile.location?.city && (
+                  <span className="pcard-location">
+                    <LocationIcon />
+                    {profile.location.city}{profile.location.state ? `, ${profile.location.state}` : ''}
+                  </span>
+                )}
+              </div>
+
+              {/* Bio */}
+              {profile.bio && (
+                <div className="pcard-section pcard-bio-section">
+                  <p className="pcard-bio">{profile.bio}</p>
+                </div>
+              )}
+
+              {/* Details chips */}
+              {details.length > 0 && (
+                <div className="pcard-section pcard-details-section">
+                  <div className="pcard-detail-chips">
+                    {details.map((d) => (
+                      <span key={d.label} className="pcard-detail-chip">
+                        <span className="pcard-chip-icon">{d.icon}</span>
+                        {d.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Additional photos shown below as sections */}
+              {profile.photos.slice(1).map((photo, i) => (
+                <div key={i} className="pcard-extra-photo">
+                  <img src={photo} alt={`${profile.name} ${i + 2}`} />
+                </div>
+              ))}
+
+              {/* Spacer so content isn't hidden behind fixed buttons */}
+              <div className="pcard-bottom-space" />
             </div>
-            <div className="swipe-actions">
-              <button className="pass-btn" onClick={pass}>✕</button>
-              <button className="like-btn" onClick={like}>♥</button>
-            </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
+
+      {/* Fixed action bar */}
+      {profile && (
+        <div className="swipe-actions-fixed">
+          <button className="pass-btn" onClick={pass} aria-label="Pass">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+          <button className="like-btn" onClick={like} aria-label="Like">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+      )}
 
       {showFilters && (
         <FiltersModal
