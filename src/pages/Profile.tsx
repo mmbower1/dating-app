@@ -173,7 +173,7 @@ const Profile = () => {
               <button
                 key={g}
                 type="button"
-                className={`pill ${interests.includes(g) ? 'selected' : ''}`}
+                className={`pill ${interests.includes(g) ? 'active' : ''}`}
                 onClick={() => toggleInterest(g)}
               >
                 {GENDER_LABELS[g]}
