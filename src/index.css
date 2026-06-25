@@ -2167,9 +2167,15 @@ form button[type="submit"]:disabled {
 
 /* ── Settings page ──────────────────────────────────── */
 .settings-page {
-  max-width: 480px;
+  max-width: 600px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 16px 120px;
+}
+
+.settings-form input {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .settings-header {
