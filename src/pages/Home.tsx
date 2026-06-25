@@ -212,9 +212,10 @@ const Home = () => {
         ) : (() => {
           const details = buildDetails(profile);
           return (
-            <div className="pcard">
+            <div className="pcard-stack">
+
               {/* Primary photo */}
-              <div className="pcard-photo-wrap">
+              <div className="pcard-item pcard-item--photo">
                 {profile.photos.length > 0 ? (
                   <img src={profile.photos[0]} alt={profile.name} className="pcard-photo-img" />
                 ) : (
@@ -224,7 +225,7 @@ const Home = () => {
               </div>
 
               {/* Identity */}
-              <div className="pcard-identity">
+              <div className="pcard-item pcard-item--identity">
                 <div className="pcard-name-row">
                   <span className="pcard-name">{profile.name}, {profile.age}</span>
                   <span className="pcard-score" title="Accountability score">{profile.accountabilityScore}</span>
@@ -239,7 +240,7 @@ const Home = () => {
 
               {/* Bio */}
               {profile.bio && (
-                <div className="pcard-section pcard-bio-section">
+                <div className="pcard-item pcard-item--text">
                   <div className="pcard-section-heart-row">
                     <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s bio`)} />
                   </div>
@@ -247,9 +248,17 @@ const Home = () => {
                 </div>
               )}
 
+              {/* Additional photos interspersed */}
+              {profile.photos.slice(1).map((photo, i) => (
+                <div key={i} className="pcard-item pcard-item--photo">
+                  <img src={photo} alt={`${profile.name} ${i + 2}`} className="pcard-photo-img" />
+                  <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
+                </div>
+              ))}
+
               {/* Details chips */}
               {details.length > 0 && (
-                <div className="pcard-section pcard-details-section">
+                <div className="pcard-item pcard-item--text">
                   <div className="pcard-section-heart-row">
                     <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s details`)} />
                   </div>
@@ -264,15 +273,7 @@ const Home = () => {
                 </div>
               )}
 
-              {/* Additional photos */}
-              {profile.photos.slice(1).map((photo, i) => (
-                <div key={i} className="pcard-extra-photo">
-                  <img src={photo} alt={`${profile.name} ${i + 2}`} />
-                  <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
-                </div>
-              ))}
-
-              <div className="pcard-bottom-space" />
+              <div style={{ height: 8 }} />
             </div>
           );
         })()}

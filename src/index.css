@@ -767,25 +767,29 @@ form button[type="submit"]:disabled {
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* ── Profile card (Hinge-style) ─────────────────────── */
+/* ── Profile card stack (Hinge-style separated sections) */
 
-.pcard {
+.pcard-stack {
   width: 100%;
   max-width: 600px;
-  background: var(--bg-card);
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  box-shadow: 0 12px 48px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.pcard-photo-wrap {
-  position: relative;
+.pcard-item {
   width: 100%;
-  aspect-ratio: 4/5;
-  background: var(--bg-secondary);
-  cursor: pointer;
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border);
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* Photo items */
+.pcard-item--photo {
+  position: relative;
+  aspect-ratio: 4/5;
 }
 
 .pcard-photo-img {
@@ -793,7 +797,6 @@ form button[type="submit"]:disabled {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: opacity 0.15s;
 }
 
 .pcard-no-photo {
@@ -808,45 +811,23 @@ form button[type="submit"]:disabled {
   background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
 }
 
-.pcard-photo-bars {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  display: flex;
-  gap: 4px;
-  z-index: 2;
-}
-
-.pcard-bar {
-  flex: 1;
-  height: 3px;
-  border-radius: 2px;
-  background: rgba(255,255,255,0.3);
-  transition: background 0.2s;
-}
-
-.pcard-bar.active {
-  background: #fff;
-}
-
-.pcard-identity {
-  padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--border);
+/* Identity item */
+.pcard-item--identity {
+  padding: 20px 22px;
 }
 
 .pcard-name-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .pcard-name {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
 }
 
 .pcard-score {
@@ -863,20 +844,20 @@ form button[type="submit"]:disabled {
 .pcard-location {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   color: var(--text-secondary);
   font-size: 13px;
 }
 
-.pcard-section {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
+/* Text items (bio, details) */
+.pcard-item--text {
+  padding: 18px 20px 20px;
 }
 
-.pcard-bio-section .pcard-bio {
+.pcard-bio {
   color: var(--text-primary);
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.65;
   margin: 0;
 }
 
@@ -890,7 +871,7 @@ form button[type="submit"]:disabled {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 20px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -901,24 +882,6 @@ form button[type="submit"]:disabled {
 
 .pcard-chip-icon {
   font-size: 13px;
-}
-
-.pcard-extra-photo {
-  width: 100%;
-  aspect-ratio: 1/1;
-  overflow: hidden;
-  border-top: 1px solid var(--border);
-}
-
-.pcard-extra-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.pcard-bottom-space {
-  height: 8px;
 }
 
 /* ── Heart buttons on card sections ─────────────────── */
