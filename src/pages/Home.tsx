@@ -28,32 +28,27 @@ function inToDisplay(inches: number) {
   return `${Math.floor(inches / 12)}'${inches % 12}"`;
 }
 
-interface DetailChip { icon: string; label: string; }
-
-const ZODIAC_GLYPHS: Record<string, string> = {
-  Aries: '♈', Taurus: '♉', Gemini: '♊', Cancer: '♋', Leo: '♌', Virgo: '♍',
-  Libra: '♎', Scorpio: '♏', Sagittarius: '♐', Capricorn: '♑', Aquarius: '♒', Pisces: '♓',
-};
-
-function buildAbout(profile: User): DetailChip[] {
-  const chips: DetailChip[] = [];
-  chips.push({ icon: '🎂', label: `${profile.age} yrs` });
-  chips.push({ icon: '👤', label: profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1) });
-  if (profile.height) chips.push({ icon: '↕', label: inToDisplay(profile.height) });
-  if (profile.location?.city) chips.push({ icon: '📍', label: `${profile.location.city}${profile.location.state ? `, ${profile.location.state}` : ''}` });
-  if (profile.hasChildren != null) chips.push({ icon: '👶', label: profile.hasChildren ? 'Has kids' : 'No kids' });
-  if (profile.pets) chips.push({ icon: '🐾', label: profile.pets });
-  if (profile.zodiacSign) chips.push({ icon: ZODIAC_GLYPHS[profile.zodiacSign] ?? '✦', label: profile.zodiacSign });
+function buildAbout(profile: User): string[] {
+  const chips: string[] = [];
+  chips.push(`${profile.age}`);
+  chips.push(profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1));
+  if (profile.height) chips.push(inToDisplay(profile.height));
+  if (profile.location?.city) chips.push(`${profile.location.city}${profile.location.state ? `, ${profile.location.state}` : ''}`);
+  if (profile.hasChildren != null) chips.push(profile.hasChildren ? 'Has kids' : 'No kids');
+  if (profile.pets) chips.push(profile.pets);
+  if (profile.zodiacSign) chips.push(profile.zodiacSign);
   return chips;
 }
 
-function buildDetails(profile: User): DetailChip[] {
-  const chips: DetailChip[] = [];
-  if (profile.educationLevel) chips.push({ icon: '🎓', label: profile.educationLevel });
-  if (profile.drinks) chips.push({ icon: '🍷', label: profile.drinks });
-  if (profile.smokes) chips.push({ icon: '🚬', label: profile.smokes });
-  if (profile.religion) chips.push({ icon: '✦', label: profile.religion });
-  if (profile.politicalAssociation) chips.push({ icon: '🗳', label: profile.politicalAssociation });
+function buildDetails(profile: User): string[] {
+  const chips: string[] = [];
+  if (profile.educationLevel) chips.push(profile.educationLevel);
+  if (profile.jobTitle) chips.push(profile.jobTitle);
+  if (profile.drinks) chips.push(`Drinks ${profile.drinks.toLowerCase()}`);
+  if (profile.smokes) chips.push(`Smokes ${profile.smokes.toLowerCase()}`);
+  if (profile.religion) chips.push(profile.religion);
+  if (profile.politicalAssociation) chips.push(profile.politicalAssociation);
+  if (profile.familyPlans) chips.push(profile.familyPlans);
   return chips;
 }
 
@@ -247,11 +242,8 @@ const Home = () => {
               {/* About — age, gender, height, location, kids, pets, zodiac */}
               <div className="pcard-item pcard-item--text">
                 <div className="pcard-detail-chips">
-                  {about.map((d) => (
-                    <span key={d.label} className="pcard-detail-chip">
-                      <span className="pcard-chip-icon">{d.icon}</span>
-                      {d.label}
-                    </span>
+                  {about.map((label) => (
+                    <span key={label} className="pcard-detail-chip">{label}</span>
                   ))}
                 </div>
               </div>
@@ -289,11 +281,8 @@ const Home = () => {
                     <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s details`)} />
                   </div>
                   <div className="pcard-detail-chips">
-                    {details.map((d) => (
-                      <span key={d.label} className="pcard-detail-chip">
-                        <span className="pcard-chip-icon">{d.icon}</span>
-                        {d.label}
-                      </span>
+                    {details.map((label) => (
+                      <span key={label} className="pcard-detail-chip">{label}</span>
                     ))}
                   </div>
                 </div>
