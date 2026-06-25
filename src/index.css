@@ -214,9 +214,16 @@ form button[type="submit"]:disabled {
   inset: 0;
   background-image: url('/auth-bg.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: center top;
+  background-attachment: scroll;
   filter: grayscale(100%) brightness(0.18);
   z-index: 0;
+}
+
+@media (max-width: 600px) {
+  .auth-page::before {
+    background-position: 60% center;
+  }
 }
 
 .auth-page::after {
