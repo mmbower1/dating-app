@@ -204,12 +204,34 @@ form button[type="submit"]:disabled {
   grid-template-rows: 1fr auto;
   min-height: 100dvh;
   width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/auth-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(100%) brightness(0.18);
+  z-index: 0;
+}
+
+.auth-page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   background-image:
-    radial-gradient(ellipse at 75% 10%, rgba(167,139,250,0.09) 0%, transparent 50%),
-    radial-gradient(ellipse at 20% 85%, rgba(126,179,245,0.09) 0%, transparent 50%);
+    radial-gradient(ellipse at 75% 10%, rgba(167,139,250,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 20% 85%, rgba(126,179,245,0.14) 0%, transparent 55%);
+  z-index: 1;
 }
 
 .auth-content {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1182,6 +1204,8 @@ form button[type="submit"]:disabled {
   padding: 40px 24px;
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 2;
 }
 
 .footer-top {
