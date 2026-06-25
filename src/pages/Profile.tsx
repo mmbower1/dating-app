@@ -12,22 +12,68 @@ function urlBase64ToUint8Array(base64: string) {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 }
 
+function inToDisplay(inches: number) {
+  return `${Math.floor(inches / 12)}'${inches % 12}"`;
+}
+
+const GENDERS = ['male', 'female', 'non-binary', 'other'];
+const GENDER_LABELS: Record<string, string> = { male: 'Men', female: 'Women', 'non-binary': 'Non-Binary', other: 'Other' };
+
 const Profile = () => {
   const { user, logout, updateUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
+
+  // form state
+  const [name, setName] = useState(user?.name || '');
+  const [age, setAge] = useState(user?.age ?? 18);
   const [bio, setBio] = useState(user?.bio || '');
+  const [pronouns, setPronouns] = useState(user?.pronouns || '');
+  const [sexuality, setSexuality] = useState(user?.sexuality || '');
+  const [interestedIn, setInterestedIn] = useState<string[]>(user?.interestedIn ?? []);
+  const [height, setHeight] = useState<string>(user?.height ? String(user.height) : '');
+  const [ethnicity, setEthnicity] = useState(user?.ethnicity || '');
+  const [hometown, setHometown] = useState(user?.hometown || '');
+  const [locationCity, setLocationCity] = useState(user?.location?.city || '');
+  const [locationState, setLocationState] = useState(user?.location?.state || '');
   const [zodiacSign, setZodiacSign] = useState(user?.zodiacSign || '');
   const [pets, setPets] = useState(user?.pets || '');
+  const [hasChildren, setHasChildren] = useState(
+    user?.hasChildren == null ? '' : user.hasChildren ? 'yes' : 'no'
+  );
+  const [familyPlans, setFamilyPlans] = useState(user?.familyPlans || '');
+  const [jobTitle, setJobTitle] = useState(user?.jobTitle || '');
+  const [work, setWork] = useState(user?.work || '');
+  const [school, setSchool] = useState(user?.school || '');
+  const [educationLevel, setEducationLevel] = useState(user?.educationLevel || '');
+  const [drinks, setDrinks] = useState(user?.drinks || '');
+  const [smokes, setSmokes] = useState(user?.smokes || '');
+  const [religion, setReligion] = useState(user?.religion || '');
+  const [politicalAssociation, setPoliticalAssociation] = useState(user?.politicalAssociation || '');
+  const [languages, setLanguages] = useState(user?.languages || '');
+
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [notifStatus, setNotifStatus] = useState<'idle' | 'enabled' | 'denied'>('idle');
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const toggleInterest = (g: string) =>
+    setInterestedIn((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]);
+
   const save = async (e: FormEvent) => {
     e.preventDefault();
-    await api.patch<User>('/users/me', { bio, zodiacSign, pets });
-    updateUser({ bio, zodiacSign, pets });
+    const patch: Partial<User> & { location?: { city: string; state: string } } = {
+      name, age: Number(age), bio, pronouns, sexuality, interestedIn,
+      height: height ? Number(height) : null,
+      ethnicity, hometown,
+      location: { city: locationCity, state: locationState },
+      zodiacSign, pets,
+      hasChildren: hasChildren === '' ? null : hasChildren === 'yes',
+      familyPlans, jobTitle, work, school, educationLevel,
+      drinks, smokes, religion, politicalAssociation, languages,
+    };
+    await api.patch<User>('/users/me', patch);
+    updateUser(patch);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -58,13 +104,9 @@ const Profile = () => {
   };
 
   const enableNotifications = async () => {
-    if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-      setNotifStatus('denied');
-      return;
-    }
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) { setNotifStatus('denied'); return; }
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') { setNotifStatus('denied'); return; }
-
     try {
       const sw = await navigator.serviceWorker.register('/sw.js');
       const { data } = await api.get<{ key: string }>('/users/vapid-public-key');
@@ -74,9 +116,7 @@ const Profile = () => {
       });
       await api.post('/users/push-subscribe', subscription.toJSON());
       setNotifStatus('enabled');
-    } catch {
-      setNotifStatus('denied');
-    }
+    } catch { setNotifStatus('denied'); }
   };
 
   if (!user) return null;
@@ -85,16 +125,12 @@ const Profile = () => {
     <div className="profile-page">
       <div className="profile-header">
         <div className="profile-avatar">
-          {user.photos[0] ? (
-            <img src={user.photos[0]} alt={user.name} />
-          ) : (
-            <div className="no-photo-lg">{user.name[0]}</div>
-          )}
+          {user.photos[0] ? <img src={user.photos[0]} alt={user.name} /> : <div className="no-photo-lg">{user.name[0]}</div>}
         </div>
         <h2>{user.name}, {user.age}</h2>
       </div>
 
-      {/* Photo management */}
+      {/* Photos */}
       <div className="photo-section">
         <h3 className="section-title">Photos</h3>
         <div className="photo-grid">
@@ -105,84 +141,229 @@ const Profile = () => {
             </div>
           ))}
           {user.photos.length < 6 && (
-            <button
-              className="photo-add"
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-            >
+            <button className="photo-add" onClick={() => fileRef.current?.click()} disabled={uploading}>
               {uploading ? '...' : '+'}
             </button>
           )}
         </div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-        />
+        <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
         {uploadError && <p className="upload-error">{uploadError}</p>}
         <p className="photo-hint">{user.photos.length}/6 photos</p>
       </div>
 
+      {/* Accountability */}
       <div className="accountability-card">
         <h3>Accountability Score</h3>
         <div className="score-ring">{user.accountabilityScore}</div>
         <div className="score-stats">
-          <div className="stat">
-            <span className="stat-value">{user.responseRate}%</span>
-            <span className="stat-label">Response rate</span>
-          </div>
-          <div className="stat">
-            <span className="stat-value">{user.gracefulExitCount}</span>
-            <span className="stat-label">Graceful exits</span>
-          </div>
-          <div className="stat">
-            <span className="stat-value">{user.ghostCount}</span>
-            <span className="stat-label">Ghosts</span>
-          </div>
+          <div className="stat"><span className="stat-value">{user.responseRate}%</span><span className="stat-label">Response rate</span></div>
+          <div className="stat"><span className="stat-value">{user.gracefulExitCount}</span><span className="stat-label">Graceful exits</span></div>
+          <div className="stat"><span className="stat-value">{user.ghostCount}</span><span className="stat-label">Ghosts</span></div>
         </div>
-        <p className="score-tip">
-          Respond to messages and use "Not feeling it" to close conversations gracefully — this raises your score and improves your visibility.
-        </p>
+        <p className="score-tip">Respond to messages and use "Not feeling it" to close conversations gracefully — this raises your score and improves your visibility.</p>
       </div>
 
       <form className="profile-form" onSubmit={save}>
-        <label>Bio</label>
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          maxLength={500}
-          rows={4}
-          placeholder="Tell people about yourself..."
-        />
+
+        {/* ── About me ──────────────────────── */}
+        <p className="profile-section-header">About me</p>
+        <label className="field-label">Bio</label>
+        <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={500} rows={4} placeholder="Tell people about yourself..." />
 
         <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Name</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Age</label>
+            <input type="number" min={18} max={99} value={age} onChange={(e) => setAge(Number(e.target.value))} />
+          </div>
+        </div>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Pronouns</label>
+            <select className="profile-select" value={pronouns} onChange={(e) => setPronouns(e.target.value)}>
+              <option value="">Select…</option>
+              {['He/Him','She/Her','They/Them','He/They','She/They','Ze/Zir','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Gender</label>
+            <input type="text" value={user.gender} readOnly className="profile-input-readonly" />
+          </div>
+        </div>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Sexuality</label>
+            <select className="profile-select" value={sexuality} onChange={(e) => setSexuality(e.target.value)}>
+              <option value="">Select…</option>
+              {['Straight','Gay','Lesbian','Bisexual','Pansexual','Asexual','Queer','Other'].map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
           <div className="profile-select-wrap">
             <label className="field-label">Zodiac sign</label>
             <select className="profile-select" value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)}>
               <option value="">Select…</option>
-              {['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'].map((z) => (
-                <option key={z} value={z}>{z}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="profile-select-wrap">
-            <label className="field-label">Pets</label>
-            <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
-              <option value="">Select…</option>
-              {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
+              {['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'].map((z) => <option key={z} value={z}>{z}</option>)}
             </select>
           </div>
         </div>
 
-        <button type="submit">{saved ? 'Saved!' : 'Save changes'}</button>
+        <label className="field-label">Interested in</label>
+        <div className="pill-group">
+          {GENDERS.map((g) => (
+            <button key={g} type="button" className={`pill ${interestedIn.includes(g) ? 'active' : ''}`} onClick={() => toggleInterest(g)}>
+              {GENDER_LABELS[g]}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Physical ──────────────────────── */}
+        <p className="profile-section-header">Physical</p>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Height</label>
+            <select className="profile-select" value={height} onChange={(e) => setHeight(e.target.value)}>
+              <option value="">Select…</option>
+              {Array.from({ length: 29 }, (_, i) => i + 56).map((h) => <option key={h} value={h}>{inToDisplay(h)}</option>)}
+            </select>
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Ethnicity</label>
+            <select className="profile-select" value={ethnicity} onChange={(e) => setEthnicity(e.target.value)}>
+              <option value="">Select…</option>
+              {['Asian','Black / African American','Hispanic / Latino','Middle Eastern','Native American','Pacific Islander','White / Caucasian','Multiracial','Other'].map((e) => <option key={e} value={e}>{e}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Pets</label>
+            <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
+              <option value="">Select…</option>
+              {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* ── Location ──────────────────────── */}
+        <p className="profile-section-header">Location</p>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">City</label>
+            <input type="text" value={locationCity} onChange={(e) => setLocationCity(e.target.value)} placeholder="Current city" />
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">State</label>
+            <input type="text" value={locationState} onChange={(e) => setLocationState(e.target.value)} placeholder="State" />
+          </div>
+        </div>
+
+        <div className="profile-select-wrap">
+          <label className="field-label">Hometown</label>
+          <input type="text" value={hometown} onChange={(e) => setHometown(e.target.value)} placeholder="Where you grew up" />
+        </div>
+
+        {/* ── Family ──────────────────────── */}
+        <p className="profile-section-header">Family</p>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Children</label>
+            <select className="profile-select" value={hasChildren} onChange={(e) => setHasChildren(e.target.value)}>
+              <option value="">Select…</option>
+              <option value="yes">Has kids</option>
+              <option value="no">No kids</option>
+            </select>
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Family plans</label>
+            <select className="profile-select" value={familyPlans} onChange={(e) => setFamilyPlans(e.target.value)}>
+              <option value="">Select…</option>
+              {['Want kids','Open to kids',"Don't want kids",'Not sure'].map((f) => <option key={f} value={f}>{f}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* ── Career & Education ────────────── */}
+        <p className="profile-section-header">Career & Education</p>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Job title</label>
+            <input type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="What you do" />
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Company</label>
+            <input type="text" value={work} onChange={(e) => setWork(e.target.value)} placeholder="Where you work" />
+          </div>
+        </div>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">School</label>
+            <input type="text" value={school} onChange={(e) => setSchool(e.target.value)} placeholder="School attended" />
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Education level</label>
+            <select className="profile-select" value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)}>
+              <option value="">Select…</option>
+              {["High School","Some College","Associate's","Bachelor's","Master's","Doctorate","Trade School"].map((e) => <option key={e} value={e}>{e}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* ── Lifestyle ───────────────────── */}
+        <p className="profile-section-header">Lifestyle</p>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Drinking</label>
+            <select className="profile-select" value={drinks} onChange={(e) => setDrinks(e.target.value)}>
+              <option value="">Select…</option>
+              {['Never','Socially','Regularly'].map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Smoking</label>
+            <select className="profile-select" value={smokes} onChange={(e) => setSmokes(e.target.value)}>
+              <option value="">Select…</option>
+              {['Never','Socially','Regularly'].map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="profile-selects-row">
+          <div className="profile-select-wrap">
+            <label className="field-label">Religious beliefs</label>
+            <select className="profile-select" value={religion} onChange={(e) => setReligion(e.target.value)}>
+              <option value="">Select…</option>
+              {['Agnostic','Atheist','Buddhist','Catholic','Christian','Hindu','Jewish','Muslim','Spiritual','Other'].map((r) => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Politics</label>
+            <select className="profile-select" value={politicalAssociation} onChange={(e) => setPoliticalAssociation(e.target.value)}>
+              <option value="">Select…</option>
+              {['Very Liberal','Liberal','Moderate','Conservative','Very Conservative','Apolitical'].map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="profile-select-wrap">
+          <label className="field-label">Languages spoken</label>
+          <input type="text" value={languages} onChange={(e) => setLanguages(e.target.value)} placeholder="e.g. English, Spanish" />
+        </div>
+
+        <button type="submit" style={{ marginTop: 8 }}>{saved ? 'Saved!' : 'Save changes'}</button>
       </form>
 
-      {/* Push notifications */}
       {notifStatus === 'idle' && (
         <button className="notif-btn" onClick={enableNotifications}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -192,26 +373,18 @@ const Profile = () => {
           Enable notifications
         </button>
       )}
-      {notifStatus === 'enabled' && (
-        <p className="notif-ok">✓ Notifications enabled</p>
-      )}
-      {notifStatus === 'denied' && (
-        <p className="notif-denied">Notifications blocked — enable in browser settings</p>
-      )}
+      {notifStatus === 'enabled' && <p className="notif-ok">✓ Notifications enabled</p>}
+      {notifStatus === 'denied' && <p className="notif-denied">Notifications blocked — enable in browser settings</p>}
 
       <button className="theme-toggle-btn" onClick={toggleTheme}>
         {theme === 'dark' ? (
           <>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-              <line x1="1" y1="12" x2="3" y2="12"/>
-              <line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
             </svg>
             Switch to Light Mode
           </>

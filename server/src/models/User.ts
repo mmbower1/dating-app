@@ -12,16 +12,24 @@ export interface IUser extends Document {
   photos: string[];
   location: { city: string; state: string; lat?: number | null; lng?: number | null };
   // Profile attributes (about the user themselves)
+  pronouns?: string;
+  sexuality?: string;
   ethnicity?: string;
   religion?: string;
   height?: number | null;
   hasChildren?: boolean | null;
+  familyPlans?: string;
   drinks?: string;
   smokes?: string;
   politicalAssociation?: string;
   educationLevel?: string;
   zodiacSign?: string;
   pets?: string;
+  work?: string;
+  jobTitle?: string;
+  school?: string;
+  hometown?: string;
+  languages?: string;
   accountabilityScore: number;
   responseRate: number;
   ghostCount: number;
@@ -73,10 +81,18 @@ const UserSchema = new Schema<IUser>(
     hasChildren: { type: Boolean, default: null },
     drinks: { type: String, default: '' },
     smokes: { type: String, default: '' },
+    pronouns: { type: String, default: '' },
+    sexuality: { type: String, default: '' },
     politicalAssociation: { type: String, default: '' },
     educationLevel: { type: String, default: '' },
     zodiacSign: { type: String, default: '' },
     pets: { type: String, default: '' },
+    familyPlans: { type: String, default: '' },
+    work: { type: String, default: '' },
+    jobTitle: { type: String, default: '' },
+    school: { type: String, default: '' },
+    hometown: { type: String, default: '' },
+    languages: { type: String, default: '' },
     accountabilityScore: { type: Number, default: 75, min: 0, max: 100 },
     responseRate: { type: Number, default: 100, min: 0, max: 100 },
     ghostCount: { type: Number, default: 0 },

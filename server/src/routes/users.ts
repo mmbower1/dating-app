@@ -109,8 +109,10 @@ router.patch('/me', protect, async (req: AuthRequest, res: Response): Promise<vo
   try {
     const allowed = [
       'name', 'bio', 'photos', 'location', 'age', 'agePreference', 'interestedIn',
-      'ethnicity', 'religion', 'height', 'hasChildren', 'drinks', 'smokes',
-      'politicalAssociation', 'educationLevel', 'zodiacSign', 'pets', 'filters',
+      'name', 'age', 'ethnicity', 'religion', 'height', 'hasChildren', 'familyPlans',
+      'drinks', 'smokes', 'politicalAssociation', 'educationLevel', 'zodiacSign', 'pets',
+      'pronouns', 'sexuality', 'work', 'jobTitle', 'school', 'hometown', 'languages',
+      'interestedIn', 'filters',
     ];
     const updates: Record<string, unknown> = {};
     for (const key of allowed) {
