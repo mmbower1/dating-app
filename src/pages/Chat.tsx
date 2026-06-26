@@ -26,6 +26,7 @@ const Chat = () => {
     ]).then(([msgRes, matchRes]) => {
       setMessages(msgRes.data);
       setMatch(matchRes.data.find((m) => m._id === matchId) || null);
+      api.post(`/matches/${matchId}/mark-read`).catch(() => {});
     }).finally(() => setLoading(false));
   }, [matchId]);
 

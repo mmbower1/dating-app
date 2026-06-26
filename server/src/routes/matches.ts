@@ -105,6 +105,42 @@ router.delete('/pass/:targetId', protect, async (req: AuthRequest, res: Response
   }
 });
 
+// Unread badge count — used by the nav tab
+router.get('/unread-count', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const matches = await Match.find({ 'users.userId': req.userId, active: true });
+    if (!matches.length) { res.json({ count: 0, matchId: null }); return; }
+
+    const match = matches[0];
+    const count = await Message.countDocuments({
+      matchId: match._id,
+      senderId: { $ne: new mongoose.Types.ObjectId(req.userId as string) },
+      read: false,
+    });
+
+    res.json({ count, matchId: (match._id as mongoose.Types.ObjectId).toString() });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Mark all messages in a match as read (called when opening chat or matches tab)
+router.post('/:matchId/mark-read', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    await Message.updateMany(
+      {
+        matchId: req.params.matchId,
+        senderId: { $ne: new mongoose.Types.ObjectId(req.userId as string) },
+        read: false,
+      },
+      { $set: { read: true } }
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
 // Get all my matches — expire any stale ones first (no message in 72 hrs)
 router.get('/', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {

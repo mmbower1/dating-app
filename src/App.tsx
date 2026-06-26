@@ -1,9 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate, NavLink } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { SocketProvider } from './context/SocketContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Logo from './components/Logo';
+import api from './api/axios';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
@@ -51,9 +53,55 @@ const ProfileIcon = () => (
   </svg>
 );
 
+const SEEN_MATCH_KEY = 'pearl_seen_match';
+
 const Nav = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const [badge, setBadge] = useState(0);
+
+  const fetchBadge = async () => {
+    try {
+      const res = await api.get<{ count: number; matchId: string | null }>('/matches/unread-count');
+      const { count, matchId } = res.data;
+      if (count > 0) {
+        setBadge(count);
+      } else if (matchId) {
+        const seen = localStorage.getItem(SEEN_MATCH_KEY);
+        setBadge(seen === matchId ? 0 : 1);
+      } else {
+        setBadge(0);
+      }
+    } catch { /* ignore */ }
+  };
+
+  // Poll every 8 seconds
+  useEffect(() => {
+    if (!user) return;
+    fetchBadge();
+    const id = setInterval(fetchBadge, 8000);
+    return () => clearInterval(id);
+  }, [user]);
+
+  // Clear badge when user navigates to /matches or any /chat
+  useEffect(() => {
+    if (!user) return;
+    if (location.pathname === '/matches' || location.pathname.startsWith('/chat')) {
+      api.get<{ count: number; matchId: string | null }>('/matches/unread-count')
+        .then((res) => {
+          const { matchId } = res.data;
+          if (matchId) {
+            localStorage.setItem(SEEN_MATCH_KEY, matchId);
+            api.post(`/matches/${matchId}/mark-read`);
+          }
+        })
+        .catch(() => {});
+      setBadge(0);
+    }
+  }, [location.pathname, user]);
+
   if (!user) return null;
+
   return (
     <nav className="bottom-nav">
       <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
@@ -61,7 +109,10 @@ const Nav = () => {
         Discover
       </NavLink>
       <NavLink to="/matches" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-        <MatchesIcon />
+        <span className="nav-icon-wrap">
+          <MatchesIcon />
+          {badge > 0 && <span className="nav-badge">{badge > 9 ? '9+' : badge}</span>}
+        </span>
         Matches
       </NavLink>
       <NavLink to="/profile" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
