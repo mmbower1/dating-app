@@ -980,7 +980,8 @@ form button[type="submit"]:disabled {
 .pcard-section-heart-row {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 12px;
+  margin-top: 12px;
+  margin-bottom: 0;
 }
 
 .pcard-detail-chips {
