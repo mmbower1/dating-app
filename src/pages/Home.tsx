@@ -117,6 +117,7 @@ const Home = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [likeTarget, setLikeTarget] = useState<string | null>(null);
   const [undoTarget, setUndoTarget] = useState<{ profile: User; idx: number } | null>(null);
+  const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
 
@@ -162,27 +163,40 @@ const Home = () => {
     setLikeTarget(null);
   };
 
+  const animateThen = (dir: 'left' | 'right', cb: () => void) => {
+    setExitDir(dir);
+    setTimeout(() => {
+      setExitDir(null);
+      cb();
+    }, 380);
+  };
+
   const sendLike = async (comment: string) => {
-    if (!profile) return;
-    const res = await api.post<{ matched: boolean }>(`/matches/like/${profile._id}`, {
-      comment: comment.trim() || undefined,
+    if (!profile || exitDir) return;
+    const snapshot = profile;
+    animateThen('right', async () => {
+      const res = await api.post<{ matched: boolean }>(`/matches/like/${snapshot._id}`, {
+        comment: comment.trim() || undefined,
+      });
+      if (res.data.matched) {
+        setFeedback(`It's a match with ${snapshot.name}! 💜`);
+        setTimeout(() => setFeedback(''), 3500);
+      }
+      advance();
     });
-    if (res.data.matched) {
-      setFeedback(`It's a match with ${profile.name}! 💜`);
-      setTimeout(() => setFeedback(''), 3500);
-    }
-    advance();
   };
 
   const pass = async () => {
-    if (!profile) return;
+    if (!profile || exitDir) return;
     const passed = profile;
     const idx = current;
-    advance();
-    setUndoTarget({ profile: passed, idx });
-    if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
-    undoTimerRef.current = setTimeout(() => setUndoTarget(null), 5000);
-    await api.post(`/matches/pass/${passed._id}`);
+    animateThen('left', async () => {
+      advance();
+      setUndoTarget({ profile: passed, idx });
+      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+      undoTimerRef.current = setTimeout(() => setUndoTarget(null), 5000);
+      await api.post(`/matches/pass/${passed._id}`);
+    });
   };
 
   const undoPass = async () => {
@@ -253,7 +267,7 @@ const Home = () => {
           const details = buildDetails(profile);
           const extraPhotos = profile.photos.slice(1);
           return (
-            <div className="pcard-stack">
+            <div className={`pcard-stack${exitDir ? ` pcard-stack--exit-${exitDir}` : ''}`}>
 
               {/* Photo 1 */}
               <div className="pcard-item pcard-item--photo">
