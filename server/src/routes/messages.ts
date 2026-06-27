@@ -2,11 +2,11 @@ import { Router, Response } from 'express';
 import { protect, AuthRequest } from '../middleware/auth';
 import Message from '../models/Message';
 import Match from '../models/Match';
-import { findUserById } from '../models/User';
+import { findUserById, getUserModel } from '../models/User';
 import mongoose from 'mongoose';
 import { sendPush } from '../utils/push';
 import type webpush from 'web-push';
-import { io } from '../index';
+import { io, isUserInRoom } from '../index';
 
 const router = Router();
 
@@ -50,17 +50,26 @@ router.post('/:matchId', protect, async (req: AuthRequest, res: Response): Promi
     // Broadcast to everyone in the match room in real time
     io.to(req.params.matchId as string).emit('new_message', message);
 
-    // Notify the other user
+    // Push-notify the other user only if they're not already in the chat room
+    const matchRoomId = req.params.matchId as string;
     const otherEntry = match.users.find((u) => u.userId.toString() !== req.userId);
     if (otherEntry) {
-      const otherUser = await findUserById(otherEntry.userId.toString());
-      if (otherUser?.pushSubscription) {
-        const sender = await findUserById(req.userId!);
-        sendPush(
-          otherUser.pushSubscription as unknown as webpush.PushSubscription,
-          `New message from ${sender?.name ?? 'Someone'}`,
-          text.trim().slice(0, 80)
-        );
+      const otherUserId = otherEntry.userId.toString();
+      const alreadyInRoom = isUserInRoom(otherUserId, matchRoomId);
+      if (!alreadyInRoom) {
+        const otherUser = await findUserById(otherUserId);
+        if (otherUser?.pushSubscription) {
+          const sender = await findUserById(req.userId!);
+          const result = await sendPush(
+            otherUser.pushSubscription as unknown as webpush.PushSubscription,
+            `New message from ${sender?.name ?? 'Someone'}`,
+            text.trim().slice(0, 80)
+          );
+          if (result === 'expired') {
+            const OtherModel = getUserModel(otherUser.gender);
+            await OtherModel.findByIdAndUpdate(otherUserId, { $set: { pushSubscription: null } });
+          }
+        }
       }
     }
 

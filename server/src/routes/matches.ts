@@ -59,10 +59,12 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
           : `You matched with ${me.name}`;
 
       if (target.pushSubscription) {
-        sendPush(target.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", pushBody);
+        const r = await sendPush(target.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", pushBody);
+        if (r === 'expired') await getUserModel(target.gender).findByIdAndUpdate(target._id, { $set: { pushSubscription: null } });
       }
       if (me.pushSubscription) {
-        sendPush(me.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", `You matched with ${target.name}`);
+        const r = await sendPush(me.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", `You matched with ${target.name}`);
+        if (r === 'expired') await UserModel.findByIdAndUpdate(req.userId, { $set: { pushSubscription: null } });
       }
 
       res.json({ matched: true, matchId: match._id });
@@ -74,11 +76,12 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
           : section
             ? `Liked your ${section}`
             : 'Check out their profile';
-        sendPush(
+        const r = await sendPush(
           target.pushSubscription as unknown as webpush.PushSubscription,
           `${me.name} liked your profile 💜`,
           pushBody
         );
+        if (r === 'expired') await getUserModel(target.gender).findByIdAndUpdate(target._id, { $set: { pushSubscription: null } });
       }
       res.json({ matched: false });
     }
@@ -250,11 +253,12 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     if (otherEntry) {
       const other = await findUserById(otherEntry.userId.toString());
       if (other?.pushSubscription) {
-        sendPush(
+        const r = await sendPush(
           other.pushSubscription as unknown as webpush.PushSubscription,
           'Connection closed',
           `${me?.name ?? 'Your match'} has ended this conversation. You're free to connect again.`
         );
+        if (r === 'expired') await getUserModel(other.gender).findByIdAndUpdate(other._id, { $set: { pushSubscription: null } });
       }
     }
 

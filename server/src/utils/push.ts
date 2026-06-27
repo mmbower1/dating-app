@@ -12,12 +12,15 @@ export async function sendPush(
   subscription: webpush.PushSubscription,
   title: string,
   body: string
-) {
-  if (!process.env.VAPID_PUBLIC_KEY) return;
+): Promise<'sent' | 'expired' | 'skipped'> {
+  if (!process.env.VAPID_PUBLIC_KEY) return 'skipped';
   try {
     await webpush.sendNotification(subscription, JSON.stringify({ title, body }));
-  } catch {
-    // Subscription expired or invalid — ignore silently
+    return 'sent';
+  } catch (err: unknown) {
+    const statusCode = (err as { statusCode?: number })?.statusCode;
+    if (statusCode === 410 || statusCode === 404) return 'expired';
+    return 'skipped';
   }
 }
 

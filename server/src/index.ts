@@ -51,6 +51,17 @@ io.use((socket, next) => {
   }
 });
 
+// Returns true if a given user has an active socket in the match room
+export function isUserInRoom(userId: string, roomId: string): boolean {
+  const room = io.sockets.adapter.rooms.get(roomId);
+  if (!room) return false;
+  for (const socketId of room) {
+    const socket = io.sockets.sockets.get(socketId);
+    if (socket?.data.userId === userId) return true;
+  }
+  return false;
+}
+
 io.on('connection', (socket) => {
   // Join a match room to receive messages for that conversation
   socket.on('join_match', (matchId: string) => {
