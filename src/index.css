@@ -1424,6 +1424,12 @@ form button[type="submit"]:disabled {
 }
 .exit-modal-textarea:focus { border-color: var(--accent-purple); }
 
+.exit-modal-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
 .exit-modal-confirm {
   flex: 1;
   background: rgba(252,129,129,0.15);
@@ -1434,8 +1440,13 @@ form button[type="submit"]:disabled {
   font-weight: 600;
   padding: 12px;
   cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
 }
-.exit-modal-confirm:hover { background: rgba(252,129,129,0.25); }
+.exit-modal-confirm:hover:not(:disabled) { background: rgba(252,129,129,0.25); }
+.exit-modal-confirm:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
 
 .chat-messages {
   flex: 1;

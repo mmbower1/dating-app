@@ -6,13 +6,6 @@ import type { Message, Match } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 
-const EXIT_REASONS = [
-  "Not enough in common",
-  "Conversation fizzled out",
-  "Met someone else",
-  "Just not feeling the connection",
-];
-
 const GracefulExitModal = ({
   onConfirm,
   onCancel,
@@ -20,10 +13,8 @@ const GracefulExitModal = ({
   onConfirm: (reason: string) => void;
   onCancel: () => void;
 }) => {
-  const [selected, setSelected] = useState('');
-  const [custom, setCustom] = useState('');
-
-  const reason = custom.trim() || selected;
+  const [reason, setReason] = useState('');
+  const canSubmit = reason.trim().length > 0;
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
@@ -33,35 +24,26 @@ const GracefulExitModal = ({
           Unmatching can lower your Pearl score. Giving a reason helps the other person grow — and keeps your score intact.
         </p>
 
-        <p className="exit-modal-section-label">Quick reasons</p>
-        <div className="exit-modal-pills">
-          {EXIT_REASONS.map((r) => (
-            <button
-              key={r}
-              type="button"
-              className={`exit-reason-pill ${selected === r && !custom ? 'active' : ''}`}
-              onClick={() => { setSelected(r); setCustom(''); }}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
-
-        <p className="exit-modal-section-label" style={{ marginTop: 14 }}>Or write your own</p>
+        <p className="exit-modal-section-label" style={{ marginTop: 14 }}>Why are you unmatching?</p>
         <textarea
           className="exit-modal-textarea"
-          placeholder="Add a personal note (optional)…"
-          maxLength={200}
-          rows={3}
-          value={custom}
-          onChange={(e) => { setCustom(e.target.value); if (e.target.value) setSelected(''); }}
+          placeholder="Be honest — your note stays private and helps them improve."
+          maxLength={300}
+          rows={4}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          autoFocus
         />
+        {!canSubmit && reason.length === 0 && (
+          <p className="exit-modal-hint">A reason is required to unmatch.</p>
+        )}
 
         <div className="modal-actions" style={{ marginTop: 16 }}>
           <button className="modal-cancel" onClick={onCancel}>Cancel</button>
           <button
             className="exit-modal-confirm"
-            onClick={() => onConfirm(reason)}
+            disabled={!canSubmit}
+            onClick={() => onConfirm(reason.trim())}
           >
             Unmatch
           </button>
