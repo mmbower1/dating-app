@@ -19,14 +19,99 @@ interface AdminMessage {
   createdAt: string;
 }
 
-type Tab = 'matches' | 'messages';
+interface SwipeEntry {
+  _id: string;
+  name: string;
+  gender: string;
+}
 
+interface AdminUser {
+  _id: string;
+  name: string;
+  email: string;
+  gender: string;
+  age: number;
+  likedUsers: string[];
+  passedUsers: string[];
+}
+
+type Tab = 'matches' | 'messages' | 'users';
+
+/* ── Swipe history panel for one user ──────────────────── */
+const SwipePanel = ({ user, onClose }: { user: AdminUser; onClose: () => void }) => {
+  const [liked, setLiked] = useState<SwipeEntry[]>([]);
+  const [passed, setPassed] = useState<SwipeEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get<{ liked: SwipeEntry[]; passed: SwipeEntry[] }>(`/admin/users/${user._id}/swipes`)
+      .then((r) => { setLiked(r.data.liked); setPassed(r.data.passed); })
+      .finally(() => setLoading(false));
+  }, [user._id]);
+
+  const remove = async (list: 'liked' | 'passed', targetId: string) => {
+    await api.delete(`/admin/users/${user._id}/swipes/${list}/${targetId}`);
+    if (list === 'liked') setLiked((p) => p.filter((x) => x._id !== targetId));
+    else setPassed((p) => p.filter((x) => x._id !== targetId));
+  };
+
+  const clearAll = async () => {
+    if (!window.confirm(`Clear ALL swipes for ${user.name}?`)) return;
+    await api.delete(`/admin/users/${user._id}/swipes`);
+    setLiked([]);
+    setPassed([]);
+  };
+
+  return (
+    <div className="swipe-panel">
+      <div className="swipe-panel-header">
+        <span className="swipe-panel-title">Swipe history — {user.name}</span>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="admin-clear-btn" onClick={clearAll}>Clear all</button>
+          <button className="admin-close-btn" onClick={onClose}>✕</button>
+        </div>
+      </div>
+
+      {loading ? <p className="admin-empty">Loading…</p> : (
+        <>
+          <p className="swipe-list-label">Liked ({liked.length})</p>
+          {liked.length === 0 ? <p className="admin-empty">None</p> : (
+            <div className="swipe-list">
+              {liked.map((u) => (
+                <div key={u._id} className="swipe-entry">
+                  <span>{u.name} <span className="swipe-entry-gender">({u.gender})</span></span>
+                  <button className="swipe-remove-btn" onClick={() => remove('liked', u._id)}>Remove</button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <p className="swipe-list-label" style={{ marginTop: 14 }}>Passed ({passed.length})</p>
+          {passed.length === 0 ? <p className="admin-empty">None</p> : (
+            <div className="swipe-list">
+              {passed.map((u) => (
+                <div key={u._id} className="swipe-entry">
+                  <span>{u.name} <span className="swipe-entry-gender">({u.gender})</span></span>
+                  <button className="swipe-remove-btn" onClick={() => remove('passed', u._id)}>Remove</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+/* ── Main Admin page ──────────────────────────────────── */
 const Admin = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>('matches');
   const [matches, setMatches] = useState<AdminMatch[]>([]);
   const [messages, setMessages] = useState<AdminMessage[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -38,12 +123,14 @@ const Admin = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [mRes, msgRes] = await Promise.all([
+      const [mRes, msgRes, uRes] = await Promise.all([
         api.get<AdminMatch[]>('/admin/matches'),
         api.get<AdminMessage[]>('/admin/messages'),
+        api.get<{ males: AdminUser[]; females: AdminUser[]; others: AdminUser[] }>('/admin/users'),
       ]);
       setMatches(mRes.data);
       setMessages(msgRes.data);
+      setUsers([...uRes.data.males, ...uRes.data.females, ...uRes.data.others]);
     } catch {
       setError('Failed to load admin data');
     } finally {
@@ -80,7 +167,7 @@ const Admin = () => {
       <div className="admin-header">
         <h1>Admin Panel</h1>
         <p className="admin-counts">
-          {matches.length} matches &nbsp;·&nbsp; {messages.length} messages
+          {matches.length} matches &nbsp;·&nbsp; {messages.length} messages &nbsp;·&nbsp; {users.length} users
         </p>
         <button className="admin-wipe-btn" onClick={fullWipe}>
           🗑 Full wipe
@@ -88,17 +175,14 @@ const Admin = () => {
       </div>
 
       <div className="admin-tabs">
-        <button
-          className={`admin-tab ${tab === 'matches' ? 'active' : ''}`}
-          onClick={() => setTab('matches')}
-        >
+        <button className={`admin-tab ${tab === 'matches' ? 'active' : ''}`} onClick={() => setTab('matches')}>
           Matches ({matches.length})
         </button>
-        <button
-          className={`admin-tab ${tab === 'messages' ? 'active' : ''}`}
-          onClick={() => setTab('messages')}
-        >
+        <button className={`admin-tab ${tab === 'messages' ? 'active' : ''}`} onClick={() => setTab('messages')}>
           Messages ({messages.length})
+        </button>
+        <button className={`admin-tab ${tab === 'users' ? 'active' : ''}`} onClick={() => setTab('users')}>
+          Users ({users.length})
         </button>
       </div>
 
@@ -111,16 +195,10 @@ const Admin = () => {
                 <span className={`admin-badge ${match.active ? 'active' : 'ended'}`}>
                   {match.active ? 'Active' : match.endReason ?? 'Ended'}
                 </span>
-                <span className="admin-names">
-                  {match.users.map((u) => u.name).join(' & ')}
-                </span>
-                <span className="admin-date">
-                  {new Date(match.createdAt).toLocaleDateString()}
-                </span>
+                <span className="admin-names">{match.users.map((u) => u.name).join(' & ')}</span>
+                <span className="admin-date">{new Date(match.createdAt).toLocaleDateString()}</span>
               </div>
-              <button className="admin-delete-btn" onClick={() => deleteMatch(match._id)}>
-                Delete
-              </button>
+              <button className="admin-delete-btn" onClick={() => deleteMatch(match._id)}>Delete</button>
             </div>
           ))}
         </div>
@@ -133,15 +211,39 @@ const Admin = () => {
             <div key={msg._id} className="admin-row">
               <div className="admin-row-info">
                 <span className="admin-msg-text">"{msg.text}"</span>
-                <span className="admin-date">
-                  {new Date(msg.createdAt).toLocaleDateString()}
+                <span className="admin-date">{new Date(msg.createdAt).toLocaleDateString()}</span>
+              </div>
+              <button className="admin-delete-btn" onClick={() => deleteMessage(msg._id)}>Delete</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === 'users' && (
+        <div className="admin-list">
+          {users.length === 0 && <p className="admin-empty">No users.</p>}
+          {users.map((u) => (
+            <div key={u._id} className="admin-row">
+              <div className="admin-row-info">
+                <span className="admin-names">{u.name}</span>
+                <span className="admin-date">{u.gender} · {u.age} · {u.email}</span>
+                <span className="admin-badge ended">
+                  {u.likedUsers?.length ?? 0} liked · {u.passedUsers?.length ?? 0} passed
                 </span>
               </div>
-              <button className="admin-delete-btn" onClick={() => deleteMessage(msg._id)}>
-                Delete
+              <button className="admin-swipes-btn" onClick={() => setSelectedUser(u)}>
+                Manage swipes
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {selectedUser && (
+        <div className="swipe-panel-overlay" onClick={() => setSelectedUser(null)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <SwipePanel user={selectedUser} onClose={() => setSelectedUser(null)} />
+          </div>
         </div>
       )}
     </div>

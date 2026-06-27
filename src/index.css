@@ -2670,3 +2670,126 @@ form button[type="submit"]:disabled {
   from { opacity: 0; transform: translateX(-50%) translateY(10px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* ── Admin swipe history tool ───────────────────────── */
+
+.admin-swipes-btn {
+  background: var(--gradient-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 100px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-swipes-btn:hover { opacity: 0.85; }
+
+.swipe-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.swipe-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.swipe-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.swipe-panel-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.admin-clear-btn {
+  background: rgba(252,129,129,0.12);
+  border: 1px solid rgba(252,129,129,0.3);
+  border-radius: 100px;
+  color: var(--error);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.admin-clear-btn:hover { opacity: 0.8; }
+
+.admin-close-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.swipe-list-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.swipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.swipe-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-input);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.swipe-entry-gender {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.swipe-remove-btn {
+  background: rgba(252,129,129,0.12);
+  border: 1px solid rgba(252,129,129,0.25);
+  border-radius: 100px;
+  color: var(--error);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.swipe-remove-btn:hover { opacity: 0.8; }

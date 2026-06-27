@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { protect, requireAdmin, AuthRequest } from '../middleware/auth';
-import { MaleUser, FemaleUser, OtherUser, findUserById } from '../models/User';
+import { MaleUser, FemaleUser, OtherUser, findUserById, getUserModel } from '../models/User';
 import Match from '../models/Match';
 import Message from '../models/Message';
 
@@ -99,6 +99,57 @@ router.get('/users', protect, requireAdmin, async (_req: AuthRequest, res: Respo
       OtherUser.find().select('-password'),
     ]);
     res.json({ males, females, others });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Get a user's swipe history with names populated
+router.get('/users/:userId/swipes', protect, requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.params.userId as string;
+    const user = await findUserById(userId);
+    if (!user) { res.status(404).json({ message: 'User not found' }); return; }
+
+    const populateIds = (ids: unknown[]) =>
+      Promise.all(ids.map(async (id) => {
+        const u = await findUserById(id!.toString());
+        return u ? { _id: u._id, name: u.name, gender: u.gender } : null;
+      })).then((r) => r.filter(Boolean));
+
+    const [liked, passed] = await Promise.all([
+      populateIds(user.likedUsers),
+      populateIds(user.passedUsers),
+    ]);
+    res.json({ liked, passed });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Remove one entry from likedUsers or passedUsers  (/liked | /passed)
+router.delete('/users/:userId/swipes/:list/:targetId', protect, requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { userId, list, targetId } = req.params as { userId: string; list: string; targetId: string };
+    if (list !== 'liked' && list !== 'passed') { res.status(400).json({ message: 'list must be liked or passed' }); return; }
+    const field = list === 'liked' ? 'likedUsers' : 'passedUsers';
+    const user = await findUserById(userId);
+    if (!user) { res.status(404).json({ message: 'User not found' }); return; }
+    await getUserModel(user.gender).findByIdAndUpdate(userId, { $pull: { [field]: targetId } });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Clear ALL swipes for a single user
+router.delete('/users/:userId/swipes', protect, requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.params.userId as string;
+    const user = await findUserById(userId);
+    if (!user) { res.status(404).json({ message: 'User not found' }); return; }
+    await getUserModel(user.gender).findByIdAndUpdate(userId, { $set: { likedUsers: [], passedUsers: [] } });
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
