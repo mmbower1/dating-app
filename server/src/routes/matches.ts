@@ -291,9 +291,10 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
       ModelB.findByIdAndUpdate(userB.userId, { $pull: { likedUsers: userA.userId } }),
     ]);
 
-    // Push-notify the other person
+    // Notify the other person in real-time so their discover unlocks immediately
     const otherEntry = match.users.find((u) => u.userId.toString() !== req.userId);
     if (otherEntry) {
+      emitToUser(otherEntry.userId.toString(), 'match_ended', { matchId: match._id });
       const other = await findUserById(otherEntry.userId.toString());
       if (other?.pushSubscription) {
         const r = await sendPush(

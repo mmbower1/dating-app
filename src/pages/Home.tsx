@@ -114,13 +114,24 @@ const Home = () => {
 
   useEffect(() => {
     if (!socket) return;
-    const handler = (data: { matchedUser: User; matchId?: string }) => {
+    const onNewMatch = (data: { matchedUser: User; matchId?: string }) => {
       setMatchedProfile(data.matchedUser);
       if (data.matchId) setPendingMatchId(data.matchId);
       setLocked(true);
     };
-    socket.on('new_match', handler);
-    return () => { socket.off('new_match', handler); };
+    const onMatchEnded = () => {
+      setLocked(false);
+      setProfiles([]);
+      api.get<User[] | { locked: boolean }>('/users/discover').then((res) => {
+        if (Array.isArray(res.data)) setProfiles(res.data);
+      });
+    };
+    socket.on('new_match', onNewMatch);
+    socket.on('match_ended', onMatchEnded);
+    return () => {
+      socket.off('new_match', onNewMatch);
+      socket.off('match_ended', onMatchEnded);
+    };
   }, [socket]);
 
   const activeFilterCount = (() => {
