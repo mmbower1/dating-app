@@ -30,6 +30,7 @@ const Settings = () => {
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [disabling, setDisabling] = useState(false);
+  const [showBlockList, setShowBlockList] = useState(false);
   const [previousMatches, setPreviousMatches] = useState<PreviousMatch[]>([]);
   const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
 
@@ -185,6 +186,51 @@ const Settings = () => {
         </form>
       </section>
 
+      {/* ── Block a previous match ─────────── */}
+      <section className="settings-section blocked-section">
+        <p className="settings-section-label">Block a previous match</p>
+        <button
+          className="settings-row-btn block-dropdown-btn"
+          onClick={() => setShowBlockList((v) => !v)}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+          </svg>
+          Previous matches
+          <svg
+            className="settings-row-chevron"
+            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            style={{ transform: showBlockList ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}
+          >
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+        {showBlockList && (
+          <div className="block-dropdown-list">
+            {previousMatches.length === 0 ? (
+              <p className="settings-disable-note">No previous matches.</p>
+            ) : (
+              previousMatches.map((u) => (
+                <div key={u.userId} className="blocked-row">
+                  {u.photos[0] ? (
+                    <img src={u.photos[0]} alt={u.name} className="blocked-avatar" />
+                  ) : (
+                    <div className="blocked-avatar blocked-avatar--placeholder">{u.name[0]}</div>
+                  )}
+                  <span className="blocked-name">{u.name}</span>
+                  {blockedIds.has(u.userId) ? (
+                    <button className="unblock-btn" onClick={() => handleUnblock(u.userId)}>Unblock</button>
+                  ) : (
+                    <button className="unmatched-block-btn" onClick={() => handleBlock(u.userId)}>Block</button>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </section>
+
       {/* ── Visibility ─────────────────────── */}
       <section className="settings-section">
         <p className="settings-section-label">Visibility</p>
@@ -214,30 +260,6 @@ const Settings = () => {
         </button>
         {user?.accountDisabled && (
           <p className="settings-disable-note">Your profile is hidden. No one can discover you until you re-enable.</p>
-        )}
-      </section>
-
-      {/* ── Previous matches / block ───────── */}
-      <section className="settings-section blocked-section">
-        <p className="settings-section-label">Block a previous match</p>
-        {previousMatches.length === 0 ? (
-          <p className="settings-disable-note">No previous matches.</p>
-        ) : (
-          previousMatches.map((u) => (
-            <div key={u.userId} className="blocked-row">
-              {u.photos[0] ? (
-                <img src={u.photos[0]} alt={u.name} className="blocked-avatar" />
-              ) : (
-                <div className="blocked-avatar blocked-avatar--placeholder">{u.name[0]}</div>
-              )}
-              <span className="blocked-name">{u.name}</span>
-              {blockedIds.has(u.userId) ? (
-                <button className="unblock-btn" onClick={() => handleUnblock(u.userId)}>Unblock</button>
-              ) : (
-                <button className="unmatched-block-btn" onClick={() => handleBlock(u.userId)}>Block</button>
-              )}
-            </div>
-          ))
         )}
       </section>
 
