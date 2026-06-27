@@ -2158,6 +2158,21 @@ form button[type="submit"]:disabled {
   margin-top: 4px;
 }
 
+.admin-rescore-btn {
+  margin-top: 14px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: rgba(72,187,120,0.1);
+  border: 1px solid rgba(72,187,120,0.35);
+  color: #48bb78;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.2s;
+  width: auto;
+}
+
+.admin-rescore-btn:hover { background: rgba(72,187,120,0.2); }
+
 .admin-wipe-btn {
   margin-top: 14px;
   padding: 10px 20px;

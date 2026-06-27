@@ -158,6 +158,12 @@ const Admin = () => {
     setMessages([]);
   };
 
+  const rescoreAll = async () => {
+    const res = await api.post<{ rescored: number }>('/admin/rescore');
+    alert(`Rescored ${res.data.rescored} users.`);
+    fetchAll();
+  };
+
   if (!user?.isAdmin) return null;
   if (loading) return <div className="page-center">Loading...</div>;
   if (error) return <div className="page-center">{error}</div>;
@@ -169,6 +175,9 @@ const Admin = () => {
         <p className="admin-counts">
           {matches.length} matches &nbsp;·&nbsp; {messages.length} messages &nbsp;·&nbsp; {users.length} users
         </p>
+        <button className="admin-rescore-btn" onClick={rescoreAll}>
+          ↻ Rescore all
+        </button>
         <button className="admin-wipe-btn" onClick={fullWipe}>
           🗑 Full wipe
         </button>
@@ -231,9 +240,15 @@ const Admin = () => {
                   {u.likedUsers?.length ?? 0} liked · {u.passedUsers?.length ?? 0} passed
                 </span>
               </div>
-              <button className="admin-swipes-btn" onClick={() => setSelectedUser(u)}>
-                Manage swipes
-              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="admin-rescore-btn" onClick={async () => {
+                  await api.post(`/admin/rescore?userId=${u._id}`);
+                  fetchAll();
+                }}>↻</button>
+                <button className="admin-swipes-btn" onClick={() => setSelectedUser(u)}>
+                  Manage swipes
+                </button>
+              </div>
             </div>
           ))}
         </div>

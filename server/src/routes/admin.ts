@@ -155,4 +155,37 @@ router.delete('/users/:userId/swipes', protect, requireAdmin, async (req: AuthRe
   }
 });
 
+// Force rescore — all users or a single user (?userId=...)
+router.post('/rescore', protect, requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const targetId = typeof req.query.userId === 'string' ? req.query.userId : null;
+
+    const rescore = async (user: { _id: unknown; gender: string; ghostCount: number; responseRate: number }) => {
+      const ghostPenalty = Math.min(user.ghostCount * 10, 50);
+      const responsePenalty = Math.round((1 - user.responseRate / 100) * 30);
+      const score = Math.max(0, Math.min(100, 100 - ghostPenalty - responsePenalty));
+      await getUserModel(user.gender).findByIdAndUpdate(user._id, { $set: { accountabilityScore: score } });
+      return score;
+    };
+
+    if (targetId) {
+      const user = await findUserById(targetId);
+      if (!user) { res.status(404).json({ message: 'User not found' }); return; }
+      const score = await rescore(user);
+      res.json({ success: true, userId: targetId, score });
+    } else {
+      const [males, females, others] = await Promise.all([
+        MaleUser.find().select('gender ghostCount responseRate'),
+        FemaleUser.find().select('gender ghostCount responseRate'),
+        OtherUser.find().select('gender ghostCount responseRate'),
+      ]);
+      const all = [...males, ...females, ...others];
+      await Promise.all(all.map(rescore));
+      res.json({ success: true, rescored: all.length });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
 export default router;
