@@ -32,11 +32,25 @@ interface AdminUser {
   gender: string;
   age: number;
   accountabilityScore: number;
+  flaggedForReview?: boolean;
   likedUsers: string[];
   passedUsers: string[];
 }
 
-type Tab = 'matches' | 'messages' | 'users';
+interface AdminReport {
+  _id: string;
+  reporterId: string;
+  reporterName: string;
+  reportedId: string;
+  reportedName: string;
+  reportedGender: string;
+  category: string;
+  description: string;
+  status: 'pending' | 'reviewed' | 'dismissed';
+  createdAt: string;
+}
+
+type Tab = 'matches' | 'messages' | 'users' | 'reports';
 
 /* ── User row with inline score editor ─────────────────── */
 const UserRow = ({ u, onRescore, onManage, onScoreChange }: {
@@ -60,7 +74,10 @@ const UserRow = ({ u, onRescore, onManage, onScoreChange }: {
     <div className="admin-row">
       <div className="admin-row-info">
         <span className="admin-names">{u.name}</span>
-        <span className="admin-date">{u.gender} · {u.age} · {u.email}</span>
+        <span className="admin-date">
+        {u.gender} · {u.age} · {u.email}
+        {u.flaggedForReview && <span className="flagged-badge" style={{ marginLeft: 6 }}>⚠ Flagged</span>}
+      </span>
         <span className="admin-badge ended">
           {u.likedUsers?.length ?? 0} liked · {u.passedUsers?.length ?? 0} passed
         </span>
@@ -158,6 +175,7 @@ const Admin = () => {
   const [matches, setMatches] = useState<AdminMatch[]>([]);
   const [messages, setMessages] = useState<AdminMessage[]>([]);
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [reports, setReports] = useState<AdminReport[]>([]);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -170,19 +188,30 @@ const Admin = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [mRes, msgRes, uRes] = await Promise.all([
+      const [mRes, msgRes, uRes, rRes] = await Promise.all([
         api.get<AdminMatch[]>('/admin/matches'),
         api.get<AdminMessage[]>('/admin/messages'),
         api.get<{ males: AdminUser[]; females: AdminUser[]; others: AdminUser[] }>('/admin/users'),
+        api.get<AdminReport[]>('/admin/reports'),
       ]);
       setMatches(mRes.data);
       setMessages(msgRes.data);
       setUsers([...uRes.data.males, ...uRes.data.females, ...uRes.data.others]);
+      setReports(rRes.data);
     } catch {
       setError('Failed to load admin data');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReportAction = async (
+    reportId: string,
+    status: 'reviewed' | 'dismissed',
+    disableAccount = false
+  ) => {
+    await api.patch(`/admin/reports/${reportId}`, { status, disableAccount });
+    await fetchAll();
   };
 
   const deleteMatch = async (id: string) => {
@@ -240,6 +269,9 @@ const Admin = () => {
         <button className={`admin-tab ${tab === 'users' ? 'active' : ''}`} onClick={() => setTab('users')}>
           Users ({users.length})
         </button>
+        <button className={`admin-tab ${tab === 'reports' ? 'active' : ''}`} onClick={() => setTab('reports')}>
+          Reports ({reports.length})
+        </button>
       </div>
 
       {tab === 'matches' && (
@@ -280,6 +312,46 @@ const Admin = () => {
           {users.length === 0 && <p className="admin-empty">No users.</p>}
           {users.map((u) => (
             <UserRow key={u._id} u={u} onRescore={async () => { await api.post(`/admin/rescore?userId=${u._id}`); fetchAll(); }} onManage={() => setSelectedUser(u)} onScoreChange={fetchAll} />
+          ))}
+        </div>
+      )}
+
+      {tab === 'reports' && (
+        <div className="admin-list">
+          {reports.length === 0 && <p className="admin-empty">No reports yet.</p>}
+          {reports.map((r) => (
+            <div key={r._id} className="admin-row admin-report-row">
+              <div className="admin-row-info">
+                <span className="admin-names">
+                  {r.reporterName} <span style={{ opacity: 0.5 }}>reported</span> {r.reportedName}
+                </span>
+                <span className="admin-date">
+                  {r.category.replace(/_/g, ' ')} · {new Date(r.createdAt).toLocaleDateString()}
+                </span>
+                {r.description && (
+                  <span className="admin-msg-text" style={{ marginTop: 2 }}>"{r.description}"</span>
+                )}
+                <span className={`admin-report-status admin-badge ${r.status === 'pending' ? 'active' : 'ended'}`}>
+                  {r.status}
+                </span>
+              </div>
+              {r.status === 'pending' && (
+                <div className="admin-report-actions">
+                  <button
+                    className="admin-rescore-btn"
+                    onClick={() => handleReportAction(r._id, 'dismissed')}
+                  >
+                    Dismiss
+                  </button>
+                  <button
+                    className="admin-delete-btn"
+                    onClick={() => handleReportAction(r._id, 'reviewed', true)}
+                  >
+                    Review &amp; Disable
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}

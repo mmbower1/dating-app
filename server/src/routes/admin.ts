@@ -3,6 +3,7 @@ import { protect, requireAdmin, AuthRequest } from '../middleware/auth';
 import { MaleUser, FemaleUser, OtherUser, findUserById, getUserModel } from '../models/User';
 import Match from '../models/Match';
 import Message from '../models/Message';
+import Report from '../models/Report';
 
 const router = Router();
 
@@ -99,6 +100,66 @@ router.get('/users', protect, requireAdmin, async (_req: AuthRequest, res: Respo
       OtherUser.find().select('-password'),
     ]);
     res.json({ males, females, others });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Get all reports sorted by createdAt desc, with reporter/reported names
+router.get('/reports', protect, requireAdmin, async (_req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const reports = await Report.find().sort({ createdAt: -1 });
+    const enriched = await Promise.all(
+      reports.map(async (r) => {
+        const [reporter, reported] = await Promise.all([
+          findUserById(r.reporterId.toString()),
+          findUserById(r.reportedId.toString()),
+        ]);
+        return {
+          _id: r._id,
+          reporterId: r.reporterId,
+          reporterName: reporter?.name ?? 'Unknown',
+          reportedId: r.reportedId,
+          reportedName: reported?.name ?? 'Unknown',
+          reportedGender: r.reportedGender,
+          category: r.category,
+          description: r.description,
+          status: r.status,
+          createdAt: r.createdAt,
+        };
+      })
+    );
+    res.json(enriched);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Update report status; optionally disable the reported account
+router.patch('/reports/:id', protect, requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { status, disableAccount } = req.body as {
+      status: 'reviewed' | 'dismissed';
+      disableAccount?: boolean;
+    };
+
+    const report = await Report.findByIdAndUpdate(
+      req.params.id,
+      { $set: { status } },
+      { new: true }
+    );
+    if (!report) { res.status(404).json({ message: 'Report not found' }); return; }
+
+    if (status === 'reviewed' && disableAccount) {
+      const reportedUser = await findUserById(report.reportedId.toString());
+      if (reportedUser) {
+        await getUserModel(reportedUser.gender).findByIdAndUpdate(report.reportedId, {
+          $set: { accountDisabled: true },
+        });
+      }
+    }
+
+    res.json({ success: true, report });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }

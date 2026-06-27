@@ -18,8 +18,10 @@ interface RegisterData {
   email: string;
   password: string;
   age: number;
+  dateOfBirth?: string;
   gender: string;
   interestedIn: string[];
+  phone?: string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);

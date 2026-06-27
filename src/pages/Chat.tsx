@@ -9,9 +9,11 @@ import { useSocket } from '../context/SocketContext';
 const GracefulExitModal = ({
   onConfirm,
   onCancel,
+  onBlock,
 }: {
   onConfirm: (reason: string, metInPerson: boolean) => void;
   onCancel: () => void;
+  onBlock: () => void;
 }) => {
   const [reason, setReason] = useState('');
   const [metInPerson, setMetInPerson] = useState(false);
@@ -57,6 +59,14 @@ const GracefulExitModal = ({
             Unmatch
           </button>
         </div>
+        <button
+          type="button"
+          className="block-user-btn"
+          onClick={onBlock}
+          style={{ marginTop: 10, width: '100%' }}
+        >
+          Block this user
+        </button>
       </div>
     </div>
   );
@@ -157,6 +167,22 @@ const Chat = () => {
     navigate('/matches');
   };
 
+  const handleBlock = async () => {
+    if (!other) return;
+    setShowExitModal(false);
+    try {
+      await api.post(`/users/${other._id}/block`);
+      // End the match as well
+      await api.patch(`/matches/${matchId}/exit`, {
+        reason: 'User blocked.',
+        metInPerson: false,
+      });
+    } catch {
+      // best-effort
+    }
+    navigate('/matches');
+  };
+
   const other = match?.users.find((u) => u.userId._id !== user?._id)?.userId;
 
   if (loading) return <div className="page-center">Loading chat...</div>;
@@ -247,6 +273,7 @@ const Chat = () => {
         <GracefulExitModal
           onConfirm={confirmExit}
           onCancel={() => setShowExitModal(false)}
+          onBlock={handleBlock}
         />
       )}
     </div>

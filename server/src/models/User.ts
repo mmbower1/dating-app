@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   age: number;
+  dateOfBirth: string;
   gender: 'male' | 'female' | 'non-binary' | 'other';
   interestedIn: ('male' | 'female' | 'non-binary' | 'other')[];
   phone: string;
@@ -51,6 +52,7 @@ export interface IUser extends Document {
   };
   isAdmin: boolean;
   accountDisabled: boolean;
+  flaggedForReview: boolean;
   pushSubscription: Record<string, unknown> | null;
   likedUsers: mongoose.Types.ObjectId[];
   passedUsers: mongoose.Types.ObjectId[];
@@ -65,6 +67,7 @@ const UserSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 6 },
     age: { type: Number, required: true, min: 18 },
+    dateOfBirth: { type: String, default: '' },
     gender: { type: String, enum: ['male', 'female', 'non-binary', 'other'], required: true },
     interestedIn: [{ type: String, enum: ['male', 'female', 'non-binary', 'other'] }],
     phone: { type: String, default: '' },
@@ -117,6 +120,7 @@ const UserSchema = new Schema<IUser>(
     },
     isAdmin: { type: Boolean, default: false },
     accountDisabled: { type: Boolean, default: false },
+    flaggedForReview: { type: Boolean, default: false },
     pushSubscription: { type: Schema.Types.Mixed, default: null },
     likedUsers: [{ type: Schema.Types.ObjectId }],
     passedUsers: [{ type: Schema.Types.ObjectId }],

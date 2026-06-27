@@ -3,8 +3,9 @@ import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 import { Readable } from 'stream';
 import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 import { protect, AuthRequest } from '../middleware/auth';
-import { getUserModel, getModelName } from '../models/User';
+import { getUserModel, getModelName, findUserById } from '../models/User';
 import Match from '../models/Match';
 import { vapidPublicKey } from '../utils/push';
 
@@ -275,6 +276,56 @@ router.patch('/me/disable', protect, async (req: AuthRequest, res: Response): Pr
 // Return VAPID public key for frontend subscription
 router.get('/vapid-public-key', (_req, res: Response) => {
   res.json({ key: vapidPublicKey });
+});
+
+// GET /users/blocked — return list of blocked users with name/photos populated
+router.get('/blocked', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const UserModel = getUserModel(req.userGender!);
+    const me = await UserModel.findById(req.userId).select('blockedUsers');
+    if (!me) { res.status(404).json({ message: 'User not found' }); return; }
+
+    const populated = await Promise.all(
+      me.blockedUsers.map(async (id) => {
+        const u = await findUserById(id.toString());
+        if (!u) return null;
+        return { _id: u._id, name: u.name, photos: u.photos, gender: u.gender };
+      })
+    );
+
+    res.json(populated.filter(Boolean));
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// POST /users/:id/block — block a user
+router.post('/:id/block', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const targetId = req.params.id as string;
+    const UserModel = getUserModel(req.userGender!);
+    await UserModel.findByIdAndUpdate(req.userId, {
+      $addToSet: { blockedUsers: new mongoose.Types.ObjectId(targetId) },
+      $pull: { likedUsers: new mongoose.Types.ObjectId(targetId) },
+    });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// DELETE /users/:id/block — unblock a user
+router.delete('/:id/block', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const targetId = req.params.id as string;
+    const UserModel = getUserModel(req.userGender!);
+    await UserModel.findByIdAndUpdate(req.userId, {
+      $pull: { blockedUsers: new mongoose.Types.ObjectId(targetId) },
+    });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
 });
 
 export default router;

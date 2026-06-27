@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { User } from '../types';
+import api from '../api/axios';
 
 function scoreColor(score: number): string {
   if (score >= 95) return '#48bb78';          // rich green
@@ -40,6 +42,98 @@ export function buildDetails(p: User): string[] {
 
 export type LikeSection = 'photo' | 'bio' | 'details';
 
+type ReportCategory = 'inappropriate_photos' | 'harassment' | 'fake_profile' | 'spam' | 'underage' | 'other';
+
+const REPORT_CATEGORIES: { value: ReportCategory; label: string }[] = [
+  { value: 'inappropriate_photos', label: 'Inappropriate photos' },
+  { value: 'harassment', label: 'Harassment' },
+  { value: 'fake_profile', label: 'Fake profile' },
+  { value: 'spam', label: 'Spam' },
+  { value: 'underage', label: 'Underage' },
+  { value: 'other', label: 'Other' },
+];
+
+interface ReportModalProps {
+  profile: User;
+  onClose: () => void;
+}
+
+const ReportModal = ({ profile, onClose }: ReportModalProps) => {
+  const [category, setCategory] = useState<ReportCategory | ''>('');
+  const [description, setDescription] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!category) return;
+    setSubmitting(true);
+    try {
+      await api.post('/reports', {
+        reportedUserId: profile._id,
+        reportedGender: profile.gender,
+        category,
+        description,
+      });
+      setSubmitted(true);
+      setTimeout(onClose, 1800);
+    } catch {
+      // silently fail — don't expose report failure to user
+      setSubmitted(true);
+      setTimeout(onClose, 1800);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="report-modal modal-sheet" onClick={(e) => e.stopPropagation()}>
+        {submitted ? (
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <p style={{ fontSize: 18, fontWeight: 600 }}>Report submitted</p>
+            <p style={{ fontSize: 14, opacity: 0.7, marginTop: 6 }}>Thank you for keeping Pearl safe.</p>
+          </div>
+        ) : (
+          <>
+            <h3 className="modal-title">Report this profile</h3>
+            <div className="report-categories">
+              {REPORT_CATEGORIES.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  className={`report-category-btn${category === c.value ? ' report-category-btn--active' : ''}`}
+                  onClick={() => setCategory(c.value)}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+            <textarea
+              className="exit-modal-textarea"
+              placeholder="Additional details (optional)"
+              maxLength={500}
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{ marginTop: 12 }}
+            />
+            <div className="modal-actions" style={{ marginTop: 16 }}>
+              <button className="modal-cancel" onClick={onClose}>Cancel</button>
+              <button
+                className="exit-modal-confirm"
+                disabled={!category || submitting}
+                onClick={handleSubmit}
+              >
+                {submitting ? 'Submitting…' : 'Submit'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 interface ProfileCardProps {
   profile: User;
   /** Extra class name forwarded to the root pcard-stack div (e.g. exit animation) */
@@ -52,6 +146,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
   const about = buildAbout(profile);
   const details = buildDetails(profile);
   const extraPhotos = profile.photos.slice(1);
+  const [showReport, setShowReport] = useState(false);
 
   const HeartBtn = ({ section, onPhoto = false }: { section: LikeSection; onPhoto?: boolean }) =>
     onHeart ? (
@@ -76,6 +171,19 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
           <div className="pcard-no-photo">{profile.name[0]}</div>
         )}
         <HeartBtn section="photo" onPhoto />
+        {/* Report button — unobtrusive, top-right of first photo */}
+        <button
+          className="report-btn"
+          type="button"
+          title="Report this profile"
+          onClick={(e) => { e.stopPropagation(); setShowReport(true); }}
+          aria-label="Report this profile"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+            <line x1="4" y1="22" x2="4" y2="15"/>
+          </svg>
+        </button>
       </div>
 
       {/* Identity */}
@@ -137,6 +245,10 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       )}
 
       <div style={{ height: 8 }} />
+
+      {showReport && (
+        <ReportModal profile={profile} onClose={() => setShowReport(false)} />
+      )}
     </div>
   );
 };

@@ -1,8 +1,15 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api/axios';
+
+interface BlockedUser {
+  _id: string;
+  name: string;
+  photos: string[];
+  gender: string;
+}
 
 const Settings = () => {
   const { user, logout, updateUser } = useAuth();
@@ -22,6 +29,22 @@ const Settings = () => {
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [disabling, setDisabling] = useState(false);
+  const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
+
+  useEffect(() => {
+    api.get<BlockedUser[]>('/users/blocked')
+      .then((res) => setBlockedUsers(res.data))
+      .catch(() => {});
+  }, []);
+
+  const handleUnblock = async (id: string) => {
+    try {
+      await api.delete(`/users/${id}/block`);
+      setBlockedUsers((prev) => prev.filter((u) => u._id !== id));
+    } catch {
+      // ignore
+    }
+  };
 
   const saveEmail = async (e: FormEvent) => {
     e.preventDefault();
@@ -184,6 +207,24 @@ const Settings = () => {
         </button>
         {user?.accountDisabled && (
           <p className="settings-disable-note">Your profile is hidden. No one can discover you until you re-enable.</p>
+        )}
+      </section>
+
+      {/* ── Blocked users ──────────────────── */}
+      <section className="settings-section blocked-section">
+        <p className="settings-section-label">Blocked users</p>
+        {blockedUsers.length === 0 ? (
+          <p className="settings-disable-note">No blocked users.</p>
+        ) : (
+          blockedUsers.map((u) => (
+            <div key={u._id} className="blocked-row">
+              {u.photos[0] && (
+                <img src={u.photos[0]} alt={u.name} className="blocked-avatar" />
+              )}
+              <span className="blocked-name">{u.name}</span>
+              <button className="unblock-btn" onClick={() => handleUnblock(u._id)}>Unblock</button>
+            </div>
+          ))
         )}
       </section>
 

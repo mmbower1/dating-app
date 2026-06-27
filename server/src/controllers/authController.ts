@@ -10,10 +10,39 @@ const signToken = (id: string, gender: string, isAdmin = false) =>
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password, age, gender, interestedIn, phone } = req.body;
+    const { name, email, password, age, dateOfBirth, gender, interestedIn, phone } = req.body;
 
-    if (!name || !email || !password || !age || !gender || !interestedIn) {
+    if (!name || !email || !password || !gender || !interestedIn) {
       res.status(400).json({ message: 'All fields are required' });
+      return;
+    }
+
+    // Calculate age from dateOfBirth if provided, otherwise use age directly
+    let resolvedAge: number;
+    if (dateOfBirth) {
+      const dob = new Date(dateOfBirth);
+      if (isNaN(dob.getTime())) {
+        res.status(400).json({ message: 'Invalid date of birth' });
+        return;
+      }
+      const today = new Date();
+      resolvedAge = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        resolvedAge--;
+      }
+      if (resolvedAge < 18) {
+        res.status(400).json({ message: 'You must be 18 or older to register' });
+        return;
+      }
+    } else if (age) {
+      resolvedAge = Number(age);
+      if (resolvedAge < 18) {
+        res.status(400).json({ message: 'You must be 18 or older to register' });
+        return;
+      }
+    } else {
+      res.status(400).json({ message: 'Age or date of birth is required' });
       return;
     }
 
@@ -30,7 +59,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const hashed = await bcrypt.hash(password, 12);
     const UserModel = getUserModel(gender);
-    const user = await UserModel.create({ name, email, password: hashed, age, gender, interestedIn, phone });
+    const user = await UserModel.create({
+      name, email, password: hashed, age: resolvedAge,
+      dateOfBirth: dateOfBirth ?? '', gender, interestedIn, phone,
+    });
 
     const token = signToken(user._id.toString(), user.gender, user.isAdmin);
     res.status(201).json({

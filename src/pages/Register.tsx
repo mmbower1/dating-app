@@ -26,6 +26,16 @@ const EyeIcon = ({ open }: { open: boolean }) =>
     </svg>
   );
 
+function calcAgeFromDob(dob: string): number {
+  if (!dob) return 0;
+  const d = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - d.getFullYear();
+  const m = today.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+  return age;
+}
+
 const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -35,10 +45,11 @@ const Register = () => {
     password: '',
     confirmPassword: '',
     phone: '',
-    age: '',
+    dateOfBirth: '',
     gender: '',
     interestedIn: [] as string[],
   });
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
@@ -61,10 +72,15 @@ const Register = () => {
     }
     if (!form.gender) { setError('Please select your gender'); return; }
     if (!form.interestedIn.length) { setError('Please select who you are interested in'); return; }
+    if (!form.dateOfBirth) { setError('Please enter your date of birth'); return; }
+    const age = calcAgeFromDob(form.dateOfBirth);
+    if (age < 18) { setError('You must be 18 or older to join Pearl'); return; }
+    if (!ageConfirmed) { setError('Please confirm you are 18 years of age or older'); return; }
     setLoading(true);
     try {
       const { confirmPassword, ...rest } = form;
-      await register({ ...rest, age: Number(rest.age) });
+      void confirmPassword;
+      await register({ ...rest, age, dateOfBirth: rest.dateOfBirth });
       navigate('/');
     } catch {
       setError('Registration failed. Email may already be in use.');
@@ -140,14 +156,26 @@ const Register = () => {
                 <EyeIcon open={showConfirm} />
               </button>
             </div>
+            <label className="field-label">Date of birth</label>
             <input
-              type="number"
-              placeholder="Age"
-              value={form.age}
-              min={18}
-              onChange={(e) => setForm({ ...form, age: e.target.value })}
+              type="date"
+              value={form.dateOfBirth}
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+              onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
               required
             />
+            {form.dateOfBirth && calcAgeFromDob(form.dateOfBirth) < 18 && (
+              <p className="error" style={{ marginTop: 4, marginBottom: 0 }}>You must be 18 or older to join Pearl.</p>
+            )}
+            <label className="age-confirm-label">
+              <input
+                type="checkbox"
+                checked={ageConfirmed}
+                onChange={(e) => setAgeConfirmed(e.target.checked)}
+                required
+              />
+              I confirm I am 18 years of age or older.
+            </label>
             <label className="field-label">I am a</label>
             <div className="pill-group">
               {GENDERS.map((g) => (

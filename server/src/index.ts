@@ -11,6 +11,7 @@ import userRoutes from './routes/users';
 import matchRoutes from './routes/matches';
 import messageRoutes from './routes/messages';
 import adminRoutes from './routes/admin';
+import reportRoutes from './routes/reports';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/reports', reportRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });

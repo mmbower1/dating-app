@@ -47,6 +47,8 @@ export interface User {
   filters?: DiscoverFilters;
   isAdmin?: boolean;
   accountDisabled?: boolean;
+  dateOfBirth?: string;
+  flaggedForReview?: boolean;
 }
 
 export interface MatchUser {
