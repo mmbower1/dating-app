@@ -156,6 +156,7 @@ const Chat = () => {
   const [otherTyping, setOtherTyping] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showFarewell, setShowFarewell] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -235,7 +236,8 @@ const Chat = () => {
   const confirmExit = async (reason: string, metInPerson: boolean) => {
     setShowExitModal(false);
     await api.patch(`/matches/${matchId}/exit`, { reason, metInPerson });
-    navigate('/');
+    setShowFarewell(true);
+    setTimeout(() => navigate('/'), 5000);
   };
 
   const submitReport = async (category: ReportCategory, description: string) => {
@@ -351,6 +353,22 @@ const Chat = () => {
           onSubmit={submitReport}
           onClose={() => setShowReportModal(false)}
         />
+      )}
+
+      {showFarewell && (
+        <div className="farewell-overlay">
+          <div className="farewell-content">
+            <p className="farewell-emoji">🌊</p>
+            <h2 className="farewell-title">Sorry it didn't work out.</h2>
+            <p className="farewell-body">
+              Wishing you the best on your next connection —<br />
+              hopefully the last one you'll need.
+            </p>
+            <button className="farewell-btn" onClick={() => navigate('/')}>
+              Keep discovering
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
