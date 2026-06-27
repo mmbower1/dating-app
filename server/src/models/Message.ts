@@ -5,7 +5,7 @@ export interface IMessage extends Document {
   senderId: mongoose.Types.ObjectId;
   text: string;
   read: boolean;
-  type: 'text' | 'graceful_exit';
+  type: 'text' | 'graceful_exit' | 'like';
   createdAt: Date;
 }
 
@@ -15,7 +15,7 @@ const MessageSchema = new Schema<IMessage>(
     senderId: { type: Schema.Types.ObjectId, required: true },
     text: { type: String, required: true, maxlength: 1000 },
     read: { type: Boolean, default: false },
-    type: { type: String, enum: ['text', 'graceful_exit'], default: 'text' },
+    type: { type: String, enum: ['text', 'graceful_exit', 'like'], default: 'text' },
   },
   { timestamps: true }
 );

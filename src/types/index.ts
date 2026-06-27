@@ -68,7 +68,7 @@ export interface Message {
   senderId: string;
   text: string;
   read: boolean;
-  type: 'text' | 'graceful_exit';
+  type: 'text' | 'graceful_exit' | 'like';
   createdAt: string;
 }
 

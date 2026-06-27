@@ -1557,6 +1557,41 @@ form button[type="submit"]:disabled {
 
 /* ── System message ─────────────────────────────────── */
 
+.like-context-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 12px 16px;
+  padding: 14px 16px;
+  background: var(--gradient-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+}
+
+.like-context-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.like-context-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.like-context-headline {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.like-context-comment {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 .system-message {
   display: flex;
   justify-content: center;

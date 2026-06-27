@@ -21,6 +21,7 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
     if (!me || !target) { res.status(404).json({ message: 'User not found' }); return; }
 
     const comment = typeof req.body.comment === 'string' ? req.body.comment.trim() : '';
+    const section = typeof req.body.section === 'string' ? req.body.section.trim() : '';
 
     me.likedUsers.push(target._id as mongoose.Types.ObjectId);
     await me.save();
@@ -34,21 +35,28 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
         ],
       });
 
-      // If the liker included a comment, post it as the opening message
-      if (comment) {
-        const { io } = await import('../index');
-        const msg = await Message.create({
+      const { io } = await import('../index');
+      const matchRoomId = (match._id as mongoose.Types.ObjectId).toString();
+
+      // Always post a 'like' context message so both parties see what sparked the match
+      const likeText = section
+        ? `${me.name} liked your ${section}${comment ? `\n\n"${comment}"` : ''}`
+        : comment || '';
+      if (likeText) {
+        const likeMsg = await Message.create({
           matchId: match._id,
           senderId: new mongoose.Types.ObjectId(req.userId as string),
-          text: comment,
-          type: 'text',
+          text: likeText,
+          type: section ? 'like' : 'text',
         });
-        io.to((match._id as mongoose.Types.ObjectId).toString()).emit('new_message', msg);
+        io.to(matchRoomId).emit('new_message', likeMsg);
       }
 
       const pushBody = comment
         ? `${me.name} said: "${comment}"`
-        : `You matched with ${me.name}`;
+        : section
+          ? `${me.name} liked your ${section}`
+          : `You matched with ${me.name}`;
 
       if (target.pushSubscription) {
         sendPush(target.pushSubscription as unknown as webpush.PushSubscription, "It's a match! 💜", pushBody);
@@ -59,12 +67,17 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 
       res.json({ matched: true, matchId: match._id });
     } else {
-      // Not a match yet — if they left a comment, push-notify the target
-      if (comment && target.pushSubscription) {
+      // Not a match yet — push-notify the target with context
+      if (target.pushSubscription) {
+        const pushBody = comment
+          ? `"${comment}"`
+          : section
+            ? `Liked your ${section}`
+            : 'Check out their profile';
         sendPush(
           target.pushSubscription as unknown as webpush.PushSubscription,
           `${me.name} liked your profile 💜`,
-          `"${comment}"`
+          pushBody
         );
       }
       res.json({ matched: false });

@@ -152,17 +152,33 @@ const Chat = () => {
       </div>
 
       <div className="chat-messages">
-        {messages.map((msg) =>
-          msg.type === 'graceful_exit' ? (
-            <div key={msg._id} className="system-message">
-              <span>{msg.text}</span>
-            </div>
-          ) : (
+        {messages.map((msg) => {
+          if (msg.type === 'graceful_exit') {
+            return (
+              <div key={msg._id} className="system-message">
+                <span>{msg.text}</span>
+              </div>
+            );
+          }
+          if (msg.type === 'like') {
+            const [headline, ...rest] = msg.text.split('\n\n');
+            const comment = rest.join('\n\n').replace(/^"|"$/g, '');
+            return (
+              <div key={msg._id} className="like-context-card">
+                <span className="like-context-icon">💜</span>
+                <div className="like-context-body">
+                  <p className="like-context-headline">{headline}</p>
+                  {comment && <p className="like-context-comment">"{comment}"</p>}
+                </div>
+              </div>
+            );
+          }
+          return (
             <div key={msg._id} className={`message ${msg.senderId === user?._id ? 'mine' : 'theirs'}`}>
               <p>{msg.text}</p>
             </div>
-          )
-        )}
+          );
+        })}
         {otherTyping && (
           <div className="message theirs typing-indicator">
             <span /><span /><span />

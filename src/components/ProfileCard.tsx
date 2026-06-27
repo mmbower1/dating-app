@@ -28,12 +28,14 @@ export function buildDetails(p: User): string[] {
   return chips;
 }
 
+export type LikeSection = 'photo' | 'bio' | 'details';
+
 interface ProfileCardProps {
   profile: User;
   /** Extra class name forwarded to the root pcard-stack div (e.g. exit animation) */
   className?: string;
-  /** When provided, renders interactive heart buttons; called with a label string */
-  onHeart?: (label: string) => void;
+  /** When provided, renders interactive heart buttons; called with section key */
+  onHeart?: (section: LikeSection) => void;
 }
 
 const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
@@ -41,11 +43,11 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
   const details = buildDetails(profile);
   const extraPhotos = profile.photos.slice(1);
 
-  const HeartBtn = ({ label, onPhoto = false }: { label: string; onPhoto?: boolean }) =>
+  const HeartBtn = ({ section, onPhoto = false }: { section: LikeSection; onPhoto?: boolean }) =>
     onHeart ? (
       <button
         className={`heart-btn ${onPhoto ? 'heart-btn--photo' : ''}`}
-        onClick={(e) => { e.stopPropagation(); onHeart(label); }}
+        onClick={(e) => { e.stopPropagation(); onHeart(section); }}
         aria-label="Like"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -63,7 +65,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
         ) : (
           <div className="pcard-no-photo">{profile.name[0]}</div>
         )}
-        <HeartBtn label={`${profile.name}'s photo`} onPhoto />
+        <HeartBtn section="photo" onPhoto />
       </div>
 
       {/* Identity */}
@@ -87,7 +89,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {extraPhotos[0] && (
         <div className="pcard-item pcard-item--photo">
           <img src={extraPhotos[0]} alt={`${profile.name} 2`} className="pcard-photo-img" />
-          <HeartBtn label={`${profile.name}'s photo`} onPhoto />
+          <HeartBtn section="photo" onPhoto />
         </div>
       )}
 
@@ -97,7 +99,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
           <p className="pcard-bio">{profile.bio}</p>
           {onHeart && (
             <div className="pcard-section-heart-row">
-              <HeartBtn label={`${profile.name}'s bio`} />
+              <HeartBtn section="bio" />
             </div>
           )}
         </div>
@@ -107,7 +109,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {extraPhotos.slice(1).map((photo, i) => (
         <div key={i} className="pcard-item pcard-item--photo">
           <img src={photo} alt={`${profile.name} ${i + 3}`} className="pcard-photo-img" />
-          <HeartBtn label={`${profile.name}'s photo`} onPhoto />
+          <HeartBtn section="photo" onPhoto />
         </div>
       ))}
 
@@ -121,7 +123,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
           </div>
           {onHeart && (
             <div className="pcard-section-heart-row">
-              <HeartBtn label={`${profile.name}'s details`} />
+              <HeartBtn section="details" />
             </div>
           )}
         </div>

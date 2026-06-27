@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import FiltersModal from '../components/FiltersModal';
 import ProfileCard from '../components/ProfileCard';
+import type { LikeSection } from '../components/ProfileCard';
 import type { User } from '../types';
 
 /* ── Icons ──────────────────────────────────────────── */
@@ -28,13 +29,19 @@ const HeartIcon = ({ filled = false }: { filled?: boolean }) => (
 /* ── Helpers ─────────────────────────────────────────── */
 
 /* ── Like sheet ──────────────────────────────────────── */
+const SECTION_LABEL: Record<LikeSection, string> = {
+  photo: 'their photo',
+  bio: 'their bio',
+  details: 'their vibe',
+};
+
 interface LikeSheetProps {
-  label: string;
+  section: LikeSection;
   onSend: (comment: string) => void;
   onCancel: () => void;
 }
 
-const LikeSheet = ({ label, onSend, onCancel }: LikeSheetProps) => {
+const LikeSheet = ({ section, onSend, onCancel }: LikeSheetProps) => {
   const [comment, setComment] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -47,7 +54,7 @@ const LikeSheet = ({ label, onSend, onCancel }: LikeSheetProps) => {
       <div className="like-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="like-sheet-label">
           <span className="like-sheet-heart"><HeartIcon filled /></span>
-          <span>{label}</span>
+          <span>You liked {SECTION_LABEL[section]}</span>
         </div>
         <textarea
           ref={inputRef}
@@ -80,7 +87,7 @@ const Home = () => {
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [likeTarget, setLikeTarget] = useState<string | null>(null);
+  const [likeTarget, setLikeTarget] = useState<LikeSection | null>(null);
   const [undoTarget, setUndoTarget] = useState<{ profile: User; idx: number } | null>(null);
   const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -139,9 +146,11 @@ const Home = () => {
   const sendLike = async (comment: string) => {
     if (!profile || exitDir) return;
     const snapshot = profile;
+    const section = likeTarget;
     animateThen('right', async () => {
       const res = await api.post<{ matched: boolean }>(`/matches/like/${snapshot._id}`, {
         comment: comment.trim() || undefined,
+        section: section ?? undefined,
       });
       if (res.data.matched) {
         setFeedback(`It's a match with ${snapshot.name}! 💜`);
@@ -250,7 +259,7 @@ const Home = () => {
       {/* Like sheet */}
       {likeTarget && (
         <LikeSheet
-          label={likeTarget}
+          section={likeTarget}
           onSend={sendLike}
           onCancel={() => setLikeTarget(null)}
         />
