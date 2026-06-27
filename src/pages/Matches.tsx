@@ -36,6 +36,7 @@ const Matches = () => {
   const navigate = useNavigate();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     api.get<Match[]>('/matches')
@@ -82,6 +83,12 @@ const Matches = () => {
             <span className="match-card-name">{other.name}{other.age ? `, ${other.age}` : ''}</span>
             <span className="match-card-score" style={{ color: scoreColor(other.accountabilityScore) }}>{other.accountabilityScore}</span>
           </div>
+          <button className="match-card-view-btn" onClick={() => setShowProfile(true)} aria-label="View profile">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
         </div>
 
         {/* Body */}
@@ -110,6 +117,33 @@ const Matches = () => {
           </button>
         </div>
       </div>
+
+      {/* Profile modal */}
+      {showProfile && (
+        <div className="modal-overlay" onClick={() => setShowProfile(false)}>
+          <div className="match-profile-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="match-profile-close" onClick={() => setShowProfile(false)} aria-label="Close">✕</button>
+            {other.photos.length > 0 ? (
+              <div className="match-profile-photos">
+                {other.photos.map((p: string, i: number) => (
+                  <img key={i} src={p} alt={other.name} className="match-profile-photo" />
+                ))}
+              </div>
+            ) : (
+              <div className="match-profile-no-photo">{other.name[0]}</div>
+            )}
+            <div className="match-profile-info">
+              <div className="match-profile-name-row">
+                <span className="match-profile-name">{other.name}{other.age ? `, ${other.age}` : ''}</span>
+                <span className="match-profile-score" style={{ color: scoreColor(other.accountabilityScore), borderColor: scoreColor(other.accountabilityScore) }}>
+                  {other.accountabilityScore}
+                </span>
+              </div>
+              {other.bio && <p className="match-profile-bio">{other.bio}</p>}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
