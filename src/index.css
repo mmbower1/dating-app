@@ -3537,19 +3537,19 @@ form button[type="submit"]:disabled {
   width: calc(100% - 32px);
   margin: 8px 16px 0;
   padding: 14px;
-  background: transparent;
-  border: 1.5px solid var(--border);
+  background: rgba(239, 68, 68, 0.06);
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
   border-radius: 12px;
   font-size: 15px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #ef4444;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s, color 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 .unmatched-list-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #ef4444;
 }
 
 .unmatched-modal {

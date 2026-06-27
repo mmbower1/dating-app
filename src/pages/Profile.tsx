@@ -6,6 +6,16 @@ import api from '../api/axios';
 import type { User } from '../types';
 import ProfileCard from '../components/ProfileCard';
 
+function scoreColor(score: number): string {
+  if (score >= 95) return '#48bb78';
+  if (score >= 90) return '#68d391';
+  if (score >= 85) return '#9ae05a';
+  if (score >= 80) return '#c6e04a';
+  if (score >= 75) return '#ecc94b';
+  if (score >= 70) return '#ed8936';
+  return '#fc8181';
+}
+
 function urlBase64ToUint8Array(base64: string) {
   const padding = '='.repeat((4 - (base64.length % 4)) % 4);
   const b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -213,7 +223,16 @@ const Profile = () => {
       {/* Accountability */}
       <div className="accountability-card">
         <h3>Accountability Score</h3>
-        <div className="score-ring">{user.accountabilityScore}</div>
+        <div
+          className="score-ring"
+          style={{
+            color: scoreColor(user.accountabilityScore),
+            borderColor: scoreColor(user.accountabilityScore),
+            background: `${scoreColor(user.accountabilityScore)}18`,
+          }}
+        >
+          {user.accountabilityScore}
+        </div>
         <p className="score-tip">Respond to messages and use "Not feeling it" to close conversations gracefully — this raises your score and improves your visibility.</p>
       </div>
 
