@@ -67,11 +67,17 @@ html, body, #root {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 #root {
@@ -142,7 +148,7 @@ input, textarea {
   border-radius: 12px;
   padding: 14px 16px;
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 17px;
   outline: none;
   transition: border-color 0.2s;
   display: block;
@@ -171,7 +177,7 @@ form button[type="submit"],
   padding: 15px;
   background: var(--gradient);
   color: #fff;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   border-radius: 12px;
   transition: opacity 0.2s, transform 0.1s;
@@ -253,7 +259,7 @@ form button[type="submit"]:disabled {
 }
 
 .auth-card h1 {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 6px;
@@ -261,7 +267,7 @@ form button[type="submit"]:disabled {
 
 .auth-subtitle {
   color: var(--text-secondary);
-  font-size: 15px;
+  font-size: 17px;
   margin-bottom: 32px;
 }
 
@@ -274,7 +280,7 @@ form button[type="submit"]:disabled {
 .auth-link {
   text-align: center;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 16px;
   margin-top: 20px;
 }
 
@@ -290,7 +296,7 @@ form button[type="submit"]:disabled {
   color: var(--error);
   padding: 10px 14px;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .password-field {
@@ -330,7 +336,7 @@ form button[type="submit"]:disabled {
 
 .field-label {
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   margin-bottom: -6px;
   display: block;
@@ -348,7 +354,7 @@ form button[type="submit"]:disabled {
   background: var(--bg-input);
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 16px;
   transition: all 0.2s;
 }
 
@@ -398,7 +404,7 @@ form button[type="submit"]:disabled {
   gap: 4px;
   text-decoration: none;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
   padding: 8px 0;
   transition: color 0.2s;
@@ -431,7 +437,7 @@ form button[type="submit"]:disabled {
   border-radius: 100px;
   background: #ef4444;
   color: #fff;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -453,15 +459,15 @@ form button[type="submit"]:disabled {
   padding-bottom: var(--nav-height);
   color: var(--text-secondary);
   text-align: center;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .locked-state { gap: 16px; padding: 32px; }
 
-.locked-icon { font-size: 52px; }
+.locked-icon { font-size: 54px; }
 
 .locked-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   background: var(--gradient);
   -webkit-background-clip: text;
@@ -470,7 +476,7 @@ form button[type="submit"]:disabled {
 }
 
 .locked-body {
-  font-size: 15px;
+  font-size: 17px;
   color: var(--text-secondary);
   max-width: 280px;
   line-height: 1.5;
@@ -482,7 +488,7 @@ form button[type="submit"]:disabled {
   border-radius: 50px;
   background: var(--gradient);
   color: #fff;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   border: none;
   cursor: pointer;
@@ -555,7 +561,7 @@ form button[type="submit"]:disabled {
   background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   transition: border-color 0.2s, color 0.2s;
   position: relative;
@@ -571,7 +577,7 @@ form button[type="submit"]:disabled {
   border-radius: 50%;
   background: var(--accent-purple);
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   margin-left: 2px;
 }
@@ -612,7 +618,7 @@ form button[type="submit"]:disabled {
 }
 
 .filters-title {
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 700;
   color: var(--text-primary);
   flex: 1;
@@ -631,7 +637,7 @@ form button[type="submit"]:disabled {
   border-radius: 10px;
   background: var(--gradient);
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -639,7 +645,7 @@ form button[type="submit"]:disabled {
   background: none;
   border: none;
   color: var(--accent-purple);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   padding: 4px 8px;
 }
@@ -671,7 +677,7 @@ form button[type="submit"]:disabled {
 .filter-section:last-child { border-bottom: none; }
 
 .filter-section-title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -683,7 +689,7 @@ form button[type="submit"]:disabled {
 }
 
 .filter-optional {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 400;
   color: var(--text-muted);
   text-transform: none;
@@ -691,7 +697,7 @@ form button[type="submit"]:disabled {
 }
 
 .filter-range-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   background: var(--gradient);
   -webkit-background-clip: text;
@@ -715,7 +721,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
@@ -728,7 +734,7 @@ form button[type="submit"]:disabled {
 .chip:hover:not(.active) { border-color: var(--border-light); color: var(--text-primary); }
 
 .filter-note {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin: -4px 0 12px;
 }
@@ -736,7 +742,7 @@ form button[type="submit"]:disabled {
 .age-slider-caps {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   padding: 4px 2px 12px;
 }
@@ -756,7 +762,7 @@ form button[type="submit"]:disabled {
 }
 
 .height-label {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -768,13 +774,13 @@ form button[type="submit"]:disabled {
   color: var(--text-primary);
   border-radius: 10px;
   padding: 9px 12px;
-  font-size: 14px;
+  font-size: 16px;
   appearance: none;
 }
 .height-select:focus { outline: none; border-color: var(--accent-purple); }
 
 .height-dash {
-  font-size: 18px;
+  font-size: 20px;
   color: var(--text-muted);
   margin-top: 18px;
 }
@@ -793,7 +799,7 @@ form button[type="submit"]:disabled {
   background: var(--gradient);
   border: none;
   color: #fff;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.01em;
   transition: opacity 0.2s;
@@ -810,7 +816,7 @@ form button[type="submit"]:disabled {
   font-weight: 600;
   padding: 12px 24px;
   border-radius: 30px;
-  font-size: 15px;
+  font-size: 17px;
   z-index: 200;
   animation: slideDown 0.3s ease;
   white-space: nowrap;
@@ -902,10 +908,11 @@ form button[type="submit"]:disabled {
 }
 
 .pcard-name {
-  font-size: 26px;
-  font-weight: 800;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.4px;
+  letter-spacing: -0.2px;
 }
 
 .pcard-score {
@@ -913,7 +920,7 @@ form button[type="submit"]:disabled {
               var(--gradient) border-box;
   border: 1.5px solid transparent;
   color: var(--accent-purple);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 20px;
@@ -924,7 +931,7 @@ form button[type="submit"]:disabled {
   align-items: center;
   gap: 5px;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 /* Text items (bio, details) */
@@ -934,7 +941,7 @@ form button[type="submit"]:disabled {
 
 .pcard-bio {
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.65;
   margin: 0;
 }
@@ -953,7 +960,7 @@ form button[type="submit"]:disabled {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.13);
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 400;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -1073,7 +1080,7 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -1089,7 +1096,7 @@ form button[type="submit"]:disabled {
   border-radius: 14px;
   padding: 13px 16px;
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 17px;
   resize: none;
   line-height: 1.5;
   transition: border-color 0.2s;
@@ -1109,7 +1116,7 @@ form button[type="submit"]:disabled {
   background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
 }
 
@@ -1120,7 +1127,7 @@ form button[type="submit"]:disabled {
   background: linear-gradient(135deg, #f472b6 0%, #a78bfa 100%);
   border: none;
   color: #fff;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1155,7 +1162,7 @@ form button[type="submit"]:disabled {
 }
 
 .matches-page h2 {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 20px;
   color: var(--text-primary);
@@ -1164,17 +1171,17 @@ form button[type="submit"]:disabled {
 
 /* ── No match empty state ── */
 .no-match-icon {
-  font-size: 48px;
+  font-size: 50px;
   margin-bottom: 16px;
 }
 .no-match-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 8px;
 }
 .no-match-sub {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-secondary);
   text-align: center;
   max-width: 260px;
@@ -1230,13 +1237,14 @@ form button[type="submit"]:disabled {
 }
 
 .match-card-name {
-  font-size: 26px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px;
   font-weight: 700;
   color: #fff;
 }
 
 .match-card-score {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--accent);
   background: rgba(0,0,0,0.45);
   border: 1px solid var(--accent);
@@ -1260,12 +1268,12 @@ form button[type="submit"]:disabled {
 }
 
 .match-card-time {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
 }
 
 .match-card-expiry {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #f97316;
   background: rgba(249,115,22,0.12);
@@ -1274,7 +1282,7 @@ form button[type="submit"]:disabled {
 }
 
 .match-card-bio {
-  font-size: 15px;
+  font-size: 17px;
   color: var(--text-secondary);
   line-height: 1.6;
   display: -webkit-box;
@@ -1295,7 +1303,7 @@ form button[type="submit"]:disabled {
   background: var(--gradient);
   border: none;
   color: #fff;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -1309,7 +1317,7 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--accent);
 }
@@ -1343,7 +1351,7 @@ form button[type="submit"]:disabled {
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  font-size: 18px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1352,7 +1360,8 @@ form button[type="submit"]:disabled {
 
 .chat-name {
   flex: 1;
-  font-size: 17px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 19px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -1363,7 +1372,7 @@ form button[type="submit"]:disabled {
   color: var(--error);
   padding: 7px 14px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
@@ -1377,7 +1386,7 @@ form button[type="submit"]:disabled {
 }
 
 .exit-modal-section-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -1396,7 +1405,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border);
   border-radius: 100px;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 15px;
   padding: 6px 14px;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
@@ -1415,7 +1424,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border);
   border-radius: 12px;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 16px;
   padding: 10px 14px;
   resize: none;
   outline: none;
@@ -1425,7 +1434,7 @@ form button[type="submit"]:disabled {
 .exit-modal-textarea:focus { border-color: var(--accent-purple); }
 
 .exit-modal-hint {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin-top: 6px;
 }
@@ -1436,7 +1445,7 @@ form button[type="submit"]:disabled {
   border: 1px solid rgba(252,129,129,0.4);
   border-radius: 12px;
   color: var(--error);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   padding: 12px;
   cursor: pointer;
@@ -1461,7 +1470,7 @@ form button[type="submit"]:disabled {
   max-width: 72%;
   padding: 10px 14px;
   border-radius: 18px;
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.4;
 }
 
@@ -1504,7 +1513,7 @@ form button[type="submit"]:disabled {
   background: var(--gradient);
   color: #fff;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
   padding: 12px 20px;
   border-radius: 24px;
   white-space: nowrap;
@@ -1514,7 +1523,7 @@ form button[type="submit"]:disabled {
   text-align: center;
   padding: 16px;
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 16px;
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
 }
@@ -1555,7 +1564,7 @@ form button[type="submit"]:disabled {
 }
 
 .system-message span {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1604,7 +1613,7 @@ form button[type="submit"]:disabled {
 }
 
 .section-title {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 14px;
@@ -1643,7 +1652,7 @@ form button[type="submit"]:disabled {
   border-radius: 50%;
   background: rgba(0,0,0,0.6);
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1660,7 +1669,7 @@ form button[type="submit"]:disabled {
   background: var(--bg-input);
   border: 2px dashed var(--border-light);
   color: var(--text-muted);
-  font-size: 28px;
+  font-size: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1676,12 +1685,12 @@ form button[type="submit"]:disabled {
 .photo-add:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .photo-hint {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
 }
 
 .upload-error {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--error);
   margin-top: 6px;
 }
@@ -1694,7 +1703,7 @@ form button[type="submit"]:disabled {
   background: var(--gradient-subtle);
   border: 1px solid var(--accent-purple);
   color: var(--accent-purple);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   transition: opacity 0.2s;
   display: flex;
@@ -1709,14 +1718,14 @@ form button[type="submit"]:disabled {
 .notif-ok {
   text-align: center;
   color: var(--success);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
 }
 
 .notif-denied {
   text-align: center;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .profile-avatar img {
@@ -1732,13 +1741,13 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
+  font-size: 38px;
   font-weight: 700;
   color: var(--accent);
 }
 
 .profile-header h2 {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
 }
 
@@ -1754,7 +1763,7 @@ form button[type="submit"]:disabled {
 }
 
 .accountability-card h3 {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -1770,7 +1779,7 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--accent);
 }
@@ -1790,19 +1799,19 @@ form button[type="submit"]:disabled {
 }
 
 .stat-value {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .stat-label {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
   text-align: center;
 }
 
 .score-tip {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
   text-align: center;
   line-height: 1.5;
@@ -1815,13 +1824,13 @@ form button[type="submit"]:disabled {
 }
 
 .profile-form label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .profile-section-header {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1856,7 +1865,7 @@ form button[type="submit"]:disabled {
   border-radius: 12px;
   padding: 12px 14px;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 16px;
   appearance: none;
   width: 100%;
   transition: border-color 0.2s;
@@ -1879,13 +1888,13 @@ form button[type="submit"]:disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .age-pref-range {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   background: var(--gradient);
   -webkit-background-clip: text;
@@ -1900,7 +1909,7 @@ form button[type="submit"]:disabled {
 }
 
 .age-slider-cap {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   min-width: 20px;
   text-align: center;
@@ -1942,7 +1951,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border);
   color: var(--text-secondary);
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
   transition: background 0.2s, border-color 0.2s;
   display: flex;
@@ -1963,7 +1972,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border);
   color: var(--error);
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
   transition: background 0.2s;
 }
@@ -1999,7 +2008,7 @@ form button[type="submit"]:disabled {
 }
 
 .footer-tagline {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -2017,7 +2026,7 @@ form button[type="submit"]:disabled {
 }
 
 .footer-col h4 {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -2026,7 +2035,7 @@ form button[type="submit"]:disabled {
 }
 
 .footer-col a {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.2s;
@@ -2044,7 +2053,7 @@ form button[type="submit"]:disabled {
   gap: 8px;
   padding-top: 24px;
   border-top: 1px solid var(--border);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
 }
 
@@ -2073,7 +2082,7 @@ form button[type="submit"]:disabled {
 
 .admin-link {
   margin-left: auto;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   padding: 6px 14px;
   border-radius: 8px;
@@ -2099,7 +2108,7 @@ form button[type="submit"]:disabled {
 }
 
 .admin-header h1 {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   background: var(--gradient);
   -webkit-background-clip: text;
@@ -2109,7 +2118,7 @@ form button[type="submit"]:disabled {
 
 .admin-counts {
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 15px;
   margin-top: 4px;
 }
 
@@ -2120,7 +2129,7 @@ form button[type="submit"]:disabled {
   background: rgba(252,129,129,0.1);
   border: 1px solid rgba(252,129,129,0.35);
   color: var(--error);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   transition: background 0.2s;
   width: auto;
@@ -2144,7 +2153,7 @@ form button[type="submit"]:disabled {
   background: var(--bg-input);
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   transition: all 0.2s;
 }
@@ -2163,7 +2172,7 @@ form button[type="submit"]:disabled {
 
 .admin-empty {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
   padding: 40px 0;
 }
@@ -2189,7 +2198,7 @@ form button[type="submit"]:disabled {
 }
 
 .admin-badge {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   padding: 3px 8px;
   border-radius: 6px;
@@ -2210,12 +2219,12 @@ form button[type="submit"]:disabled {
 
 .admin-names {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-primary);
 }
 
 .admin-msg-text {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2224,7 +2233,7 @@ form button[type="submit"]:disabled {
 }
 
 .admin-date {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   flex-shrink: 0;
 }
@@ -2236,7 +2245,7 @@ form button[type="submit"]:disabled {
   background: rgba(252,129,129,0.1);
   border: 1px solid rgba(252,129,129,0.3);
   color: var(--error);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   transition: opacity 0.2s;
 }
@@ -2266,7 +2275,7 @@ form button[type="submit"]:disabled {
 }
 
 .welcome-tagline {
-  font-size: 18px;
+  font-size: 20px;
   color: var(--text-secondary);
   letter-spacing: 0.3px;
 }
@@ -2290,20 +2299,20 @@ form button[type="submit"]:disabled {
 }
 
 .pillar-icon {
-  font-size: 26px;
+  font-size: 28px;
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .welcome-pillar h3 {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .welcome-pillar p {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -2321,7 +2330,7 @@ form button[type="submit"]:disabled {
   border-radius: 50px;
   background: var(--gradient);
   color: #fff;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   border: none;
   cursor: pointer;
@@ -2337,7 +2346,7 @@ form button[type="submit"]:disabled {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
   cursor: pointer;
   width: 100%;
@@ -2380,20 +2389,20 @@ form button[type="submit"]:disabled {
 }
 
 .legal-content h1 {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .legal-date {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
   margin-bottom: 16px;
 }
 
 .legal-content h2 {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
   margin-top: 20px;
@@ -2401,7 +2410,7 @@ form button[type="submit"]:disabled {
 
 .legal-content p,
 .legal-content li {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-secondary);
   line-height: 1.7;
 }
@@ -2446,7 +2455,7 @@ form button[type="submit"]:disabled {
 .settings-back:hover { color: var(--text-primary); }
 
 .settings-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -2464,7 +2473,7 @@ form button[type="submit"]:disabled {
 }
 
 .settings-section-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -2485,19 +2494,19 @@ form button[type="submit"]:disabled {
   border: none;
   border-radius: 10px;
   padding: 8px 20px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   margin-top: 2px;
 }
 
 .settings-msg {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--success);
 }
 
 .settings-error {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--error);
 }
 
@@ -2512,7 +2521,7 @@ form button[type="submit"]:disabled {
   background: none;
   border: none;
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -2532,7 +2541,7 @@ form button[type="submit"]:disabled {
   border: 1px solid rgba(252,129,129,0.4);
   border-radius: 10px;
   color: var(--error);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   padding: 10px;
   cursor: pointer;
@@ -2563,14 +2572,14 @@ form button[type="submit"]:disabled {
 }
 
 .modal-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 10px;
 }
 
 .modal-body {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-secondary);
   line-height: 1.6;
 }
@@ -2592,7 +2601,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border);
   border-radius: 12px;
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   padding: 12px;
   cursor: pointer;
@@ -2604,7 +2613,7 @@ form button[type="submit"]:disabled {
   border: none;
   border-radius: 12px;
   color: #fff;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   padding: 12px;
   cursor: pointer;
@@ -2647,7 +2656,7 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-primary);
   white-space: nowrap;
   z-index: 90;
@@ -2660,7 +2669,7 @@ form button[type="submit"]:disabled {
   border: none;
   border-radius: 100px;
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   padding: 5px 14px;
   cursor: pointer;
@@ -2678,7 +2687,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border-light);
   border-radius: 100px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   padding: 6px 14px;
   cursor: pointer;
@@ -2718,7 +2727,7 @@ form button[type="submit"]:disabled {
 
 .swipe-panel-title {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   color: var(--text-primary);
 }
 
@@ -2727,7 +2736,7 @@ form button[type="submit"]:disabled {
   border: 1px solid rgba(252,129,129,0.3);
   border-radius: 100px;
   color: var(--error);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   padding: 5px 12px;
   cursor: pointer;
@@ -2740,7 +2749,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border);
   border-radius: 100px;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 16px;
   width: 30px;
   height: 30px;
   display: flex;
@@ -2750,7 +2759,7 @@ form button[type="submit"]:disabled {
 }
 
 .swipe-list-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -2771,13 +2780,13 @@ form button[type="submit"]:disabled {
   background: var(--bg-input);
   border-radius: 10px;
   padding: 9px 12px;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-primary);
 }
 
 .swipe-entry-gender {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .swipe-remove-btn {
@@ -2785,7 +2794,7 @@ form button[type="submit"]:disabled {
   border: 1px solid rgba(252,129,129,0.25);
   border-radius: 100px;
   color: var(--error);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   padding: 4px 10px;
   cursor: pointer;
