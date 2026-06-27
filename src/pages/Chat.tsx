@@ -24,7 +24,6 @@ const GracefulExitModal = ({
           Your message will be sent directly to them. Unmatching without a thoughtful reason can lower your Pearl score.
         </p>
 
-        <p className="exit-modal-section-label" style={{ marginTop: 14 }}>Your message to them</p>
         <textarea
           className="exit-modal-textarea"
           placeholder="Be honest and specific — it helps them show up better for the next person."
