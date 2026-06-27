@@ -39,9 +39,6 @@ const Welcome = () => {
       <section className="welcome-hero">
         <h1 className="welcome-headline">Dating the way<br />it should be.</h1>
         <p className="welcome-tagline">Real connections. No games. No ghosting.</p>
-        <button className="welcome-cta" onClick={() => navigate('/register')}>
-          Get started
-        </button>
       </section>
 
       {/* ── Pillars ── */}
