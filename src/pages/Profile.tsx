@@ -34,6 +34,7 @@ const HOBBIES = [
   'Reading', 'Hiking', 'Cooking', 'Gaming', 'Traveling', 'Fitness',
   'Photography', 'Music', 'Art', 'Dancing', 'Yoga', 'Movies',
   'Sports', 'Cycling', 'Swimming', 'Writing', 'Volunteering', 'Gardening',
+  'Cars', 'Gym',
 ];
 
 const PROMPT_QUESTIONS = [
