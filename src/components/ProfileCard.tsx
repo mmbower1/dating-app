@@ -121,11 +121,6 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
               <span key={label} className="pcard-detail-chip">{label}</span>
             ))}
           </div>
-          {onHeart && (
-            <div className="pcard-section-heart-row">
-              <HeartBtn section="details" />
-            </div>
-          )}
         </div>
       )}
 
