@@ -117,15 +117,15 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
         </div>
       )}
 
-      {/* Photos 3+ */}
-      {extraPhotos.slice(1).map((photo, i) => (
-        <div key={i} className="pcard-item pcard-item--photo">
-          <img src={photo} alt={`${profile.name} ${i + 3}`} className="pcard-photo-img" />
+      {/* Photo 3 */}
+      {extraPhotos[1] && (
+        <div className="pcard-item pcard-item--photo">
+          <img src={extraPhotos[1]} alt={`${profile.name} 3`} className="pcard-photo-img" />
           <HeartBtn section="photo" onPhoto />
         </div>
-      ))}
+      )}
 
-      {/* Lifestyle details */}
+      {/* Lifestyle details — after photo 3 */}
       {details.length > 0 && (
         <div className="pcard-item pcard-item--text">
           <div className="pcard-detail-chips">
@@ -135,6 +135,14 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
           </div>
         </div>
       )}
+
+      {/* Photos 4+ */}
+      {extraPhotos.slice(2).map((photo, i) => (
+        <div key={i} className="pcard-item pcard-item--photo">
+          <img src={photo} alt={`${profile.name} ${i + 4}`} className="pcard-photo-img" />
+          <HeartBtn section="photo" onPhoto />
+        </div>
+      ))}
 
       {/* Prompts */}
       {profile.prompts?.filter((p) => p.answer.trim()).map((p, i) => (
