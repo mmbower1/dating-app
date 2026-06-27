@@ -1466,6 +1466,7 @@ form button[type="submit"]:disabled {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 14px;
+  margin-top: 16px;
   margin-bottom: 12px;
   cursor: pointer;
   font-size: 14px;
