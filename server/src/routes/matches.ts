@@ -202,6 +202,25 @@ router.patch('/:matchId/celebration-seen', protect, async (req: AuthRequest, res
 });
 
 // Get all my matches — expire any stale ones first (no message in 72 hrs)
+router.get('/ended', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const matches = await Match.find({ 'users.userId': req.userId, active: false })
+      .populate({ path: 'users.userId', select: 'name photos gender' })
+      .sort({ updatedAt: -1 });
+
+    const result = matches.map((m) => {
+      const other = m.users.find((u) => u.userId._id?.toString() !== req.userId);
+      if (!other) return null;
+      const u = other.userId as unknown as { _id: string; name: string; photos: string[]; gender: string };
+      return { matchId: m._id, userId: u._id, name: u.name, photos: u.photos, gender: u.gender };
+    }).filter(Boolean);
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
 router.get('/', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const expiryMs = 72 * 60 * 60 * 1000;

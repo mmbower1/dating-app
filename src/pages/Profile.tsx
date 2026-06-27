@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -53,6 +53,21 @@ const Profile = () => {
   const [languages, setLanguages] = useState(user?.languages || '');
 
   const [showPreview, setShowPreview] = useState(false);
+  const [showUnmatched, setShowUnmatched] = useState(false);
+  const [unmatchedList, setUnmatchedList] = useState<{ matchId: string; userId: string; name: string; photos: string[]; gender: string }[]>([]);
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!showUnmatched) return;
+    api.get<{ matchId: string; userId: string; name: string; photos: string[]; gender: string }[]>('/matches/ended')
+      .then((res) => setUnmatchedList(res.data))
+      .catch(() => {});
+  }, [showUnmatched]);
+
+  const blockUser = async (userId: string) => {
+    await api.post(`/users/${userId}/block`);
+    setBlockedIds((prev) => new Set(prev).add(userId));
+  };
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -406,6 +421,11 @@ const Profile = () => {
       {notifStatus === 'enabled' && <p className="notif-ok">✓ Notifications enabled</p>}
       {notifStatus === 'denied' && <p className="notif-denied">Notifications blocked — enable in browser settings</p>}
 
+      {/* Block a previous match */}
+      <button className="unmatched-list-btn" onClick={() => setShowUnmatched(true)}>
+        Block a previous match
+      </button>
+
       {/* About / Legal links */}
       <div className="profile-footer-links">
         <a href="mailto:support@pearlapp.com" className="profile-footer-link">Contact Us</a>
@@ -415,6 +435,44 @@ const Profile = () => {
         <a href="/terms" className="profile-footer-link">Terms of Service</a>
       </div>
       <p className="profile-footer-copy">© {new Date().getFullYear()} Pearl. All rights reserved.</p>
+
+      {/* Unmatched list modal */}
+      {showUnmatched && (
+        <div className="modal-overlay" onClick={() => setShowUnmatched(false)}>
+          <div className="modal-sheet unmatched-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="unmatched-modal-header">
+              <h3 className="modal-title" style={{ margin: 0 }}>Previous matches</h3>
+              <button className="preview-close-btn" onClick={() => setShowUnmatched(false)}>✕</button>
+            </div>
+            <p className="modal-body" style={{ marginBottom: 16 }}>
+              You can block someone here to prevent them from appearing in your discover feed.
+            </p>
+            {unmatchedList.length === 0 ? (
+              <p className="settings-disable-note">No previous matches to show.</p>
+            ) : (
+              <div className="unmatched-list">
+                {unmatchedList.map((u) => (
+                  <div key={u.userId} className="unmatched-row">
+                    {u.photos[0] ? (
+                      <img src={u.photos[0]} alt={u.name} className="blocked-avatar" />
+                    ) : (
+                      <div className="blocked-avatar blocked-avatar--placeholder">{u.name[0]}</div>
+                    )}
+                    <span className="blocked-name">{u.name}</span>
+                    {blockedIds.has(u.userId) ? (
+                      <span className="unmatched-blocked-badge">Blocked</span>
+                    ) : (
+                      <button className="unmatched-block-btn" onClick={() => blockUser(u.userId)}>
+                        Block
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Profile preview overlay */}
       {showPreview && (
