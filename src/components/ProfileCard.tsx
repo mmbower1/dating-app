@@ -1,5 +1,15 @@
 import type { User } from '../types';
 
+function scoreColor(score: number): string {
+  if (score >= 95) return '#48bb78';          // rich green
+  if (score >= 90) return '#68d391';          // light green
+  if (score >= 85) return '#9ae05a';          // green-yellow
+  if (score >= 80) return '#c6e04a';          // yellow-green
+  if (score >= 75) return '#ecc94b';          // yellow
+  if (score >= 70) return '#ed8936';          // orange
+  return '#fc8181';                           // red
+}
+
 function inToDisplay(inches: number) {
   return `${Math.floor(inches / 12)}'${inches % 12}"`;
 }
@@ -72,7 +82,14 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       <div className="pcard-item pcard-item--identity">
         <div className="pcard-name-row">
           <span className="pcard-name">{profile.name}</span>
-          <span className="pcard-score" title="Accountability score">{profile.accountabilityScore}</span>
+          <span
+            className="pcard-score"
+            title="Accountability score"
+            style={{
+              background: `linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(${scoreColor(profile.accountabilityScore)}, ${scoreColor(profile.accountabilityScore)}) border-box`,
+              color: scoreColor(profile.accountabilityScore),
+            }}
+          >{profile.accountabilityScore}</span>
         </div>
       </div>
 
