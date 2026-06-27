@@ -31,7 +31,7 @@ const GENDERS = ['male', 'female', 'non-binary', 'other'];
 const GENDER_LABELS: Record<string, string> = { male: 'Men', female: 'Women', 'non-binary': 'Non-Binary', other: 'Other' };
 
 const HOBBIES = [
-  'Art', 'Cars', 'Cooking', 'Cycling', 'Dancing', 'Fitness',
+  'Art', 'Cars', 'Cooking', 'Cycling', 'Dancing',
   'Gaming', 'Gardening', 'Gym', 'Hiking', 'Movies', 'Music',
   'Photography', 'Reading', 'Sports', 'Swimming', 'Traveling', 'Volunteering',
   'Writing', 'Yoga',
