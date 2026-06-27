@@ -46,6 +46,7 @@ export interface User {
   agePreference?: { min: number; max: number };
   filters?: DiscoverFilters;
   isAdmin?: boolean;
+  accountDisabled?: boolean;
 }
 
 export interface MatchUser {

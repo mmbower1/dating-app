@@ -21,6 +21,7 @@ const Settings = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [disabling, setDisabling] = useState(false);
 
   const saveEmail = async (e: FormEvent) => {
     e.preventDefault();
@@ -47,6 +48,17 @@ const Settings = () => {
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setPwError(msg ?? 'Failed to update password.');
+    }
+  };
+
+  const toggleDisable = async () => {
+    setDisabling(true);
+    const next = !user?.accountDisabled;
+    try {
+      await api.patch('/users/me/disable', { disabled: next });
+      updateUser({ accountDisabled: next });
+    } finally {
+      setDisabling(false);
     }
   };
 
@@ -141,6 +153,38 @@ const Settings = () => {
           {pwMsg && <p className="settings-msg">{pwMsg}</p>}
           <button type="submit" className="settings-save-btn">Update password</button>
         </form>
+      </section>
+
+      {/* ── Visibility ─────────────────────── */}
+      <section className="settings-section">
+        <p className="settings-section-label">Visibility</p>
+        <button
+          className={`settings-row-btn settings-disable-btn ${user?.accountDisabled ? 'settings-disable-btn--on' : ''}`}
+          onClick={toggleDisable}
+          disabled={disabling}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {user?.accountDisabled ? (
+              <>
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </>
+            ) : (
+              <>
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </>
+            )}
+          </svg>
+          {user?.accountDisabled ? 'Re-enable account' : 'Disable account'}
+          <span className="settings-disable-badge">
+            {user?.accountDisabled ? 'Hidden from discover' : 'Visible'}
+          </span>
+        </button>
+        {user?.accountDisabled && (
+          <p className="settings-disable-note">Your profile is hidden. No one can discover you until you re-enable.</p>
+        )}
       </section>
 
       {/* ── Danger zone ────────────────────── */}

@@ -50,6 +50,7 @@ export interface IUser extends Document {
     maxDistance: number | null;
   };
   isAdmin: boolean;
+  accountDisabled: boolean;
   pushSubscription: Record<string, unknown> | null;
   likedUsers: mongoose.Types.ObjectId[];
   passedUsers: mongoose.Types.ObjectId[];
@@ -115,6 +116,7 @@ const UserSchema = new Schema<IUser>(
       maxDistance: { type: Number, default: null },
     },
     isAdmin: { type: Boolean, default: false },
+    accountDisabled: { type: Boolean, default: false },
     pushSubscription: { type: Schema.Types.Mixed, default: null },
     likedUsers: [{ type: Schema.Types.ObjectId }],
     passedUsers: [{ type: Schema.Types.ObjectId }],

@@ -2706,6 +2706,35 @@ form button[type="submit"]:disabled {
   background: rgba(252,129,129,0.07);
 }
 
+.settings-disable-btn {
+  justify-content: flex-start;
+  gap: 10px;
+  color: var(--text-secondary);
+}
+.settings-disable-btn .settings-disable-badge {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 3px 10px;
+  color: #68d391;
+}
+.settings-disable-btn--on {
+  border-color: rgba(252,129,129,0.35);
+  color: var(--error);
+}
+.settings-disable-btn--on .settings-disable-badge {
+  background: rgba(252,129,129,0.1);
+  color: var(--error);
+}
+.settings-disable-note {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  padding: 0 2px;
+}
+
 /* ── Delete confirmation modal ──────────────────────── */
 .modal-overlay {
   position: fixed;

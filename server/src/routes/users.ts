@@ -52,7 +52,7 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
         modelsToQuery.map((modelName) => {
           const Model = getUserModel(modelName === 'MaleUser' ? 'male' : modelName === 'FemaleUser' ? 'female' : 'other');
           const ageFilter = (ageMin > 18 || ageMax < 99) ? { age: { $gte: ageMin, $lte: ageMax } } : {};
-          return Model.find({ _id: { $nin: excludeList }, ...ageFilter })
+          return Model.find({ _id: { $nin: excludeList }, accountDisabled: { $ne: true }, ...ageFilter })
             .select('-password -likedUsers -passedUsers -blockedUsers')
             .limit(50);
         })
@@ -251,6 +251,22 @@ router.post('/push-subscribe', protect, async (req: AuthRequest, res: Response):
     const UserModel = getUserModel(req.userGender!);
     await UserModel.findByIdAndUpdate(req.userId, { pushSubscription: req.body });
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Toggle account visibility (disable hides from discover)
+router.patch('/me/disable', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { disabled } = req.body as { disabled: boolean };
+    const UserModel = getUserModel(req.userGender!);
+    const user = await UserModel.findByIdAndUpdate(
+      req.userId,
+      { $set: { accountDisabled: disabled } },
+      { new: true }
+    ).select('-password');
+    res.json(user);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
