@@ -1579,6 +1579,10 @@ form button[type="submit"]:disabled {
 }
 
 .chat-closed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   text-align: center;
   padding: 16px;
   color: var(--text-muted);
@@ -1586,6 +1590,18 @@ form button[type="submit"]:disabled {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
 }
+
+.report-link-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 0;
+}
+.report-link-btn:hover { opacity: 1; }
 
 /* ── Typing indicator ───────────────────────────────── */
 

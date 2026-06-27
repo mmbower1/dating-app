@@ -16,65 +16,86 @@ const REPORT_CATEGORIES: { value: ReportCategory; label: string }[] = [
   { value: 'other', label: 'Other' },
 ];
 
+const ReportModal = ({
+  onSubmit,
+  onClose,
+}: {
+  onSubmit: (category: ReportCategory, description: string) => Promise<void>;
+  onClose: () => void;
+}) => {
+  const [category, setCategory] = useState<ReportCategory | ''>('');
+  const [description, setDescription] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!category) return;
+    setSubmitting(true);
+    await onSubmit(category, description);
+    setDone(true);
+    setTimeout(onClose, 1800);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="report-modal modal-sheet" onClick={(e) => e.stopPropagation()}>
+        {done ? (
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <p style={{ fontSize: 18, fontWeight: 600 }}>Report submitted</p>
+            <p style={{ fontSize: 14, opacity: 0.7, marginTop: 6 }}>Thank you for keeping Pearl safe.</p>
+          </div>
+        ) : (
+          <>
+            <h3 className="modal-title">Report this user</h3>
+            <p className="modal-body">Select a reason so our team can review this account.</p>
+            <div className="report-categories">
+              {REPORT_CATEGORIES.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  className={`report-category-btn${category === c.value ? ' report-category-btn--active' : ''}`}
+                  onClick={() => setCategory(c.value)}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+            <textarea
+              className="exit-modal-textarea"
+              placeholder="Additional details (optional)"
+              maxLength={500}
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{ marginTop: 12 }}
+            />
+            <div className="modal-actions" style={{ marginTop: 16 }}>
+              <button className="modal-cancel" onClick={onClose}>Cancel</button>
+              <button
+                className="exit-modal-confirm"
+                disabled={!category || submitting}
+                onClick={handleSubmit}
+              >
+                {submitting ? 'Submitting…' : 'Submit report'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const GracefulExitModal = ({
   onConfirm,
   onCancel,
-  onBlock,
-  other,
 }: {
   onConfirm: (reason: string, metInPerson: boolean) => void;
   onCancel: () => void;
-  onBlock: (category: ReportCategory | '', description: string) => void;
-  other: { _id: string; gender: string } | undefined;
 }) => {
   const [reason, setReason] = useState('');
   const [metInPerson, setMetInPerson] = useState(false);
-  const [showReport, setShowReport] = useState(false);
-  const [reportCategory, setReportCategory] = useState<ReportCategory | ''>('');
-  const [reportDesc, setReportDesc] = useState('');
   const canSubmit = reason.trim().length > 0;
-
-  if (showReport) {
-    return (
-      <div className="modal-overlay" onClick={onCancel}>
-        <div className="modal-sheet exit-modal" onClick={(e) => e.stopPropagation()}>
-          <h3 className="modal-title">Report & Block</h3>
-          <p className="modal-body">Select a reason so our team can review this account.</p>
-          <div className="report-categories">
-            {REPORT_CATEGORIES.map((c) => (
-              <button
-                key={c.value}
-                type="button"
-                className={`report-category-btn${reportCategory === c.value ? ' report-category-btn--active' : ''}`}
-                onClick={() => setReportCategory(c.value)}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-          <textarea
-            className="exit-modal-textarea"
-            placeholder="Additional details (optional)"
-            maxLength={500}
-            rows={3}
-            value={reportDesc}
-            onChange={(e) => setReportDesc(e.target.value)}
-            style={{ marginTop: 12 }}
-          />
-          <div className="modal-actions" style={{ marginTop: 16 }}>
-            <button className="modal-cancel" onClick={() => setShowReport(false)}>Back</button>
-            <button
-              className="exit-modal-confirm"
-              disabled={!reportCategory}
-              onClick={() => onBlock(reportCategory, reportDesc)}
-            >
-              Report & Block
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
@@ -116,14 +137,6 @@ const GracefulExitModal = ({
             Unmatch
           </button>
         </div>
-        <button
-          type="button"
-          className="block-user-btn"
-          onClick={() => setShowReport(true)}
-          style={{ marginTop: 10, width: '100%' }}
-        >
-          Report &amp; Block
-        </button>
       </div>
     </div>
   );
@@ -142,6 +155,7 @@ const Chat = () => {
   const [loading, setLoading] = useState(true);
   const [otherTyping, setOtherTyping] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -221,27 +235,17 @@ const Chat = () => {
   const confirmExit = async (reason: string, metInPerson: boolean) => {
     setShowExitModal(false);
     await api.patch(`/matches/${matchId}/exit`, { reason, metInPerson });
-    navigate('/matches');
+    navigate('/');
   };
 
-  const handleBlock = async (category: ReportCategory | '', description: string) => {
+  const submitReport = async (category: ReportCategory, description: string) => {
     if (!other) return;
-    setShowExitModal(false);
-    try {
-      if (category) {
-        await api.post('/reports', {
-          reportedUserId: other._id,
-          reportedGender: other.gender,
-          category,
-          description,
-        });
-      }
-      await api.post(`/users/${other._id}/block`);
-      await api.patch(`/matches/${matchId}/exit`, { reason: 'User blocked.', metInPerson: false });
-    } catch {
-      // best-effort
-    }
-    navigate('/matches');
+    await api.post('/reports', {
+      reportedUserId: other._id,
+      reportedGender: other.gender,
+      category,
+      description,
+    });
   };
 
   const other = match?.users.find((u) => u.userId._id !== user?._id)?.userId;
@@ -327,15 +331,25 @@ const Chat = () => {
           <button type="submit">Send</button>
         </form>
       ) : (
-        <div className="chat-closed">This conversation has ended.</div>
+        <div className="chat-closed">
+          <span>This conversation has ended.</span>
+          <button className="report-link-btn" onClick={() => setShowReportModal(true)}>
+            Report this user
+          </button>
+        </div>
       )}
 
       {showExitModal && (
         <GracefulExitModal
           onConfirm={confirmExit}
           onCancel={() => setShowExitModal(false)}
-          onBlock={handleBlock}
-          other={other}
+        />
+      )}
+
+      {showReportModal && (
+        <ReportModal
+          onSubmit={submitReport}
+          onClose={() => setShowReportModal(false)}
         />
       )}
     </div>
