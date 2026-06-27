@@ -27,16 +27,13 @@ const GracefulExitModal = ({
         <p className="exit-modal-section-label" style={{ marginTop: 14 }}>Your message to them</p>
         <textarea
           className="exit-modal-textarea"
-          placeholder="What specifically gave you the ick? Be direct — it helps them grow."
+          placeholder="Be honest and specific — it helps them show up better for the next person."
           maxLength={300}
           rows={4}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           autoFocus
         />
-        {!canSubmit && reason.length === 0 && (
-          <p className="exit-modal-hint">A reason is required to unmatch.</p>
-        )}
 
         <div className="modal-actions" style={{ marginTop: 16 }}>
           <button className="modal-cancel" onClick={onCancel}>Cancel</button>
