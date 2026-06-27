@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import type { Match } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { buildAbout, buildDetails } from '../components/ProfileCard';
+import ProfileCard from '../components/ProfileCard';
 
 function scoreColor(score: number): string {
   if (score >= 95) return '#48bb78';
@@ -119,50 +119,18 @@ const Matches = () => {
         </div>
       </div>
 
-      {/* Profile modal */}
-      {showProfile && (() => {
-        const aboutChips = buildAbout(other);
-        const detailChips = buildDetails(other);
-        return (
-          <div className="modal-overlay" onClick={() => setShowProfile(false)}>
-            <div className="match-profile-modal" onClick={(e) => e.stopPropagation()}>
-              <button className="match-profile-close" onClick={() => setShowProfile(false)} aria-label="Close">✕</button>
-              {other.photos.length > 0 ? (
-                <div className="match-profile-photos">
-                  {other.photos.map((p: string, i: number) => (
-                    <img key={i} src={p} alt={other.name} className="match-profile-photo" />
-                  ))}
-                </div>
-              ) : (
-                <div className="match-profile-no-photo">{other.name[0]}</div>
-              )}
-              <div className="match-profile-info">
-                <div className="match-profile-name-row">
-                  <span className="match-profile-name">{other.name}{other.age ? `, ${other.age}` : ''}</span>
-                  <span className="match-profile-score" style={{ color: scoreColor(other.accountabilityScore), borderColor: scoreColor(other.accountabilityScore) }}>
-                    {other.accountabilityScore}
-                  </span>
-                </div>
-                {other.bio && <p className="match-profile-bio">{other.bio}</p>}
-                {aboutChips.length > 0 && (
-                  <div className="match-profile-chips">
-                    {aboutChips.map((c) => <span key={c} className="match-profile-chip">{c}</span>)}
-                  </div>
-                )}
-                {detailChips.length > 0 && (
-                  <div className="match-profile-chips">
-                    {detailChips.map((c) => <span key={c} className="match-profile-chip">{c}</span>)}
-                  </div>
-                )}
-                {other.work && <p className="match-profile-detail">🏢 {other.work}</p>}
-                {other.school && <p className="match-profile-detail">🎓 {other.school}</p>}
-                {other.hometown && <p className="match-profile-detail">📍 From {other.hometown}</p>}
-                {other.languages && <p className="match-profile-detail">🗣 {other.languages}</p>}
-              </div>
-            </div>
+      {/* Profile preview — identical to the own-profile preview */}
+      {showProfile && (
+        <div className="preview-overlay">
+          <div className="preview-overlay-header">
+            <span className="preview-overlay-label">{other.name}'s profile</span>
+            <button className="preview-close-btn" onClick={() => setShowProfile(false)}>✕ Close</button>
           </div>
-        );
-      })()}
+          <div className="preview-scroll">
+            <ProfileCard profile={other} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
