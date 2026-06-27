@@ -39,6 +39,7 @@ export interface User {
   school?: string;
   hometown?: string;
   languages?: string;
+  prompts?: { question: string; answer: string }[];
   accountabilityScore: number;
   responseRate: number;
   ghostCount: number;

@@ -976,6 +976,162 @@ form button[type="submit"]:disabled {
   flex-shrink: 0;
 }
 
+/* ── Prompt cards on ProfileCard ────────────────────── */
+.pcard-item--prompt {
+  padding: 20px 20px 22px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.pcard-prompt-question {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+.pcard-prompt-answer {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Profile accordion sections ─────────────────────── */
+.profile-accordion {
+  margin-bottom: 4px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.profile-accordion-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border: none;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.profile-accordion-btn:hover { background: var(--bg-input); }
+.profile-accordion-btn.open { background: var(--bg-input); }
+.profile-accordion-body {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Prompts section ─────────────────────────────────── */
+.profile-prompts-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: -8px 0 12px;
+  line-height: 1.5;
+}
+.prompt-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.prompt-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.prompt-card-question {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1.4;
+}
+.prompt-card-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.prompt-card-remove:hover { color: #fc8181; }
+.prompt-card-textarea {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: var(--font-body);
+  resize: none;
+  box-sizing: border-box;
+}
+.prompt-char-count {
+  font-size: 11px;
+  color: var(--text-muted);
+  align-self: flex-end;
+}
+.prompt-add-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.prompt-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  background: none;
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.prompt-add-btn:hover { border-color: var(--accent); background: rgba(124,92,219,0.06); }
+.prompt-picker {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.prompt-picker-option {
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.prompt-picker-option:last-child { border-bottom: none; }
+.prompt-picker-option:hover { background: var(--bg-input); }
+
 /* ── Heart buttons on card sections ─────────────────── */
 .heart-btn {
   display: flex;

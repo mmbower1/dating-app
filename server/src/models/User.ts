@@ -31,6 +31,7 @@ export interface IUser extends Document {
   school?: string;
   hometown?: string;
   languages?: string;
+  prompts?: { question: string; answer: string }[];
   accountabilityScore: number;
   responseRate: number;
   ghostCount: number;
@@ -97,6 +98,10 @@ const UserSchema = new Schema<IUser>(
     school: { type: String, default: '' },
     hometown: { type: String, default: '' },
     languages: { type: String, default: '' },
+    prompts: [{
+      question: { type: String },
+      answer: { type: String },
+    }],
     accountabilityScore: { type: Number, default: 100, min: 0, max: 100 },
     responseRate: { type: Number, default: 100, min: 0, max: 100 },
     ghostCount: { type: Number, default: 0 },

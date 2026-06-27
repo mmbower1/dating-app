@@ -30,11 +30,55 @@ function inToDisplay(inches: number) {
 const GENDERS = ['male', 'female', 'non-binary', 'other'];
 const GENDER_LABELS: Record<string, string> = { male: 'Men', female: 'Women', 'non-binary': 'Non-Binary', other: 'Other' };
 
+const PROMPT_QUESTIONS = [
+  "The most spontaneous thing I've done...",
+  "My ideal Sunday looks like...",
+  "I'm looking for someone who...",
+  "Two truths and a lie...",
+  "My love language is...",
+  "The way to win me over...",
+  "I geek out on...",
+  "My simple pleasures...",
+  "A life goal of mine...",
+  "My most controversial opinion...",
+  "Something I never get tired of...",
+  "The key to my heart...",
+  "I'll know it's a match when...",
+  "My biggest green flag...",
+  "A perfect date looks like...",
+  "I'm most proud of...",
+  "The best trip I've taken...",
+  "Change my mind on...",
+];
+
+const ChevronIcon = ({ open }: { open: boolean }) => (
+  <svg
+    width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: open ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}
+  >
+    <polyline points="9 18 15 12 9 6"/>
+  </svg>
+);
+
+const Section = ({
+  label, open, onToggle, children,
+}: {
+  label: string; open: boolean; onToggle: () => void; children: React.ReactNode;
+}) => (
+  <div className="profile-accordion">
+    <button type="button" className={`profile-accordion-btn${open ? ' open' : ''}`} onClick={onToggle}>
+      <span>{label}</span>
+      <ChevronIcon open={open} />
+    </button>
+    {open && <div className="profile-accordion-body">{children}</div>}
+  </div>
+);
+
 const Profile = () => {
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
 
-  // form state
   const [name, setName] = useState(user?.name || '');
   const [age, setAge] = useState(user?.age ?? 18);
   const [bio, setBio] = useState(user?.bio || '');
@@ -61,6 +105,17 @@ const Profile = () => {
   const [religion, setReligion] = useState(user?.religion || '');
   const [politicalAssociation, setPoliticalAssociation] = useState(user?.politicalAssociation || '');
   const [languages, setLanguages] = useState(user?.languages || '');
+  const [prompts, setPrompts] = useState<{ question: string; answer: string }[]>(user?.prompts ?? []);
+
+  // Accordion open state
+  const [openAbout, setOpenAbout] = useState(false);
+  const [openPhysical, setOpenPhysical] = useState(false);
+  const [openLocation, setOpenLocation] = useState(false);
+  const [openFamily, setOpenFamily] = useState(false);
+  const [openCareer, setOpenCareer] = useState(false);
+  const [openLifestyle, setOpenLifestyle] = useState(false);
+  const [openPrompts, setOpenPrompts] = useState(true);
+  const [showPromptPicker, setShowPromptPicker] = useState(false);
 
   const [showPreview, setShowPreview] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -83,6 +138,7 @@ const Profile = () => {
       hasChildren: hasChildren === '' ? null : hasChildren === 'yes',
       familyPlans, jobTitle, work, school, educationLevel,
       drinks, smokes, religion, politicalAssociation, languages,
+      prompts,
     };
     await api.patch<User>('/users/me', patch);
     updateUser(patch);
@@ -116,9 +172,7 @@ const Profile = () => {
   };
 
   const dragIndex = useRef<number | null>(null);
-
   const onDragStart = useCallback((i: number) => { dragIndex.current = i; }, []);
-
   const onDrop = useCallback(async (dropIndex: number) => {
     if (dragIndex.current === null || dragIndex.current === dropIndex) return;
     const reordered = [...(user?.photos ?? [])];
@@ -144,6 +198,20 @@ const Profile = () => {
       setNotifStatus('enabled');
     } catch { setNotifStatus('denied'); }
   };
+
+  const addPrompt = (question: string) => {
+    setPrompts((prev) => [...prev, { question, answer: '' }]);
+    setShowPromptPicker(false);
+  };
+
+  const removePrompt = (i: number) =>
+    setPrompts((prev) => prev.filter((_, idx) => idx !== i));
+
+  const updatePromptAnswer = (i: number, answer: string) =>
+    setPrompts((prev) => prev.map((p, idx) => idx === i ? { ...p, answer } : p));
+
+  const usedQuestions = new Set(prompts.map((p) => p.question));
+  const availableQuestions = PROMPT_QUESTIONS.filter((q) => !usedQuestions.has(q));
 
   if (!user) return null;
 
@@ -214,203 +282,261 @@ const Profile = () => {
 
       <form className="profile-form" onSubmit={save}>
 
-        {/* ── About me ──────────────────────── */}
+        {/* Bio always visible */}
         <p className="profile-section-header">About me</p>
         <label className="field-label">Bio</label>
         <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={500} rows={4} placeholder="Tell people about yourself..." />
 
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Name</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+        <Section label="Details" open={openAbout} onToggle={() => setOpenAbout((v) => !v)}>
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Name</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Age</label>
+              <input type="number" min={18} max={99} value={age} onChange={(e) => setAge(Number(e.target.value))} />
+            </div>
           </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Age</label>
-            <input type="number" min={18} max={99} value={age} onChange={(e) => setAge(Number(e.target.value))} />
-          </div>
-        </div>
 
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Pronouns</label>
-            <select className="profile-select" value={pronouns} onChange={(e) => setPronouns(e.target.value)}>
-              <option value="">Select…</option>
-              {['He/Him','She/Her','They/Them','He/They','She/They','Ze/Zir','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
-            </select>
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Pronouns</label>
+              <select className="profile-select" value={pronouns} onChange={(e) => setPronouns(e.target.value)}>
+                <option value="">Select…</option>
+                {['He/Him','She/Her','They/Them','He/They','She/They','Ze/Zir','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Gender</label>
+              <input type="text" value={user.gender} readOnly className="profile-input-readonly" />
+            </div>
           </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Gender</label>
-            <input type="text" value={user.gender} readOnly className="profile-input-readonly" />
-          </div>
-        </div>
 
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Sexuality</label>
-            <select className="profile-select" value={sexuality} onChange={(e) => setSexuality(e.target.value)}>
-              <option value="">Select…</option>
-              {['Straight','Gay','Lesbian','Bisexual','Pansexual','Asexual','Queer','Other'].map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Sexuality</label>
+              <select className="profile-select" value={sexuality} onChange={(e) => setSexuality(e.target.value)}>
+                <option value="">Select…</option>
+                {['Straight','Gay','Lesbian','Bisexual','Pansexual','Asexual','Queer','Other'].map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Zodiac sign</label>
+              <select className="profile-select" value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)}>
+                <option value="">Select…</option>
+                {['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'].map((z) => <option key={z} value={z}>{z}</option>)}
+              </select>
+            </div>
           </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Zodiac sign</label>
-            <select className="profile-select" value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)}>
-              <option value="">Select…</option>
-              {['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'].map((z) => <option key={z} value={z}>{z}</option>)}
-            </select>
-          </div>
-        </div>
 
-        <label className="field-label">Interested in</label>
-        <div className="pill-group">
-          {GENDERS.map((g) => (
-            <button key={g} type="button" className={`pill ${interestedIn.includes(g) ? 'active' : ''}`} onClick={() => toggleInterest(g)}>
-              {GENDER_LABELS[g]}
-            </button>
+          <label className="field-label">Interested in</label>
+          <div className="pill-group">
+            {GENDERS.map((g) => (
+              <button key={g} type="button" className={`pill ${interestedIn.includes(g) ? 'active' : ''}`} onClick={() => toggleInterest(g)}>
+                {GENDER_LABELS[g]}
+              </button>
+            ))}
+          </div>
+        </Section>
+
+        <Section label="Physical" open={openPhysical} onToggle={() => setOpenPhysical((v) => !v)}>
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Height</label>
+              <select className="profile-select" value={height} onChange={(e) => setHeight(e.target.value)}>
+                <option value="">Select…</option>
+                {Array.from({ length: 29 }, (_, i) => i + 56).map((h) => <option key={h} value={h}>{inToDisplay(h)}</option>)}
+              </select>
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Ethnicity</label>
+              <select className="profile-select" value={ethnicity} onChange={(e) => setEthnicity(e.target.value)}>
+                <option value="">Select…</option>
+                {['Asian','Black / African American','Hispanic / Latino','Middle Eastern','Native American','Pacific Islander','White / Caucasian','Multiracial','Other'].map((e) => <option key={e} value={e}>{e}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Pets</label>
+              <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
+                <option value="">Select…</option>
+                {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+          </div>
+        </Section>
+
+        <Section label="Location" open={openLocation} onToggle={() => setOpenLocation((v) => !v)}>
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">City</label>
+              <input type="text" value={locationCity} onChange={(e) => setLocationCity(e.target.value)} placeholder="Current city" />
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">State</label>
+              <input type="text" value={locationState} onChange={(e) => setLocationState(e.target.value)} placeholder="State" />
+            </div>
+          </div>
+          <div className="profile-select-wrap">
+            <label className="field-label">Hometown</label>
+            <input type="text" value={hometown} onChange={(e) => setHometown(e.target.value)} placeholder="Where you grew up" />
+          </div>
+        </Section>
+
+        <Section label="Family" open={openFamily} onToggle={() => setOpenFamily((v) => !v)}>
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Children</label>
+              <select className="profile-select" value={hasChildren} onChange={(e) => setHasChildren(e.target.value)}>
+                <option value="">Select…</option>
+                <option value="yes">Has kids</option>
+                <option value="no">No kids</option>
+              </select>
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Family plans</label>
+              <select className="profile-select" value={familyPlans} onChange={(e) => setFamilyPlans(e.target.value)}>
+                <option value="">Select…</option>
+                {['Want kids','Open to kids',"Don't want kids",'Not sure'].map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
+          </div>
+        </Section>
+
+        <Section label="Career & Education" open={openCareer} onToggle={() => setOpenCareer((v) => !v)}>
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Job title</label>
+              <input type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="What you do" />
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Company</label>
+              <input type="text" value={work} onChange={(e) => setWork(e.target.value)} placeholder="Where you work" />
+            </div>
+          </div>
+
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">School</label>
+              <input type="text" value={school} onChange={(e) => setSchool(e.target.value)} placeholder="School attended" />
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Education level</label>
+              <select className="profile-select" value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)}>
+                <option value="">Select…</option>
+                {["High School","Some College","Associate's","Bachelor's","Master's","Doctorate","Trade School"].map((e) => <option key={e} value={e}>{e}</option>)}
+              </select>
+            </div>
+          </div>
+        </Section>
+
+        <Section label="Lifestyle" open={openLifestyle} onToggle={() => setOpenLifestyle((v) => !v)}>
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Drinking</label>
+              <select className="profile-select" value={drinks} onChange={(e) => setDrinks(e.target.value)}>
+                <option value="">Select…</option>
+                {['Never','Socially','Regularly'].map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Smoking</label>
+              <select className="profile-select" value={smokes} onChange={(e) => setSmokes(e.target.value)}>
+                <option value="">Select…</option>
+                {['Never','Socially','Regularly'].map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Religious beliefs</label>
+              <select className="profile-select" value={religion} onChange={(e) => setReligion(e.target.value)}>
+                <option value="">Select…</option>
+                {['Agnostic','Atheist','Buddhist','Catholic','Christian','Hindu','Jewish','Muslim','Spiritual','Other'].map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div className="profile-select-wrap">
+              <label className="field-label">Politics</label>
+              <select className="profile-select" value={politicalAssociation} onChange={(e) => setPoliticalAssociation(e.target.value)}>
+                <option value="">Select…</option>
+                {['Very Liberal','Liberal','Moderate','Conservative','Very Conservative','Apolitical'].map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="profile-select-wrap">
+            <label className="field-label">Languages spoken</label>
+            <input type="text" value={languages} onChange={(e) => setLanguages(e.target.value)} placeholder="e.g. English, Spanish" />
+          </div>
+        </Section>
+
+        {/* ── Prompts ───────────────────────── */}
+        <p className="profile-section-header" style={{ marginTop: 24 }}>Prompts</p>
+        <p className="profile-prompts-hint">Answer up to 3 questions — your answers appear on your profile card for people to see.</p>
+
+        <Section
+          label={prompts.length > 0 ? `Your prompts (${prompts.length}/3)` : 'Add prompts'}
+          open={openPrompts}
+          onToggle={() => setOpenPrompts((v) => !v)}
+        >
+          {prompts.map((p, i) => (
+            <div key={i} className="prompt-card">
+              <div className="prompt-card-header">
+                <span className="prompt-card-question">{p.question}</span>
+                <button
+                  type="button"
+                  className="prompt-card-remove"
+                  onClick={() => removePrompt(i)}
+                  aria-label="Remove prompt"
+                >✕</button>
+              </div>
+              <textarea
+                className="prompt-card-textarea"
+                placeholder="Your answer..."
+                maxLength={200}
+                rows={3}
+                value={p.answer}
+                onChange={(e) => updatePromptAnswer(i, e.target.value)}
+              />
+              <span className="prompt-char-count">{p.answer.length}/200</span>
+            </div>
           ))}
-        </div>
 
-        {/* ── Physical ──────────────────────── */}
-        <p className="profile-section-header">Physical</p>
+          {prompts.length < 3 && (
+            <div className="prompt-add-wrap">
+              <button
+                type="button"
+                className="prompt-add-btn"
+                onClick={() => setShowPromptPicker((v) => !v)}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add a prompt
+              </button>
+              {showPromptPicker && (
+                <div className="prompt-picker">
+                  {availableQuestions.map((q) => (
+                    <button
+                      key={q}
+                      type="button"
+                      className="prompt-picker-option"
+                      onClick={() => addPrompt(q)}
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </Section>
 
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Height</label>
-            <select className="profile-select" value={height} onChange={(e) => setHeight(e.target.value)}>
-              <option value="">Select…</option>
-              {Array.from({ length: 29 }, (_, i) => i + 56).map((h) => <option key={h} value={h}>{inToDisplay(h)}</option>)}
-            </select>
-          </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Ethnicity</label>
-            <select className="profile-select" value={ethnicity} onChange={(e) => setEthnicity(e.target.value)}>
-              <option value="">Select…</option>
-              {['Asian','Black / African American','Hispanic / Latino','Middle Eastern','Native American','Pacific Islander','White / Caucasian','Multiracial','Other'].map((e) => <option key={e} value={e}>{e}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Pets</label>
-            <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
-              <option value="">Select…</option>
-              {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
-            </select>
-          </div>
-        </div>
-
-        {/* ── Location ──────────────────────── */}
-        <p className="profile-section-header">Location</p>
-
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">City</label>
-            <input type="text" value={locationCity} onChange={(e) => setLocationCity(e.target.value)} placeholder="Current city" />
-          </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">State</label>
-            <input type="text" value={locationState} onChange={(e) => setLocationState(e.target.value)} placeholder="State" />
-          </div>
-        </div>
-
-        <div className="profile-select-wrap">
-          <label className="field-label">Hometown</label>
-          <input type="text" value={hometown} onChange={(e) => setHometown(e.target.value)} placeholder="Where you grew up" />
-        </div>
-
-        {/* ── Family ──────────────────────── */}
-        <p className="profile-section-header">Family</p>
-
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Children</label>
-            <select className="profile-select" value={hasChildren} onChange={(e) => setHasChildren(e.target.value)}>
-              <option value="">Select…</option>
-              <option value="yes">Has kids</option>
-              <option value="no">No kids</option>
-            </select>
-          </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Family plans</label>
-            <select className="profile-select" value={familyPlans} onChange={(e) => setFamilyPlans(e.target.value)}>
-              <option value="">Select…</option>
-              {['Want kids','Open to kids',"Don't want kids",'Not sure'].map((f) => <option key={f} value={f}>{f}</option>)}
-            </select>
-          </div>
-        </div>
-
-        {/* ── Career & Education ────────────── */}
-        <p className="profile-section-header">Career & Education</p>
-
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Job title</label>
-            <input type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="What you do" />
-          </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Company</label>
-            <input type="text" value={work} onChange={(e) => setWork(e.target.value)} placeholder="Where you work" />
-          </div>
-        </div>
-
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">School</label>
-            <input type="text" value={school} onChange={(e) => setSchool(e.target.value)} placeholder="School attended" />
-          </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Education level</label>
-            <select className="profile-select" value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)}>
-              <option value="">Select…</option>
-              {["High School","Some College","Associate's","Bachelor's","Master's","Doctorate","Trade School"].map((e) => <option key={e} value={e}>{e}</option>)}
-            </select>
-          </div>
-        </div>
-
-        {/* ── Lifestyle ───────────────────── */}
-        <p className="profile-section-header">Lifestyle</p>
-
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Drinking</label>
-            <select className="profile-select" value={drinks} onChange={(e) => setDrinks(e.target.value)}>
-              <option value="">Select…</option>
-              {['Never','Socially','Regularly'].map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-          </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Smoking</label>
-            <select className="profile-select" value={smokes} onChange={(e) => setSmokes(e.target.value)}>
-              <option value="">Select…</option>
-              {['Never','Socially','Regularly'].map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div className="profile-selects-row">
-          <div className="profile-select-wrap">
-            <label className="field-label">Religious beliefs</label>
-            <select className="profile-select" value={religion} onChange={(e) => setReligion(e.target.value)}>
-              <option value="">Select…</option>
-              {['Agnostic','Atheist','Buddhist','Catholic','Christian','Hindu','Jewish','Muslim','Spiritual','Other'].map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
-          </div>
-          <div className="profile-select-wrap">
-            <label className="field-label">Politics</label>
-            <select className="profile-select" value={politicalAssociation} onChange={(e) => setPoliticalAssociation(e.target.value)}>
-              <option value="">Select…</option>
-              {['Very Liberal','Liberal','Moderate','Conservative','Very Conservative','Apolitical'].map((p) => <option key={p} value={p}>{p}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div className="profile-select-wrap">
-          <label className="field-label">Languages spoken</label>
-          <input type="text" value={languages} onChange={(e) => setLanguages(e.target.value)} placeholder="e.g. English, Spanish" />
-        </div>
-
-        <button type="submit" style={{ marginTop: 8 }}>{saved ? 'Saved!' : 'Save changes'}</button>
+        <button type="submit" style={{ marginTop: 16 }}>{saved ? 'Saved!' : 'Save changes'}</button>
       </form>
 
       {notifStatus === 'idle' && (
@@ -425,7 +551,6 @@ const Profile = () => {
       {notifStatus === 'enabled' && <p className="notif-ok">✓ Notifications enabled</p>}
       {notifStatus === 'denied' && <p className="notif-denied">Notifications blocked — enable in browser settings</p>}
 
-      {/* About / Legal links */}
       <div className="profile-footer-links">
         <a href="mailto:support@pearlapp.com" className="profile-footer-link">Contact Us</a>
         <span className="profile-footer-dot">·</span>
@@ -435,7 +560,6 @@ const Profile = () => {
       </div>
       <p className="profile-footer-copy">© {new Date().getFullYear()} Pearl. All rights reserved.</p>
 
-      {/* Profile preview overlay */}
       {showPreview && (
         <div className="preview-overlay">
           <div className="preview-overlay-header">

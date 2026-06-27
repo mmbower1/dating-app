@@ -136,6 +136,14 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
         </div>
       )}
 
+      {/* Prompts */}
+      {profile.prompts?.filter((p) => p.answer.trim()).map((p, i) => (
+        <div key={i} className="pcard-item pcard-item--prompt">
+          <p className="pcard-prompt-question">{p.question}</p>
+          <p className="pcard-prompt-answer">{p.answer}</p>
+        </div>
+      ))}
+
       <div style={{ height: 8 }} />
     </div>
   );
