@@ -186,7 +186,27 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     await match.save();
 
     const UserModel = getUserModel(req.userGender!);
-    await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
+
+    // Check if the unmatcher ever sent a message in this conversation
+    const sentAMessage = await Message.exists({
+      matchId: match._id,
+      senderId: new mongoose.Types.ObjectId(req.userId as string),
+      type: 'text',
+    });
+    const otherSentMessage = await Message.exists({
+      matchId: match._id,
+      senderId: { $ne: new mongoose.Types.ObjectId(req.userId as string) },
+      type: 'text',
+    });
+
+    // Ghosting: received messages but never replied before unmatching
+    if (otherSentMessage && !sentAMessage) {
+      await UserModel.findByIdAndUpdate(req.userId, { $inc: { ghostCount: 1 } });
+    } else {
+      // Genuine exit — reward graceful behaviour
+      await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
+    }
+
     await recalculateScore(req.userId!, req.userGender!);
 
     // Post a system message visible to both parties, including their reason
