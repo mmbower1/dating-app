@@ -130,5 +130,5 @@ The compiled frontend goes to `dist/` and the backend to `server/dist/`.
 - Profile preview — see exactly how your card looks to others
 - Push notifications for new matches and messages
 - Admin panel to manage users, swipe history, and accountability scores
-- Undo last pass within 5 seconds
+- Undo last pass at any time
 - Filters for age, distance, ethnicity, religion, height, and more

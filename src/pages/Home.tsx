@@ -90,7 +90,6 @@ const Home = () => {
   const [likeTarget, setLikeTarget] = useState<LikeSection | null>(null);
   const [undoTarget, setUndoTarget] = useState<{ profile: User; idx: number } | null>(null);
   const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null);
-  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
 
   const fetchCandidates = useCallback(() => {
@@ -167,15 +166,12 @@ const Home = () => {
     animateThen('left', async () => {
       advance();
       setUndoTarget({ profile: passed, idx });
-      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
-      undoTimerRef.current = setTimeout(() => setUndoTarget(null), 5000);
       await api.post(`/matches/pass/${passed._id}`);
     });
   };
 
   const undoPass = async () => {
     if (!undoTarget) return;
-    if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
     try {
       await api.delete(`/matches/pass/${undoTarget.profile._id}`);
       setCandidates((prev) => {
