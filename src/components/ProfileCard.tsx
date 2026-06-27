@@ -35,7 +35,6 @@ export function buildDetails(p: User): string[] {
   if (p.religion) chips.push(p.religion);
   if (p.politicalAssociation) chips.push(p.politicalAssociation);
   if (p.familyPlans) chips.push(p.familyPlans);
-  if (p.hobbies?.length) chips.push(...p.hobbies);
   return chips;
 }
 
@@ -144,6 +143,18 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
           <HeartBtn section="photo" onPhoto />
         </div>
       ))}
+
+      {/* Hobbies */}
+      {profile.hobbies && profile.hobbies.length > 0 && (
+        <div className="pcard-item pcard-item--text">
+          <p className="pcard-section-label">Hobbies</p>
+          <div className="pcard-hobby-chips">
+            {profile.hobbies.map((h) => (
+              <span key={h} className="pcard-hobby-chip">{h}</span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Prompts */}
       {profile.prompts?.filter((p) => p.answer.trim()).map((p, i) => (

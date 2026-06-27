@@ -976,6 +976,30 @@ form button[type="submit"]:disabled {
   flex-shrink: 0;
 }
 
+/* ── Hobbies section on ProfileCard ─────────────────── */
+.pcard-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+.pcard-hobby-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pcard-hobby-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(124, 92, 219, 0.1);
+  border: 1px solid rgba(124, 92, 219, 0.3);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 500;
+}
+
 /* ── Prompt cards on ProfileCard ────────────────────── */
 .pcard-item--prompt {
   padding: 20px 20px 22px;
@@ -3405,7 +3429,7 @@ form button[type="submit"]:disabled {
 }
 
 .preview-scroll .pcard-stack {
-  max-width: 480px;
+  max-width: 680px;
   margin: 0 auto;
   width: 100%;
 }
