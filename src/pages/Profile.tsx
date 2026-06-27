@@ -170,11 +170,6 @@ const Profile = () => {
       <div className="accountability-card">
         <h3>Accountability Score</h3>
         <div className="score-ring">{user.accountabilityScore}</div>
-        <div className="score-stats">
-          <div className="stat"><span className="stat-value">{user.responseRate}%</span><span className="stat-label">Response rate</span></div>
-          <div className="stat"><span className="stat-value">{user.gracefulExitCount}</span><span className="stat-label">Graceful exits</span></div>
-          <div className="stat"><span className="stat-value">{user.ghostCount}</span><span className="stat-label">Ghosts</span></div>
-        </div>
         <p className="score-tip">Respond to messages and use "Not feeling it" to close conversations gracefully — this raises your score and improves your visibility.</p>
       </div>
 
