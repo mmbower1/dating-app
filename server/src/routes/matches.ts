@@ -244,7 +244,8 @@ async function recalculateScore(userId: string, gender: string) {
   const ghostPenalty = Math.min(user.ghostCount * 10, 50);
   const responsePenalty = Math.round((1 - user.responseRate / 100) * 30);
 
-  const score = Math.max(0, Math.min(100, 100 - ghostPenalty - responsePenalty));
+  let score = Math.max(0, Math.min(100, 100 - ghostPenalty - responsePenalty));
+  if (score === 69) score = 70;
   user.accountabilityScore = Math.round(score);
   await user.save();
 }

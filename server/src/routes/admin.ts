@@ -159,8 +159,9 @@ router.delete('/users/:userId/swipes', protect, requireAdmin, async (req: AuthRe
 router.patch('/users/:userId/score', protect, requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.params.userId as string;
-    const score = Math.max(1, Math.min(100, Number(req.body.score)));
+    let score = Math.max(1, Math.min(100, Number(req.body.score)));
     if (isNaN(score)) { res.status(400).json({ message: 'Invalid score' }); return; }
+    if (score === 69) score = 70;
     const user = await findUserById(userId);
     if (!user) { res.status(404).json({ message: 'User not found' }); return; }
     await getUserModel(user.gender).findByIdAndUpdate(userId, { $set: { accountabilityScore: score } });
@@ -178,7 +179,8 @@ router.post('/rescore', protect, requireAdmin, async (req: AuthRequest, res: Res
     const rescore = async (user: { _id: unknown; gender: string; ghostCount: number; responseRate: number }) => {
       const ghostPenalty = Math.min(user.ghostCount * 10, 50);
       const responsePenalty = Math.round((1 - user.responseRate / 100) * 30);
-      const score = Math.max(0, Math.min(100, 100 - ghostPenalty - responsePenalty));
+      let score = Math.max(0, Math.min(100, 100 - ghostPenalty - responsePenalty));
+      if (score === 69) score = 70;
       await getUserModel(user.gender).findByIdAndUpdate(user._id, { $set: { accountabilityScore: score } });
       return score;
     };

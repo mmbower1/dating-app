@@ -915,11 +915,10 @@ form button[type="submit"]:disabled {
 }
 
 .pcard-score {
-  background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-              var(--gradient) border-box;
-  border: 1.5px solid transparent;
+  background: var(--bg-card);
+  border: none;
   color: var(--accent-purple);
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 20px;
