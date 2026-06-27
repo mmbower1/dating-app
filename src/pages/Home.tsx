@@ -16,6 +16,52 @@ const SlidersIcon = () => (
   </svg>
 );
 
+const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  left: `${5 + (i * 4.7) % 90}%`,
+  delay: `${(i * 0.17) % 1.8}s`,
+  duration: `${1.6 + (i * 0.13) % 1.2}s`,
+  size: i % 3 === 0 ? 22 : i % 3 === 1 ? 16 : 12,
+}));
+
+const MatchCelebration = ({ matchedProfile, onDone }: { matchedProfile: User; onDone: () => void }) => {
+  useEffect(() => {
+    const t = setTimeout(onDone, 4000);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
+  return (
+    <div className="match-celebration" onClick={onDone}>
+      <div className="match-celebration-particles">
+        {PARTICLES.map((p) => (
+          <div
+            key={p.id}
+            className="match-particle"
+            style={{ left: p.left, animationDelay: p.delay, animationDuration: p.duration, width: p.size, height: p.size }}
+          />
+        ))}
+      </div>
+
+      <div className="match-celebration-content">
+        <div className="match-celebration-photos">
+          <div className="match-celebration-photo">
+            {matchedProfile.photos[0]
+              ? <img src={matchedProfile.photos[0]} alt={matchedProfile.name} />
+              : <div className="match-celebration-initial">{matchedProfile.name[0]}</div>}
+          </div>
+        </div>
+
+        <h1 className="match-celebration-title">It's a match!</h1>
+        <p className="match-celebration-sub">You and <strong>{matchedProfile.name}</strong> liked each other.</p>
+        <button className="match-celebration-btn" onClick={onDone}>
+          Send a message
+        </button>
+        <p className="match-celebration-skip">Tap anywhere to continue</p>
+      </div>
+    </div>
+  );
+};
+
 const Home = () => {
   const { user } = useAuth();
   const [candidates, setCandidates] = useState<User[]>([]);
@@ -23,6 +69,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [matchedProfile, setMatchedProfile] = useState<User | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [undoTarget, setUndoTarget] = useState<{ profile: User; idx: number } | null>(null);
   const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null);
@@ -78,10 +125,10 @@ const Home = () => {
     animateThen('right', async () => {
       const res = await api.post<{ matched: boolean }>(`/matches/like/${snapshot._id}`, {});
       if (res.data.matched) {
-        setFeedback(`It's a match with ${snapshot.name}! 💜`);
-        setTimeout(() => setFeedback(''), 3500);
+        setMatchedProfile(snapshot);
+      } else {
+        advance();
       }
-      advance();
     });
   };
 
@@ -125,6 +172,10 @@ const Home = () => {
         </button>
       </div>
     );
+  }
+
+  if (matchedProfile) {
+    return <MatchCelebration matchedProfile={matchedProfile} onDone={() => { setMatchedProfile(null); navigate('/matches'); }} />;
   }
 
   return (
