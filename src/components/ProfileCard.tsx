@@ -97,11 +97,6 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {profile.bio && (
         <div className="pcard-item pcard-item--text">
           <p className="pcard-bio">{profile.bio}</p>
-          {onHeart && (
-            <div className="pcard-section-heart-row">
-              <HeartBtn section="bio" />
-            </div>
-          )}
         </div>
       )}
 
