@@ -391,6 +391,16 @@ const Profile = () => {
       {notifStatus === 'enabled' && <p className="notif-ok">✓ Notifications enabled</p>}
       {notifStatus === 'denied' && <p className="notif-denied">Notifications blocked — enable in browser settings</p>}
 
+      {/* About / Legal links */}
+      <div className="profile-footer-links">
+        <a href="mailto:support@pearlapp.com" className="profile-footer-link">Contact Us</a>
+        <span className="profile-footer-dot">·</span>
+        <a href="/privacy" className="profile-footer-link">Privacy Policy</a>
+        <span className="profile-footer-dot">·</span>
+        <a href="/terms" className="profile-footer-link">Terms of Service</a>
+      </div>
+      <p className="profile-footer-copy">© {new Date().getFullYear()} Pearl. All rights reserved.</p>
+
       {/* Profile preview overlay */}
       {showPreview && (
         <div className="preview-overlay">
