@@ -63,7 +63,7 @@ const GracefulExitModal = ({
             className="exit-modal-confirm"
             onClick={() => onConfirm(reason)}
           >
-            End conversation
+            Unmatch
           </button>
         </div>
       </div>
