@@ -29,11 +29,13 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 
     const mutualLike = target.likedUsers.some((id) => id.equals(me._id as mongoose.Types.ObjectId));
     if (mutualLike) {
+      // Mark the current user (me, second liker) as having seen the celebration already
       const match = await Match.create({
         users: [
           { userId: me._id, model: getModelName(me.gender), name: me.name, photo: me.photos[0] ?? '' },
           { userId: target._id, model: getModelName(target.gender), name: target.name, photo: target.photos[0] ?? '' },
         ],
+        celebrationSeenBy: [new mongoose.Types.ObjectId(req.userId as string)],
       });
 
       const { io } = await import('../index');
@@ -41,6 +43,7 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 
       // Notify the first liker (target) that their like became a match
       emitToUser(target._id.toString(), 'new_match', {
+        matchId: (match._id as mongoose.Types.ObjectId).toString(),
         matchedUser: { _id: me._id, name: me.name, photos: me.photos },
       });
 
@@ -157,6 +160,40 @@ router.post('/:matchId/mark-read', protect, async (req: AuthRequest, res: Respon
       },
       { $set: { read: true } }
     );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Check for a match celebration the current user hasn't seen yet
+router.get('/pending-celebration', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const match = await Match.findOne({
+      'users.userId': req.userId,
+      celebrationSeenBy: { $not: { $elemMatch: { $eq: new mongoose.Types.ObjectId(req.userId as string) } } },
+    });
+    if (!match) { res.json(null); return; }
+
+    const otherEntry = match.users.find((u) => u.userId.toString() !== req.userId);
+    if (!otherEntry) { res.json(null); return; }
+
+    const otherUser = await findUserById(otherEntry.userId.toString());
+    res.json({
+      matchId: match._id,
+      matchedUser: { _id: otherUser?._id, name: otherUser?.name, photos: otherUser?.photos ?? [] },
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Mark the celebration as seen for the current user
+router.patch('/:matchId/celebration-seen', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    await Match.findByIdAndUpdate(req.params.matchId, {
+      $addToSet: { celebrationSeenBy: new mongoose.Types.ObjectId(req.userId as string) },
+    });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });

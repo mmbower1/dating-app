@@ -78,6 +78,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<User | null>(null);
+  const [pendingMatchId, setPendingMatchId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [undoTarget, setUndoTarget] = useState<{ profile: User; idx: number } | null>(null);
   const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null);
@@ -100,9 +101,22 @@ const Home = () => {
   useEffect(() => { fetchCandidates(); }, [fetchCandidates]);
 
   useEffect(() => {
+    api.get<{ matchId: string; matchedUser: User } | null>('/matches/pending-celebration')
+      .then((res) => {
+        if (res.data) {
+          setMatchedProfile(res.data.matchedUser);
+          setPendingMatchId(res.data.matchId);
+          setLocked(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
     if (!socket) return;
-    const handler = (data: { matchedUser: User }) => {
+    const handler = (data: { matchedUser: User; matchId?: string }) => {
       setMatchedProfile(data.matchedUser);
+      if (data.matchId) setPendingMatchId(data.matchId);
       setLocked(true);
     };
     socket.on('new_match', handler);
@@ -193,7 +207,12 @@ const Home = () => {
   }
 
   if (matchedProfile) {
-    return <MatchCelebration matchedProfile={matchedProfile} onDone={() => { setMatchedProfile(null); navigate('/matches'); }} />;
+    return <MatchCelebration matchedProfile={matchedProfile} onDone={() => {
+      if (pendingMatchId) api.patch(`/matches/${pendingMatchId}/celebration-seen`).catch(() => {});
+      setMatchedProfile(null);
+      setPendingMatchId(null);
+      navigate('/matches');
+    }} />;
   }
 
   return (
