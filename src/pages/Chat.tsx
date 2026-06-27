@@ -6,18 +6,75 @@ import type { Message, Match } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 
+type ReportCategory = 'inappropriate_photos' | 'harassment' | 'fake_profile' | 'spam' | 'underage' | 'other';
+const REPORT_CATEGORIES: { value: ReportCategory; label: string }[] = [
+  { value: 'inappropriate_photos', label: 'Inappropriate photos' },
+  { value: 'harassment', label: 'Harassment' },
+  { value: 'fake_profile', label: 'Fake profile' },
+  { value: 'spam', label: 'Spam' },
+  { value: 'underage', label: 'Underage' },
+  { value: 'other', label: 'Other' },
+];
+
 const GracefulExitModal = ({
   onConfirm,
   onCancel,
   onBlock,
+  other,
 }: {
   onConfirm: (reason: string, metInPerson: boolean) => void;
   onCancel: () => void;
-  onBlock: () => void;
+  onBlock: (category: ReportCategory | '', description: string) => void;
+  other: { _id: string; gender: string } | undefined;
 }) => {
   const [reason, setReason] = useState('');
   const [metInPerson, setMetInPerson] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [reportCategory, setReportCategory] = useState<ReportCategory | ''>('');
+  const [reportDesc, setReportDesc] = useState('');
   const canSubmit = reason.trim().length > 0;
+
+  if (showReport) {
+    return (
+      <div className="modal-overlay" onClick={onCancel}>
+        <div className="modal-sheet exit-modal" onClick={(e) => e.stopPropagation()}>
+          <h3 className="modal-title">Report & Block</h3>
+          <p className="modal-body">Select a reason so our team can review this account.</p>
+          <div className="report-categories">
+            {REPORT_CATEGORIES.map((c) => (
+              <button
+                key={c.value}
+                type="button"
+                className={`report-category-btn${reportCategory === c.value ? ' report-category-btn--active' : ''}`}
+                onClick={() => setReportCategory(c.value)}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <textarea
+            className="exit-modal-textarea"
+            placeholder="Additional details (optional)"
+            maxLength={500}
+            rows={3}
+            value={reportDesc}
+            onChange={(e) => setReportDesc(e.target.value)}
+            style={{ marginTop: 12 }}
+          />
+          <div className="modal-actions" style={{ marginTop: 16 }}>
+            <button className="modal-cancel" onClick={() => setShowReport(false)}>Back</button>
+            <button
+              className="exit-modal-confirm"
+              disabled={!reportCategory}
+              onClick={() => onBlock(reportCategory, reportDesc)}
+            >
+              Report & Block
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
@@ -62,10 +119,10 @@ const GracefulExitModal = ({
         <button
           type="button"
           className="block-user-btn"
-          onClick={onBlock}
+          onClick={() => setShowReport(true)}
           style={{ marginTop: 10, width: '100%' }}
         >
-          Block this user
+          Report &amp; Block
         </button>
       </div>
     </div>
@@ -167,16 +224,20 @@ const Chat = () => {
     navigate('/matches');
   };
 
-  const handleBlock = async () => {
+  const handleBlock = async (category: ReportCategory | '', description: string) => {
     if (!other) return;
     setShowExitModal(false);
     try {
+      if (category) {
+        await api.post('/reports', {
+          reportedUserId: other._id,
+          reportedGender: other.gender,
+          category,
+          description,
+        });
+      }
       await api.post(`/users/${other._id}/block`);
-      // End the match as well
-      await api.patch(`/matches/${matchId}/exit`, {
-        reason: 'User blocked.',
-        metInPerson: false,
-      });
+      await api.patch(`/matches/${matchId}/exit`, { reason: 'User blocked.', metInPerson: false });
     } catch {
       // best-effort
     }
@@ -274,6 +335,7 @@ const Chat = () => {
           onConfirm={confirmExit}
           onCancel={() => setShowExitModal(false)}
           onBlock={handleBlock}
+          other={other}
         />
       )}
     </div>
