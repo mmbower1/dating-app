@@ -148,9 +148,9 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {profile.hobbies && profile.hobbies.length > 0 && (
         <div className="pcard-item pcard-item--text">
           <p className="pcard-section-label">Hobbies</p>
-          <div className="pcard-hobby-chips">
+          <div className="pcard-detail-chips">
             {profile.hobbies.map((h) => (
-              <span key={h} className="pcard-hobby-chip">{h}</span>
+              <span key={h} className="pcard-detail-chip">{h}</span>
             ))}
           </div>
         </div>
