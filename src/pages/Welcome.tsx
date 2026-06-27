@@ -25,30 +25,42 @@ const Welcome = () => {
 
   return (
     <div className="welcome-page">
-      <div className="welcome-hero">
-        <Logo size="lg" showText={true} />
-        <p className="welcome-tagline">Dating the way it should be.</p>
-      </div>
 
-      <div className="welcome-pillars">
+      {/* ── Top nav ── */}
+      <nav className="welcome-nav">
+        <Logo size="sm" showText={true} />
+        <div className="welcome-nav-actions">
+          <button className="welcome-nav-signin" onClick={() => navigate('/login')}>Sign in</button>
+          <button className="welcome-nav-cta" onClick={() => navigate('/register')}>Create account</button>
+        </div>
+      </nav>
+
+      {/* ── Hero ── */}
+      <section className="welcome-hero">
+        <h1 className="welcome-headline">Dating the way<br />it should be.</h1>
+        <p className="welcome-tagline">Real connections. No games. No ghosting.</p>
+        <button className="welcome-cta" onClick={() => navigate('/register')}>
+          Get started
+        </button>
+      </section>
+
+      {/* ── Pillars ── */}
+      <section className="welcome-pillars">
         {pillars.map((p) => (
           <div key={p.title} className="welcome-pillar">
-            <div>
-              <h3>{p.title}</h3>
-              <p>{p.body}</p>
-            </div>
+            <h3>{p.title}</h3>
+            <p>{p.body}</p>
           </div>
         ))}
-      </div>
+      </section>
 
-      <div className="welcome-actions">
-        <button className="welcome-cta" onClick={() => navigate('/register')}>
-          Create account
-        </button>
-        <button className="welcome-secondary" onClick={() => navigate('/login')}>
-          Sign in
-        </button>
-      </div>
+      {/* ── Footer CTA ── */}
+      <section className="welcome-footer-cta">
+        <h2>Ready to meet someone real?</h2>
+        <button className="welcome-cta" onClick={() => navigate('/register')}>Create your profile</button>
+        <button className="welcome-secondary" onClick={() => navigate('/login')}>Already have an account? Sign in</button>
+      </section>
+
     </div>
   );
 };

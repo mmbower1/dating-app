@@ -2326,90 +2326,147 @@ form button[type="submit"]:disabled {
 
 /* ── Welcome page ───────────────────────────────────── */
 
+/* ── Welcome page ───────────────────────────────────── */
 .welcome-page {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 24px 60px;
-  gap: 40px;
   background-image:
-    radial-gradient(ellipse at 75% 10%, rgba(167,139,250,0.1) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 10%, rgba(167,139,250,0.12) 0%, transparent 55%),
     radial-gradient(ellipse at 20% 85%, rgba(126,179,245,0.1) 0%, transparent 55%);
 }
 
+/* nav */
+.welcome-nav {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+}
+
+.welcome-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.welcome-nav-signin {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 50px;
+  transition: color 0.2s;
+}
+.welcome-nav-signin:hover { color: var(--text-primary); }
+
+.welcome-nav-cta {
+  background: var(--gradient);
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 22px;
+  border-radius: 50px;
+  transition: opacity 0.2s;
+}
+.welcome-nav-cta:hover { opacity: 0.88; }
+
+/* hero */
 .welcome-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
   text-align: center;
+  padding: 72px 24px 64px;
+  gap: 20px;
+  max-width: 900px;
+}
+
+.welcome-headline {
+  font-size: clamp(42px, 8vw, 72px);
+  font-weight: 700;
+  line-height: 1.1;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .welcome-tagline {
   font-size: 20px;
   color: var(--text-secondary);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
+/* pillars grid */
 .welcome-pillars {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   width: 100%;
-  max-width: 480px;
+  max-width: 1400px;
+  padding: 0 32px 64px;
 }
 
 .welcome-pillar {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-}
-
-.pillar-icon {
-  font-size: 28px;
-  flex-shrink: 0;
-  margin-top: 2px;
+  border-radius: 20px;
+  padding: 28px 24px;
 }
 
 .welcome-pillar h3 {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 
 .welcome-pillar p {
   font-size: 15px;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
-.welcome-actions {
+/* footer cta */
+.welcome-footer-cta {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  gap: 14px;
   width: 100%;
   max-width: 480px;
+  padding: 0 24px 80px;
+  text-align: center;
 }
 
+.welcome-footer-cta h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* shared buttons */
 .welcome-cta {
-  padding: 15px;
+  padding: 15px 32px;
   border-radius: 50px;
   background: var(--gradient);
   color: #fff;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   border: none;
   cursor: pointer;
   width: 100%;
   transition: opacity 0.2s;
 }
-
 .welcome-cta:hover { opacity: 0.88; }
 
 .welcome-secondary {
@@ -2418,16 +2475,24 @@ form button[type="submit"]:disabled {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   width: 100%;
   transition: border-color 0.2s, color 0.2s;
 }
-
 .welcome-secondary:hover {
   border-color: var(--accent-purple);
   color: var(--accent-purple);
+}
+
+@media (max-width: 560px) {
+  .welcome-pillars {
+    grid-template-columns: 1fr;
+  }
+  .welcome-nav {
+    padding: 16px 20px;
+  }
 }
 
 /* ── Legal pages ────────────────────────────────────── */
