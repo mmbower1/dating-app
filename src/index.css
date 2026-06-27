@@ -3190,9 +3190,8 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--gradient-subtle);
-  border: 1px solid var(--border-light);
-  border-radius: 100px;
+  background: transparent;
+  border: none;
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
