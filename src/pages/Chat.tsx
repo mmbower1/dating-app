@@ -10,8 +10,6 @@ const EXIT_REASONS = [
   "Not enough in common",
   "Conversation fizzled out",
   "Met someone else",
-  "Looking for something different",
-  "Not ready to date right now",
   "Just not feeling the connection",
 ];
 
