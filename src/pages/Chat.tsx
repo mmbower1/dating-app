@@ -40,7 +40,7 @@ const GracefulExitModal = ({
           className="exit-modal-textarea"
           placeholder={metInPerson
             ? "How did the date go? What didn't click?"
-            : "Be honest and specific — it helps them show up better for the next person."}
+            : "Be honest and specific — it helps them show up better for their next potential match."}
           maxLength={300}
           rows={4}
           value={reason}
