@@ -1,75 +1,150 @@
-# React + TypeScript + Vite
+# Pearl
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern dating app built for genuine connections. Pearl limits users to one active match at a time, encouraging real conversations over endless swiping.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+- **Frontend** — React 19, TypeScript, Vite
+- **Backend** — Node.js, Express, TypeScript
+- **Database** — MongoDB Atlas (Mongoose)
+- **Auth** — JWT
+- **Real-time** — Socket.io
+- **Photo storage** — Cloudinary
+- **Push notifications** — Web Push (VAPID)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Make sure you have the following installed before getting started:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- [Node.js](https://nodejs.org/) v18 or higher
+- [npm](https://www.npmjs.com/) v9 or higher
+- A [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account and cluster
+- A [Cloudinary](https://cloudinary.com/) account (free tier works)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Clone the repo
 
+```bash
+git clone https://github.com/mmbower1/dating-app.git
+cd dating-app
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Environment variables
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Backend — `server/.env`
 
+Create a file at `server/.env` with the following:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=any_long_random_string
+CLIENT_URL=http://localhost:5173
+ADMIN_SECRET=any_secret_you_choose_for_admin_promotion
+
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+VAPID_PUBLIC_KEY=your_vapid_public_key
+VAPID_PRIVATE_KEY=your_vapid_private_key
 ```
+
+**Generating VAPID keys** (run once in your terminal):
+
+```bash
+npx web-push generate-vapid-keys
+```
+
+Copy the output into your `.env` file.
+
+### Frontend — `.env`
+
+Create a file at `.env` (root of the project) with the following:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+---
+
+## Install dependencies
+
+Install both the frontend and backend dependencies:
+
+```bash
+# Install frontend dependencies
+npm install
+
+# Install backend dependencies
+cd server && npm install && cd ..
+```
+
+---
+
+## Run the app locally
+
+From the root of the project, run:
+
+```bash
+npm run dev
+```
+
+This starts both the frontend (Vite) and the backend (Express + Socket.io) concurrently.
+
+| Service    | URL                      |
+|------------|--------------------------|
+| Frontend   | http://localhost:5173    |
+| Backend    | http://localhost:5000    |
+
+---
+
+## Promoting an admin
+
+Pearl has an admin panel at `/admin`. To grant a user admin access, call the promote endpoint with your `ADMIN_SECRET`:
+
+```bash
+curl -X POST http://localhost:5000/api/admin/promote \
+  -H "Content-Type: application/json" \
+  -H "x-admin-secret: your_admin_secret_here" \
+  -d '{ "email": "user@example.com" }'
+```
+
+Once promoted, the user will see an **Admin** button in the top-right corner of the app.
+
+---
+
+## Building for production
+
+```bash
+# Build the frontend
+npm run build
+
+# Build the backend
+cd server && npm run build
+```
+
+The compiled frontend goes to `dist/` and the backend to `server/dist/`.
+
+---
+
+## Features
+
+- Discover profiles with photo cards, bio, and detail pills
+- Like photos with an optional comment — the liked section appears as a special card in chat on match
+- One active match at a time — swiping is locked until the connection ends
+- Real-time chat powered by Socket.io with typing indicators
+- Graceful exit flow — unmatching requires a message sent directly to the other person
+- Accountability score (1–100) based on response rate and ghosting history
+- Profile preview — see exactly how your card looks to others
+- Push notifications for new matches and messages
+- Admin panel to manage users, swipe history, and accountability scores
+- Undo last pass within 5 seconds
+- Filters for age, distance, ethnicity, religion, height, and more
