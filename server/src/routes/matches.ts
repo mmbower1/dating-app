@@ -235,6 +235,51 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
   }
 });
 
+// Rate the exit reason — only the person who was unmatched can do this, once
+router.patch('/:matchId/rate-exit', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { rating } = req.body as { rating: 'genuine' | 'not_genuine' };
+    if (!['genuine', 'not_genuine'].includes(rating)) {
+      res.status(400).json({ message: 'Invalid rating' }); return;
+    }
+
+    const match = await Match.findById(req.params.matchId);
+    if (!match || match.endReason !== 'graceful_exit') {
+      res.status(404).json({ message: 'Match not found or no exit reason' }); return;
+    }
+    if (match.exitRatedBy) {
+      res.status(409).json({ message: 'Already rated' }); return;
+    }
+    // Only the person who did NOT end the match can rate
+    const endedBy = match.endedBy?.toString();
+    if (endedBy === req.userId) {
+      res.status(403).json({ message: 'You cannot rate your own exit' }); return;
+    }
+
+    match.exitRating = rating;
+    match.exitRatedBy = new mongoose.Types.ObjectId(req.userId as string);
+    await match.save();
+
+    // Penalise the unmatcher if reason was rated as not genuine
+    if (rating === 'not_genuine' && endedBy) {
+      const unmatcher = await findUserById(endedBy);
+      if (unmatcher) {
+        const UserModel = getUserModel(unmatcher.gender);
+        const updated = await UserModel.findById(endedBy);
+        if (updated) {
+          let score = Math.max(0, updated.accountabilityScore - 10);
+          if (score === 69) score = 68;
+          await UserModel.findByIdAndUpdate(endedBy, { $set: { accountabilityScore: score } });
+        }
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
 async function recalculateScore(userId: string, gender: string) {
   const UserModel = getUserModel(gender);
   const user = await UserModel.findById(userId);

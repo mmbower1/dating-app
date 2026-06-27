@@ -56,6 +56,8 @@ const Chat = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [match, setMatch] = useState<Match | null>(null);
+  const [exitRating, setExitRating] = useState<'genuine' | 'not_genuine' | null>(null);
+  const [exitRated, setExitRated] = useState(false);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const [otherTyping, setOtherTyping] = useState(false);
@@ -69,7 +71,10 @@ const Chat = () => {
       api.get<Match[]>('/matches'),
     ]).then(([msgRes, matchRes]) => {
       setMessages(msgRes.data);
-      setMatch(matchRes.data.find((m) => m._id === matchId) || null);
+      const foundMatch = matchRes.data.find((m) => m._id === matchId) || null;
+      setMatch(foundMatch);
+      if (foundMatch?.exitRatedBy) setExitRated(true);
+      if (foundMatch?.exitRating) setExitRating(foundMatch.exitRating);
       api.post(`/matches/${matchId}/mark-read`).catch(() => {});
     }).finally(() => setLoading(false));
   }, [matchId]);
@@ -127,6 +132,12 @@ const Chat = () => {
     setText('');
   };
 
+  const rateExit = async (rating: 'genuine' | 'not_genuine') => {
+    setExitRating(rating);
+    setExitRated(true);
+    await api.patch(`/matches/${matchId}/rate-exit`, { rating });
+  };
+
   const confirmExit = async (reason: string) => {
     setShowExitModal(false);
     await api.patch(`/matches/${matchId}/exit`, { reason });
@@ -150,9 +161,29 @@ const Chat = () => {
       <div className="chat-messages">
         {messages.map((msg) => {
           if (msg.type === 'graceful_exit') {
+            const wasUnmatched = match?.endedBy !== user?._id;
             return (
-              <div key={msg._id} className="system-message">
-                <span>{msg.text}</span>
+              <div key={msg._id}>
+                <div className="system-message">
+                  <span>{msg.text}</span>
+                </div>
+                {wasUnmatched && (
+                  <div className="exit-rating">
+                    {exitRated ? (
+                      <p className="exit-rating-done">
+                        {exitRating === 'genuine' ? 'You marked this as genuine.' : 'Feedback recorded — their score has been adjusted.'}
+                      </p>
+                    ) : (
+                      <>
+                        <p className="exit-rating-label">Does this reason feel genuine?</p>
+                        <div className="exit-rating-btns">
+                          <button className="exit-rating-yes" onClick={() => rateExit('genuine')}>👍 Yes</button>
+                          <button className="exit-rating-no" onClick={() => rateExit('not_genuine')}>👎 No</button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             );
           }

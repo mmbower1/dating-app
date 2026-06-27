@@ -15,6 +15,8 @@ export interface IMatch extends Document {
   endedBy: mongoose.Types.ObjectId | null;
   endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | null;
   ghostedUserId: mongoose.Types.ObjectId | null;
+  exitRating: 'genuine' | 'not_genuine' | null;
+  exitRatedBy: mongoose.Types.ObjectId | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,6 +45,8 @@ const MatchSchema = new Schema<IMatch>(
       default: null,
     },
     ghostedUserId: { type: Schema.Types.ObjectId, default: null },
+    exitRating: { type: String, enum: ['genuine', 'not_genuine', null], default: null },
+    exitRatedBy: { type: Schema.Types.ObjectId, default: null },
   },
   { timestamps: true }
 );

@@ -59,6 +59,9 @@ export interface Match {
   active: boolean;
   lastMessageAt: string | null;
   endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | null;
+  endedBy: string | null;
+  exitRating: 'genuine' | 'not_genuine' | null;
+  exitRatedBy: string | null;
   createdAt: string;
 }
 

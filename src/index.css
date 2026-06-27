@@ -1622,6 +1622,44 @@ form button[type="submit"]:disabled {
   line-height: 1.4;
 }
 
+.exit-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px 4px;
+}
+
+.exit-rating-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.exit-rating-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.exit-rating-yes, .exit-rating-no {
+  padding: 7px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.exit-rating-yes:hover { border-color: #48bb78; color: #48bb78; }
+.exit-rating-no:hover  { border-color: #fc8181; color: #fc8181; }
+
+.exit-rating-done {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 /* ── Profile ────────────────────────────────────────── */
 
 .profile-page {
