@@ -186,25 +186,30 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     await match.save();
 
     const UserModel = getUserModel(req.userGender!);
+    const metInPerson = req.body.metInPerson === true;
 
-    // Check if the unmatcher ever sent a message in this conversation
-    const sentAMessage = await Message.exists({
-      matchId: match._id,
-      senderId: new mongoose.Types.ObjectId(req.userId as string),
-      type: 'text',
-    });
-    const otherSentMessage = await Message.exists({
-      matchId: match._id,
-      senderId: { $ne: new mongoose.Types.ObjectId(req.userId as string) },
-      type: 'text',
-    });
-
-    // Ghosting: received messages but never replied before unmatching
-    if (otherSentMessage && !sentAMessage) {
-      await UserModel.findByIdAndUpdate(req.userId, { $inc: { ghostCount: 1 } });
-    } else {
-      // Genuine exit — reward graceful behaviour
+    if (metInPerson) {
+      // They went on a real date — always a graceful exit, no penalties
       await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
+    } else {
+      // Check if the unmatcher ever sent a message in this conversation
+      const sentAMessage = await Message.exists({
+        matchId: match._id,
+        senderId: new mongoose.Types.ObjectId(req.userId as string),
+        type: 'text',
+      });
+      const otherSentMessage = await Message.exists({
+        matchId: match._id,
+        senderId: { $ne: new mongoose.Types.ObjectId(req.userId as string) },
+        type: 'text',
+      });
+
+      // Ghosting: received messages but never replied before unmatching
+      if (otherSentMessage && !sentAMessage) {
+        await UserModel.findByIdAndUpdate(req.userId, { $inc: { ghostCount: 1 } });
+      } else {
+        await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
+      }
     }
 
     await recalculateScore(req.userId!, req.userGender!);
@@ -212,9 +217,13 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     // Post a system message visible to both parties, including their reason
     const me = await UserModel.findById(req.userId);
     const reason = typeof req.body.reason === 'string' ? req.body.reason.trim() : '';
-    const systemText = reason
-      ? `${me?.name ?? 'Your match'} unmatched and left this note: "${reason}"`
-      : `${me?.name ?? 'Your match'} chose not to continue this conversation.`;
+    const systemText = metInPerson
+      ? (reason
+          ? `${me?.name ?? 'Your match'} met you in person and left this note: "${reason}"`
+          : `${me?.name ?? 'Your match'} met you in person but decided not to continue.`)
+      : (reason
+          ? `${me?.name ?? 'Your match'} unmatched and left this note: "${reason}"`
+          : `${me?.name ?? 'Your match'} chose not to continue this conversation.`);
     const systemMsg = await Message.create({
       matchId: match._id,
       senderId: new mongoose.Types.ObjectId(req.userId as string),

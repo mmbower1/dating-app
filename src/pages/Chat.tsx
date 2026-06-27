@@ -10,10 +10,11 @@ const GracefulExitModal = ({
   onConfirm,
   onCancel,
 }: {
-  onConfirm: (reason: string) => void;
+  onConfirm: (reason: string, metInPerson: boolean) => void;
   onCancel: () => void;
 }) => {
   const [reason, setReason] = useState('');
+  const [metInPerson, setMetInPerson] = useState(false);
   const canSubmit = reason.trim().length > 0;
 
   return (
@@ -21,17 +22,29 @@ const GracefulExitModal = ({
       <div className="modal-sheet exit-modal" onClick={(e) => e.stopPropagation()}>
         <h3 className="modal-title">Not feeling it?</h3>
         <p className="modal-body">
-          Your message will be sent directly to them. Unmatching without a thoughtful reason can lower your Pearl score.
+          {metInPerson
+            ? "Glad you gave it a real shot. Let them know how it went — it helps them grow."
+            : "Your message will be sent directly to them. Unmatching without a thoughtful reason can lower your Pearl score."}
         </p>
+
+        <button
+          className={`met-in-person-toggle ${metInPerson ? 'met-in-person-toggle--on' : ''}`}
+          onClick={() => setMetInPerson((v) => !v)}
+          type="button"
+        >
+          <span className="met-toggle-dot" />
+          Did you meet in person?
+        </button>
 
         <textarea
           className="exit-modal-textarea"
-          placeholder="Be honest and specific — it helps them show up better for the next person."
+          placeholder={metInPerson
+            ? "How did the date go? What didn't click?"
+            : "Be honest and specific — it helps them show up better for the next person."}
           maxLength={300}
           rows={4}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          autoFocus
         />
 
         <div className="modal-actions" style={{ marginTop: 16 }}>
@@ -39,7 +52,7 @@ const GracefulExitModal = ({
           <button
             className="exit-modal-confirm"
             disabled={!canSubmit}
-            onClick={() => onConfirm(reason.trim())}
+            onClick={() => onConfirm(reason.trim(), metInPerson)}
           >
             Unmatch
           </button>
@@ -138,9 +151,9 @@ const Chat = () => {
     await api.patch(`/matches/${matchId}/rate-exit`, { rating });
   };
 
-  const confirmExit = async (reason: string) => {
+  const confirmExit = async (reason: string, metInPerson: boolean) => {
     setShowExitModal(false);
-    await api.patch(`/matches/${matchId}/exit`, { reason });
+    await api.patch(`/matches/${matchId}/exit`, { reason, metInPerson });
     navigate('/matches');
   };
 

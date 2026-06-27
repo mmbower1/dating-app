@@ -1448,6 +1448,40 @@ form button[type="submit"]:disabled {
 }
 .exit-modal-textarea:focus { border-color: var(--accent-purple); }
 
+.met-in-person-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--text-secondary);
+  width: 100%;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.met-in-person-toggle--on {
+  border-color: #68d391;
+  background: rgba(104,211,145,0.08);
+  color: #68d391;
+}
+.met-toggle-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.met-in-person-toggle--on .met-toggle-dot {
+  background: #68d391;
+}
+
 .exit-modal-hint {
   font-size: 14px;
   color: var(--text-muted);
