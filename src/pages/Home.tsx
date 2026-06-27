@@ -116,8 +116,7 @@ const Home = () => {
   if (locked) {
     return (
       <div className="page-center locked-state">
-        <div className="locked-icon">💜</div>
-        <h2 className="locked-title">You have an active connection</h2>
+        <h2 className="locked-title">You have an active connection!</h2>
         <p className="locked-body">
           Pearl is built for genuine connections. Focus on the person you matched with before exploring more.
         </p>
