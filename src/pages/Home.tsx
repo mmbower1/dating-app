@@ -121,9 +121,10 @@ const Home = () => {
     };
     const onMatchEnded = () => {
       setLocked(false);
-      setProfiles([]);
+      setCandidates([]);
+      setCurrent(0);
       api.get<User[] | { locked: boolean }>('/users/discover').then((res) => {
-        if (Array.isArray(res.data)) setProfiles(res.data);
+        if (Array.isArray(res.data)) setCandidates(res.data);
       });
     };
     socket.on('new_match', onNewMatch);
