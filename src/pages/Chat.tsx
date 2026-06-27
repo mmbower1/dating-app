@@ -176,7 +176,9 @@ const Chat = () => {
 
   useEffect(() => {
     if (!socket || !matchId) return;
-    socket.emit('join_match', matchId);
+
+    const joinRoom = () => socket.emit('join_match', matchId);
+    joinRoom();
 
     const onMessage = (msg: Message) => {
       setMessages((prev) => {
@@ -189,12 +191,15 @@ const Chat = () => {
     const onTypingStart = () => setOtherTyping(true);
     const onTypingStop = () => setOtherTyping(false);
 
+    // Rejoin the room after a socket reconnect so messages keep flowing
+    socket.on('connect', joinRoom);
     socket.on('new_message', onMessage);
     socket.on('typing_start', onTypingStart);
     socket.on('typing_stop', onTypingStop);
 
     return () => {
       socket.emit('leave_match', matchId);
+      socket.off('connect', joinRoom);
       socket.off('new_message', onMessage);
       socket.off('typing_start', onTypingStart);
       socket.off('typing_stop', onTypingStop);
