@@ -27,7 +27,7 @@ const GracefulExitModal = ({
         <p className="exit-modal-section-label" style={{ marginTop: 14 }}>Your message to them</p>
         <textarea
           className="exit-modal-textarea"
-          placeholder="e.g. I don't think we're a great fit, but I wish you all the best."
+          placeholder="What specifically gave you the ick? Be direct — it helps them grow."
           maxLength={300}
           rows={4}
           value={reason}
