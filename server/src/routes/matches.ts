@@ -171,6 +171,7 @@ router.get('/pending-celebration', protect, async (req: AuthRequest, res: Respon
   try {
     const match = await Match.findOne({
       'users.userId': req.userId,
+      active: true,
       celebrationSeenBy: { $not: { $elemMatch: { $eq: new mongoose.Types.ObjectId(req.userId as string) } } },
     });
     if (!match) { res.json(null); return; }

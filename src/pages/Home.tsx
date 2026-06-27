@@ -135,6 +135,8 @@ const Home = () => {
       setLocked(true);
     };
     const onMatchEnded = () => {
+      setMatchedProfile(null);
+      setPendingMatchId(null);
       setLocked(false);
       setCandidates([]);
       setCurrent(0);
