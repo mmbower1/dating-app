@@ -44,7 +44,7 @@ const Matches = () => {
       <div className="page-center">
         <div className="no-match-icon">
           <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M32 56S6 38.5 6 20.5C6 13.1 11.8 7 19 7c4.8 0 9 2.6 11.5 6.5L32 16l1.5-2.5C36 9.6 40.2 7 45 7c7.2 0 13 6.1 13 13.5C58 38.5 32 56 32 56Z" fill="white" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+            <path d="M32 56S6 38.5 6 20.5C6 13.1 11.8 7 19 7c4.8 0 9 2.6 11.5 6.5L32 16l1.5-2.5C36 9.6 40.2 7 45 7c7.2 0 13 6.1 13 13.5C58 38.5 32 56 32 56Z" fill="none" stroke="white" strokeWidth="3" strokeLinejoin="round"/>
           </svg>
         </div>
         <p className="no-match-title">No match yet</p>
