@@ -155,6 +155,21 @@ router.delete('/users/:userId/swipes', protect, requireAdmin, async (req: AuthRe
   }
 });
 
+// Manually set a user's accountability score
+router.patch('/users/:userId/score', protect, requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.params.userId as string;
+    const score = Math.max(1, Math.min(100, Number(req.body.score)));
+    if (isNaN(score)) { res.status(400).json({ message: 'Invalid score' }); return; }
+    const user = await findUserById(userId);
+    if (!user) { res.status(404).json({ message: 'User not found' }); return; }
+    await getUserModel(user.gender).findByIdAndUpdate(userId, { $set: { accountabilityScore: score } });
+    res.json({ success: true, score });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
 // Force rescore — all users or a single user (?userId=...)
 router.post('/rescore', protect, requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
   try {

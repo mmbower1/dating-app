@@ -31,11 +31,58 @@ interface AdminUser {
   email: string;
   gender: string;
   age: number;
+  accountabilityScore: number;
   likedUsers: string[];
   passedUsers: string[];
 }
 
 type Tab = 'matches' | 'messages' | 'users';
+
+/* ── User row with inline score editor ─────────────────── */
+const UserRow = ({ u, onRescore, onManage, onScoreChange }: {
+  u: AdminUser;
+  onRescore: () => void;
+  onManage: () => void;
+  onScoreChange: () => void;
+}) => {
+  const [score, setScore] = useState(u.accountabilityScore ?? 100);
+  const [saving, setSaving] = useState(false);
+
+  const saveScore = async () => {
+    const clamped = Math.max(1, Math.min(100, score));
+    setSaving(true);
+    await api.patch(`/admin/users/${u._id}/score`, { score: clamped });
+    setSaving(false);
+    onScoreChange();
+  };
+
+  return (
+    <div className="admin-row">
+      <div className="admin-row-info">
+        <span className="admin-names">{u.name}</span>
+        <span className="admin-date">{u.gender} · {u.age} · {u.email}</span>
+        <span className="admin-badge ended">
+          {u.likedUsers?.length ?? 0} liked · {u.passedUsers?.length ?? 0} passed
+        </span>
+      </div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <input
+          type="number"
+          min={1}
+          max={100}
+          value={score}
+          onChange={(e) => setScore(Number(e.target.value))}
+          className="admin-score-input"
+        />
+        <button className="admin-rescore-btn" style={{ marginTop: 0 }} onClick={saveScore} disabled={saving}>
+          {saving ? '…' : 'Set'}
+        </button>
+        <button className="admin-rescore-btn" style={{ marginTop: 0 }} onClick={onRescore}>↻</button>
+        <button className="admin-swipes-btn" onClick={onManage}>Manage swipes</button>
+      </div>
+    </div>
+  );
+};
 
 /* ── Swipe history panel for one user ──────────────────── */
 const SwipePanel = ({ user, onClose }: { user: AdminUser; onClose: () => void }) => {
@@ -232,24 +279,7 @@ const Admin = () => {
         <div className="admin-list">
           {users.length === 0 && <p className="admin-empty">No users.</p>}
           {users.map((u) => (
-            <div key={u._id} className="admin-row">
-              <div className="admin-row-info">
-                <span className="admin-names">{u.name}</span>
-                <span className="admin-date">{u.gender} · {u.age} · {u.email}</span>
-                <span className="admin-badge ended">
-                  {u.likedUsers?.length ?? 0} liked · {u.passedUsers?.length ?? 0} passed
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="admin-rescore-btn" onClick={async () => {
-                  await api.post(`/admin/rescore?userId=${u._id}`);
-                  fetchAll();
-                }}>↻</button>
-                <button className="admin-swipes-btn" onClick={() => setSelectedUser(u)}>
-                  Manage swipes
-                </button>
-              </div>
-            </div>
+            <UserRow key={u._id} u={u} onRescore={async () => { await api.post(`/admin/rescore?userId=${u._id}`); fetchAll(); }} onManage={() => setSelectedUser(u)} onScoreChange={fetchAll} />
           ))}
         </div>
       )}
