@@ -1194,6 +1194,7 @@ form button[type="submit"]:disabled {
   position: relative;
   width: 100%;
   aspect-ratio: 4/5;
+  max-height: 44vh;
   overflow: hidden;
 }
 
@@ -1276,6 +1277,11 @@ form button[type="submit"]:disabled {
   font-size: 15px;
   color: var(--text-secondary);
   line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .match-card-cta {
