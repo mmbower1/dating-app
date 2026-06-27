@@ -74,7 +74,7 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -907,7 +907,7 @@ form button[type="submit"]:disabled {
 }
 
 .pcard-name {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 28px;
   font-weight: 700;
   color: var(--text-primary);
@@ -1249,7 +1249,7 @@ form button[type="submit"]:disabled {
 }
 
 .match-card-name {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 28px;
   font-weight: 700;
   color: #fff;
@@ -1372,7 +1372,7 @@ form button[type="submit"]:disabled {
 
 .chat-name {
   flex: 1;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 19px;
   font-weight: 600;
   color: var(--text-primary);
@@ -2976,7 +2976,7 @@ form button[type="submit"]:disabled {
 }
 
 .preview-overlay-label {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
