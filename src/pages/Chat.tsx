@@ -359,9 +359,6 @@ const Chat = () => {
       ) : (
         <div className="chat-closed">
           <span>This conversation has ended.</span>
-          <button className="report-link-btn" onClick={() => setShowReportModal(true)}>
-            Report this user
-          </button>
         </div>
       )}
 
