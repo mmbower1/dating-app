@@ -86,6 +86,12 @@ const ReportModal = ({
   );
 };
 
+const IN_PERSON_REASONS = [
+  'Something that was said',
+  'Mannerisms',
+  'Not as expected',
+];
+
 const GracefulExitModal = ({
   onConfirm,
   onCancel,
@@ -103,29 +109,42 @@ const GracefulExitModal = ({
         <h3 className="modal-title">Not feeling it?</h3>
         <p className="modal-body">
           {metInPerson
-            ? "Glad you gave it a real shot. Let them know how it went — it helps them grow."
+            ? "Glad you gave it a real shot. What didn't click?"
             : "Your message will be sent directly to them. Unmatching without a thoughtful reason can lower your Pearl score."}
         </p>
 
         <button
           className={`met-in-person-toggle ${metInPerson ? 'met-in-person-toggle--on' : ''}`}
-          onClick={() => setMetInPerson((v) => !v)}
+          onClick={() => { setMetInPerson((v) => !v); setReason(''); }}
           type="button"
         >
           <span className="met-toggle-dot" />
           Did you meet in person?
         </button>
 
-        <textarea
-          className="exit-modal-textarea"
-          placeholder={metInPerson
-            ? "How did the date go? What didn't click?"
-            : "Be honest and specific — it helps them show up better for their next potential match."}
-          maxLength={300}
-          rows={4}
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-        />
+        {metInPerson ? (
+          <div className="exit-reason-options">
+            {IN_PERSON_REASONS.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                className={`exit-reason-option${reason === opt ? ' exit-reason-option--active' : ''}`}
+                onClick={() => setReason(opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <textarea
+            className="exit-modal-textarea"
+            placeholder="Be honest and specific — it helps them show up better for their next potential match."
+            maxLength={300}
+            rows={4}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+        )}
 
         <div className="modal-actions" style={{ marginTop: 16 }}>
           <button className="modal-cancel" onClick={onCancel}>Cancel</button>
