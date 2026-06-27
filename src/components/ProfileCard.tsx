@@ -137,10 +137,6 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       )}
 
       <div style={{ height: 8 }} />
-
-      {showReport && (
-        <ReportModal profile={profile} onClose={() => setShowReport(false)} />
-      )}
     </div>
   );
 };
