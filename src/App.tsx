@@ -113,7 +113,7 @@ const Nav = () => {
           <MatchesIcon />
           {badge > 0 && <span className="nav-badge">{badge > 9 ? '9+' : badge}</span>}
         </span>
-        Matches
+        Message
       </NavLink>
       <NavLink to="/profile" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
         <ProfileIcon />
