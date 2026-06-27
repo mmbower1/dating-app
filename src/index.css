@@ -2613,10 +2613,10 @@ form button[type="submit"]:disabled {
 
 /* ── Settings page ──────────────────────────────────── */
 .settings-page {
-  max-width: 600px;
+  max-width: 900px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 16px 120px;
+  padding: 0 24px 120px;
 }
 
 .settings-form input {
