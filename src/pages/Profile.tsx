@@ -285,7 +285,7 @@ const Profile = () => {
         >
           {user.accountabilityScore}
         </div>
-        <p className="score-tip">Respond to messages and use "Not feeling it" to close conversations gracefully — this raises your score and improves your visibility.</p>
+        <p className="score-tip">Respond to messages and close conversations gracefully — this raises your score and improves your visibility.</p>
       </div>
 
       <form className="profile-form" onSubmit={save}>
