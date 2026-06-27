@@ -59,14 +59,23 @@ const Profile = () => {
 
   useEffect(() => {
     if (!showUnmatched) return;
-    api.get<{ matchId: string; userId: string; name: string; photos: string[]; gender: string }[]>('/matches/ended')
-      .then((res) => setUnmatchedList(res.data))
-      .catch(() => {});
+    Promise.all([
+      api.get<{ matchId: string; userId: string; name: string; photos: string[]; gender: string }[]>('/matches/ended'),
+      api.get<{ _id: string }[]>('/users/blocked'),
+    ]).then(([matchRes, blockedRes]) => {
+      setUnmatchedList(matchRes.data);
+      setBlockedIds(new Set(blockedRes.data.map((u) => u._id)));
+    }).catch(() => {});
   }, [showUnmatched]);
 
   const blockUser = async (userId: string) => {
     await api.post(`/users/${userId}/block`);
     setBlockedIds((prev) => new Set(prev).add(userId));
+  };
+
+  const unblockUser = async (userId: string) => {
+    await api.delete(`/users/${userId}/block`);
+    setBlockedIds((prev) => { const n = new Set(prev); n.delete(userId); return n; });
   };
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -460,7 +469,9 @@ const Profile = () => {
                     )}
                     <span className="blocked-name">{u.name}</span>
                     {blockedIds.has(u.userId) ? (
-                      <span className="unmatched-blocked-badge">Blocked</span>
+                      <button className="unblock-btn" onClick={() => unblockUser(u.userId)}>
+                        Unblock
+                      </button>
                     ) : (
                       <button className="unmatched-block-btn" onClick={() => blockUser(u.userId)}>
                         Block
