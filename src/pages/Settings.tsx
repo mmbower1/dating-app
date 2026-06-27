@@ -4,8 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api/axios';
 
-interface BlockedUser {
-  _id: string;
+interface PreviousMatch {
+  matchId: string;
+  userId: string;
   name: string;
   photos: string[];
   gender: string;
@@ -29,21 +30,27 @@ const Settings = () => {
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [disabling, setDisabling] = useState(false);
-  const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
+  const [previousMatches, setPreviousMatches] = useState<PreviousMatch[]>([]);
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    api.get<BlockedUser[]>('/users/blocked')
-      .then((res) => setBlockedUsers(res.data))
-      .catch(() => {});
+    Promise.all([
+      api.get<PreviousMatch[]>('/matches/ended'),
+      api.get<{ _id: string }[]>('/users/blocked'),
+    ]).then(([matchRes, blockedRes]) => {
+      setPreviousMatches(matchRes.data);
+      setBlockedIds(new Set(blockedRes.data.map((u) => u._id)));
+    }).catch(() => {});
   }, []);
 
-  const handleUnblock = async (id: string) => {
-    try {
-      await api.delete(`/users/${id}/block`);
-      setBlockedUsers((prev) => prev.filter((u) => u._id !== id));
-    } catch {
-      // ignore
-    }
+  const handleBlock = async (userId: string) => {
+    await api.post(`/users/${userId}/block`);
+    setBlockedIds((prev) => new Set(prev).add(userId));
+  };
+
+  const handleUnblock = async (userId: string) => {
+    await api.delete(`/users/${userId}/block`);
+    setBlockedIds((prev) => { const n = new Set(prev); n.delete(userId); return n; });
   };
 
   const saveEmail = async (e: FormEvent) => {
@@ -210,19 +217,25 @@ const Settings = () => {
         )}
       </section>
 
-      {/* ── Blocked users ──────────────────── */}
+      {/* ── Previous matches / block ───────── */}
       <section className="settings-section blocked-section">
-        <p className="settings-section-label">Blocked users</p>
-        {blockedUsers.length === 0 ? (
-          <p className="settings-disable-note">No blocked users.</p>
+        <p className="settings-section-label">Block a previous match</p>
+        {previousMatches.length === 0 ? (
+          <p className="settings-disable-note">No previous matches.</p>
         ) : (
-          blockedUsers.map((u) => (
-            <div key={u._id} className="blocked-row">
-              {u.photos[0] && (
+          previousMatches.map((u) => (
+            <div key={u.userId} className="blocked-row">
+              {u.photos[0] ? (
                 <img src={u.photos[0]} alt={u.name} className="blocked-avatar" />
+              ) : (
+                <div className="blocked-avatar blocked-avatar--placeholder">{u.name[0]}</div>
               )}
               <span className="blocked-name">{u.name}</span>
-              <button className="unblock-btn" onClick={() => handleUnblock(u._id)}>Unblock</button>
+              {blockedIds.has(u.userId) ? (
+                <button className="unblock-btn" onClick={() => handleUnblock(u.userId)}>Unblock</button>
+              ) : (
+                <button className="unmatched-block-btn" onClick={() => handleBlock(u.userId)}>Block</button>
+              )}
             </div>
           ))
         )}
