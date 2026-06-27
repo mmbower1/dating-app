@@ -165,7 +165,7 @@ const Chat = () => {
         <button className="back-btn" onClick={() => navigate('/matches')}>←</button>
         <span className="chat-name">{other?.name ?? 'Chat'}</span>
         <button className="exit-btn" onClick={() => setShowExitModal(true)} title="End conversation">
-          Not feeling it
+          Not feeling it?
         </button>
       </div>
 
