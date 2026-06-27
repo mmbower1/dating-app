@@ -8,7 +8,7 @@ const pillars = [
   },
   {
     title: 'Graceful goodbyes',
-    body: 'Not feeling it? Say so respectfully. Ghosting lowers your accountability score and limits your visibility.',
+    body: 'Not feeling it? Say why respectfully. Ghosting lowers your accountability score and limits your visibility.',
   },
   {
     title: 'Accountability score',
@@ -16,7 +16,7 @@ const pillars = [
   },
   {
     title: 'No infinite scrolling',
-    body: 'Pearl isn\'t built for browsing. It\'s built for connecting. Quality over quantity, always.',
+    body: 'Pearl isn\'t built for browsing. It\'s built for connecting. Quality over quantity.',
   },
 ];
 
