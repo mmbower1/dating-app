@@ -338,6 +338,16 @@ const Profile = () => {
             </div>
           </div>
 
+          <div className="profile-selects-row">
+            <div className="profile-select-wrap">
+              <label className="field-label">Pets</label>
+              <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
+                <option value="">Select…</option>
+                {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+          </div>
+
           <label className="field-label">Interested in</label>
           <div className="pill-group">
             {GENDERS.map((g) => (
@@ -366,15 +376,6 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="profile-selects-row">
-            <div className="profile-select-wrap">
-              <label className="field-label">Pets</label>
-              <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
-                <option value="">Select…</option>
-                {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-          </div>
         </Section>
 
         <Section label="Location" open={openLocation} onToggle={() => setOpenLocation((v) => !v)}>
