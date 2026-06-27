@@ -2802,3 +2802,79 @@ form button[type="submit"]:disabled {
 }
 
 .swipe-remove-btn:hover { opacity: 0.8; }
+
+/* ── Profile preview ────────────────────────────────── */
+
+.profile-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 16px;
+}
+
+.profile-preview-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gradient-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 100px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+.profile-preview-btn:hover { opacity: 0.8; }
+
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.preview-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.preview-overlay-label {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.preview-close-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 7px 16px;
+  cursor: pointer;
+}
+
+.preview-close-btn:hover { opacity: 0.8; }
+
+.preview-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 32px;
+}

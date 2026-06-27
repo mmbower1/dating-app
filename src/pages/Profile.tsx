@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import type { User } from '../types';
+import ProfileCard from '../components/ProfileCard';
 
 function urlBase64ToUint8Array(base64: string) {
   const padding = '='.repeat((4 - (base64.length % 4)) % 4);
@@ -51,6 +52,7 @@ const Profile = () => {
   const [politicalAssociation, setPoliticalAssociation] = useState(user?.politicalAssociation || '');
   const [languages, setLanguages] = useState(user?.languages || '');
 
+  const [showPreview, setShowPreview] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -124,6 +126,13 @@ const Profile = () => {
   return (
     <div className="profile-page">
       <div className="profile-header">
+        <button className="profile-preview-btn" onClick={() => setShowPreview(true)} aria-label="Preview profile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          Preview
+        </button>
         <button className="profile-settings-btn" onClick={() => navigate('/settings')} aria-label="Settings">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3"/>
@@ -381,6 +390,19 @@ const Profile = () => {
       )}
       {notifStatus === 'enabled' && <p className="notif-ok">✓ Notifications enabled</p>}
       {notifStatus === 'denied' && <p className="notif-denied">Notifications blocked — enable in browser settings</p>}
+
+      {/* Profile preview overlay */}
+      {showPreview && (
+        <div className="preview-overlay">
+          <div className="preview-overlay-header">
+            <span className="preview-overlay-label">Your profile preview</span>
+            <button className="preview-close-btn" onClick={() => setShowPreview(false)}>✕ Close</button>
+          </div>
+          <div className="preview-scroll">
+            <ProfileCard profile={user} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

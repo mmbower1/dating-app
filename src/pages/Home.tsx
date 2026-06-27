@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import FiltersModal from '../components/FiltersModal';
+import ProfileCard from '../components/ProfileCard';
 import type { User } from '../types';
 
 /* ── Icons ──────────────────────────────────────────── */
@@ -23,34 +24,8 @@ const HeartIcon = ({ filled = false }: { filled?: boolean }) => (
   </svg>
 );
 
+
 /* ── Helpers ─────────────────────────────────────────── */
-function inToDisplay(inches: number) {
-  return `${Math.floor(inches / 12)}'${inches % 12}"`;
-}
-
-function buildAbout(profile: User): string[] {
-  const chips: string[] = [];
-  chips.push(`${profile.age}`);
-  chips.push(profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1));
-  if (profile.height) chips.push(inToDisplay(profile.height));
-  if (profile.location?.city) chips.push(`${profile.location.city}${profile.location.state ? `, ${profile.location.state}` : ''}`);
-  if (profile.hasChildren != null) chips.push(profile.hasChildren ? 'Has kids' : 'No kids');
-  if (profile.pets) chips.push(profile.pets);
-  if (profile.zodiacSign) chips.push(profile.zodiacSign);
-  return chips;
-}
-
-function buildDetails(profile: User): string[] {
-  const chips: string[] = [];
-  if (profile.educationLevel) chips.push(profile.educationLevel);
-  if (profile.jobTitle) chips.push(profile.jobTitle);
-  if (profile.drinks) chips.push(`Drinks ${profile.drinks.toLowerCase()}`);
-  if (profile.smokes) chips.push(`Smokes ${profile.smokes.toLowerCase()}`);
-  if (profile.religion) chips.push(profile.religion);
-  if (profile.politicalAssociation) chips.push(profile.politicalAssociation);
-  if (profile.familyPlans) chips.push(profile.familyPlans);
-  return chips;
-}
 
 /* ── Like sheet ──────────────────────────────────────── */
 interface LikeSheetProps {
@@ -95,16 +70,6 @@ const LikeSheet = ({ label, onSend, onCancel }: LikeSheetProps) => {
   );
 };
 
-/* ── Heart button ─────────────────────────────────────── */
-const HeartBtn = ({ onClick, onPhoto = false }: { onClick: () => void; onPhoto?: boolean }) => (
-  <button
-    className={`heart-btn ${onPhoto ? 'heart-btn--photo' : ''}`}
-    onClick={(e) => { e.stopPropagation(); onClick(); }}
-    aria-label="Like"
-  >
-    <HeartIcon />
-  </button>
-);
 
 /* ── Main component ───────────────────────────────────── */
 const Home = () => {
@@ -262,84 +227,13 @@ const Home = () => {
             <p>No more profiles right now.</p>
             <p>Check back later!</p>
           </div>
-        ) : (() => {
-          const about = buildAbout(profile);
-          const details = buildDetails(profile);
-          const extraPhotos = profile.photos.slice(1);
-          return (
-            <div className={`pcard-stack${exitDir ? ` pcard-stack--exit-${exitDir}` : ''}`}>
-
-              {/* Photo 1 */}
-              <div className="pcard-item pcard-item--photo">
-                {profile.photos.length > 0 ? (
-                  <img src={profile.photos[0]} alt={profile.name} className="pcard-photo-img" />
-                ) : (
-                  <div className="pcard-no-photo">{profile.name[0]}</div>
-                )}
-                <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
-              </div>
-
-              {/* Identity */}
-              <div className="pcard-item pcard-item--identity">
-                <div className="pcard-name-row">
-                  <span className="pcard-name">{profile.name}</span>
-                  <span className="pcard-score" title="Accountability score">{profile.accountabilityScore}</span>
-                </div>
-              </div>
-
-              {/* About — age, gender, height, location, kids, pets, zodiac */}
-              <div className="pcard-item pcard-item--text">
-                <div className="pcard-detail-chips">
-                  {about.map((label) => (
-                    <span key={label} className="pcard-detail-chip">{label}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Photo 2 */}
-              {extraPhotos[0] && (
-                <div className="pcard-item pcard-item--photo">
-                  <img src={extraPhotos[0]} alt={`${profile.name} 2`} className="pcard-photo-img" />
-                  <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
-                </div>
-              )}
-
-              {/* Bio — below photo 2 */}
-              {profile.bio && (
-                <div className="pcard-item pcard-item--text">
-                  <p className="pcard-bio">{profile.bio}</p>
-                  <div className="pcard-section-heart-row">
-                    <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s bio`)} />
-                  </div>
-                </div>
-              )}
-
-              {/* Photo 3+ */}
-              {extraPhotos.slice(1).map((photo, i) => (
-                <div key={i} className="pcard-item pcard-item--photo">
-                  <img src={photo} alt={`${profile.name} ${i + 3}`} className="pcard-photo-img" />
-                  <HeartBtn onPhoto onClick={() => setLikeTarget(`${profile.name}'s photo`)} />
-                </div>
-              ))}
-
-              {/* Lifestyle details */}
-              {details.length > 0 && (
-                <div className="pcard-item pcard-item--text">
-                  <div className="pcard-detail-chips">
-                    {details.map((label) => (
-                      <span key={label} className="pcard-detail-chip">{label}</span>
-                    ))}
-                  </div>
-                  <div className="pcard-section-heart-row">
-                    <HeartBtn onClick={() => setLikeTarget(`${profile.name}'s details`)} />
-                  </div>
-                </div>
-              )}
-
-              <div style={{ height: 8 }} />
-            </div>
-          );
-        })()}
+        ) : (
+          <ProfileCard
+            profile={profile}
+            className={exitDir ? `pcard-stack--exit-${exitDir}` : undefined}
+            onHeart={(label) => setLikeTarget(label)}
+          />
+        )}
       </div>
 
       {/* Fixed pass button — bottom left */}
