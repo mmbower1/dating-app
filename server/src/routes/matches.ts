@@ -6,6 +6,7 @@ import Message from '../models/Message';
 import mongoose from 'mongoose';
 import { sendPush } from '../utils/push';
 import type webpush from 'web-push';
+import { emitToUser } from '../index';
 
 const router = Router();
 
@@ -37,6 +38,11 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 
       const { io } = await import('../index');
       const matchRoomId = (match._id as mongoose.Types.ObjectId).toString();
+
+      // Notify the first liker (target) that their like became a match
+      emitToUser(target._id.toString(), 'new_match', {
+        matchedUser: { _id: me._id, name: me.name, photos: me.photos },
+      });
 
       // Always post a 'like' context message so both parties see what sparked the match
       const likeText = section

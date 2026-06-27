@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 import FiltersModal from '../components/FiltersModal';
 import ProfileCard from '../components/ProfileCard';
 import type { User } from '../types';
@@ -71,6 +72,7 @@ const MatchCelebration = ({ matchedProfile, onDone }: { matchedProfile: User; on
 
 const Home = () => {
   const { user } = useAuth();
+  const socket = useSocket();
   const [candidates, setCandidates] = useState<User[]>([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -96,6 +98,16 @@ const Home = () => {
   }, []);
 
   useEffect(() => { fetchCandidates(); }, [fetchCandidates]);
+
+  useEffect(() => {
+    if (!socket) return;
+    const handler = (data: { matchedUser: User }) => {
+      setMatchedProfile(data.matchedUser);
+      setLocked(true);
+    };
+    socket.on('new_match', handler);
+    return () => { socket.off('new_match', handler); };
+  }, [socket]);
 
   const activeFilterCount = (() => {
     if (!user) return 0;

@@ -51,6 +51,14 @@ io.use((socket, next) => {
   }
 });
 
+// userId → socketId map for direct user targeting
+const userSockets = new Map<string, string>();
+
+export function emitToUser(userId: string, event: string, data: unknown) {
+  const socketId = userSockets.get(userId);
+  if (socketId) io.to(socketId).emit(event, data);
+}
+
 // Returns true if a given user has an active socket in the match room
 export function isUserInRoom(userId: string, roomId: string): boolean {
   const room = io.sockets.adapter.rooms.get(roomId);
@@ -63,6 +71,9 @@ export function isUserInRoom(userId: string, roomId: string): boolean {
 }
 
 io.on('connection', (socket) => {
+  userSockets.set(socket.data.userId, socket.id);
+  socket.on('disconnect', () => userSockets.delete(socket.data.userId));
+
   // Join a match room to receive messages for that conversation
   socket.on('join_match', (matchId: string) => {
     socket.join(matchId);
