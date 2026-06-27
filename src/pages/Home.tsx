@@ -1,13 +1,11 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import FiltersModal from '../components/FiltersModal';
 import ProfileCard from '../components/ProfileCard';
-import type { LikeSection } from '../components/ProfileCard';
 import type { User } from '../types';
 
-/* ── Icons ──────────────────────────────────────────── */
 const SlidersIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
@@ -18,67 +16,6 @@ const SlidersIcon = () => (
   </svg>
 );
 
-
-const HeartIcon = ({ filled = false }: { filled?: boolean }) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-  </svg>
-);
-
-
-/* ── Helpers ─────────────────────────────────────────── */
-
-/* ── Like sheet ──────────────────────────────────────── */
-const SECTION_LABEL: Record<LikeSection, string> = {
-  photo: 'their photo',
-  bio: 'their bio',
-  details: 'their vibe',
-};
-
-interface LikeSheetProps {
-  section: LikeSection;
-  onSend: (comment: string) => void;
-  onCancel: () => void;
-}
-
-const LikeSheet = ({ section, onSend, onCancel }: LikeSheetProps) => {
-  const [comment, setComment] = useState('');
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    setTimeout(() => inputRef.current?.focus(), 120);
-  }, []);
-
-  return (
-    <div className="like-sheet-overlay" onClick={onCancel}>
-      <div className="like-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="like-sheet-label">
-          <span className="like-sheet-heart"><HeartIcon filled /></span>
-          <span>You liked {SECTION_LABEL[section]}</span>
-        </div>
-        <textarea
-          ref={inputRef}
-          className="like-sheet-input"
-          placeholder="Add a comment… (optional)"
-          maxLength={200}
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          rows={3}
-          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend(comment); } }}
-        />
-        <div className="like-sheet-actions">
-          <button className="like-sheet-cancel" onClick={onCancel}>Cancel</button>
-          <button className="like-sheet-send" onClick={() => onSend(comment)}>
-            <HeartIcon filled /> Send
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
-/* ── Main component ───────────────────────────────────── */
 const Home = () => {
   const { user } = useAuth();
   const [candidates, setCandidates] = useState<User[]>([]);
@@ -87,7 +24,6 @@ const Home = () => {
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [likeTarget, setLikeTarget] = useState<LikeSection | null>(null);
   const [undoTarget, setUndoTarget] = useState<{ profile: User; idx: number } | null>(null);
   const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null);
   const navigate = useNavigate();
@@ -129,28 +65,18 @@ const Home = () => {
 
   const profile = candidates[current];
 
-  const advance = () => {
-    setCurrent((c) => c + 1);
-    setLikeTarget(null);
-  };
+  const advance = () => setCurrent((c) => c + 1);
 
   const animateThen = (dir: 'left' | 'right', cb: () => void) => {
     setExitDir(dir);
-    setTimeout(() => {
-      setExitDir(null);
-      cb();
-    }, 380);
+    setTimeout(() => { setExitDir(null); cb(); }, 380);
   };
 
-  const sendLike = async (comment: string) => {
+  const sendLike = async () => {
     if (!profile || exitDir) return;
     const snapshot = profile;
-    const section = likeTarget;
     animateThen('right', async () => {
-      const res = await api.post<{ matched: boolean }>(`/matches/like/${snapshot._id}`, {
-        comment: comment.trim() || undefined,
-        section: section ?? undefined,
-      });
+      const res = await api.post<{ matched: boolean }>(`/matches/like/${snapshot._id}`, {});
       if (res.data.matched) {
         setFeedback(`It's a match with ${snapshot.name}! 💜`);
         setTimeout(() => setFeedback(''), 3500);
@@ -184,7 +110,6 @@ const Home = () => {
       setUndoTarget(null);
     }
   };
-
 
   if (loading) return <div className="page-center">Finding people near you...</div>;
 
@@ -236,12 +161,10 @@ const Home = () => {
           <ProfileCard
             profile={profile}
             className={exitDir ? `pcard-stack--exit-${exitDir}` : undefined}
-            onHeart={(label) => setLikeTarget(label)}
           />
         )}
       </div>
 
-      {/* Fixed pass button — bottom left */}
       {profile && (
         <div className="pass-bar">
           <button className="pass-btn" onClick={pass} aria-label="Pass">
@@ -249,16 +172,12 @@ const Home = () => {
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
+          <button className="like-btn" onClick={sendLike} aria-label="Like">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
         </div>
-      )}
-
-      {/* Like sheet */}
-      {likeTarget && (
-        <LikeSheet
-          section={likeTarget}
-          onSend={sendLike}
-          onCancel={() => setLikeTarget(null)}
-        />
       )}
 
       {showFilters && (

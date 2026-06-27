@@ -1030,18 +1030,18 @@ form button[type="submit"]:disabled {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 600px;
+  max-width: 760px;
   display: flex;
-  justify-content: flex-start;
-  padding: 0 20px;
+  justify-content: space-between;
+  padding: 0 32px;
   pointer-events: none;
   z-index: 20;
 }
 
-.pass-btn {
+.pass-btn, .like-btn {
   pointer-events: all;
-  width: 54px;
-  height: 54px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1049,11 +1049,13 @@ form button[type="submit"]:disabled {
   background: var(--bg-card);
   border: 2px solid var(--border-light);
   color: var(--text-secondary);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   transition: transform 0.15s, border-color 0.15s, color 0.15s;
 }
 .pass-btn:hover  { border-color: #fc8181; color: #fc8181; transform: scale(1.08); }
 .pass-btn:active { transform: scale(0.93); }
+.like-btn:hover  { border-color: #b39dfa; color: #b39dfa; transform: scale(1.08); }
+.like-btn:active { transform: scale(0.93); }
 
 /* ── Like sheet ──────────────────────────────────────── */
 .like-sheet-overlay {
