@@ -68,7 +68,6 @@ const Home = () => {
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
-  const [feedback, setFeedback] = useState('');
   const [matchedProfile, setMatchedProfile] = useState<User | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [undoTarget, setUndoTarget] = useState<{ profile: User; idx: number } | null>(null);
@@ -181,8 +180,6 @@ const Home = () => {
   return (
     <>
       <div className="home-page">
-        {feedback && <div className="match-toast">{feedback}</div>}
-
         <div className="discover-topbar">
           <button className="filter-btn" onClick={() => setShowFilters(true)}>
             <SlidersIcon />
