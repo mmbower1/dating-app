@@ -112,6 +112,21 @@ const Home = () => {
       .catch(() => {});
   }, []);
 
+  // Fallback: while locked, poll every 3s so the screen unlocks even if the socket event is missed
+  useEffect(() => {
+    if (!locked) return;
+    const interval = setInterval(() => {
+      api.get<User[] | { locked: boolean }>('/users/discover').then((res) => {
+        if (Array.isArray(res.data)) {
+          setLocked(false);
+          setCandidates(res.data);
+          setCurrent(0);
+        }
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [locked]);
+
   useEffect(() => {
     if (!socket) return;
     const onNewMatch = (data: { matchedUser: User; matchId?: string }) => {
