@@ -1361,12 +1361,81 @@ form button[type="submit"]:disabled {
   background: rgba(252,129,129,0.1);
   border: 1px solid rgba(252,129,129,0.3);
   color: var(--error);
-  padding: 7px 12px;
+  padding: 7px 14px;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
+  cursor: pointer;
 }
+.exit-btn:hover { background: rgba(252,129,129,0.18); }
+
+/* ── Graceful exit modal ────────────────────────────── */
+.exit-modal {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.exit-modal-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.exit-modal-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exit-reason-pill {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.exit-reason-pill.active,
+.exit-reason-pill:hover {
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
+  background: var(--accent-purple-glow);
+}
+
+.exit-modal-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  padding: 10px 14px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+}
+.exit-modal-textarea:focus { border-color: var(--accent-purple); }
+
+.exit-modal-confirm {
+  flex: 1;
+  background: rgba(252,129,129,0.15);
+  border: 1px solid rgba(252,129,129,0.4);
+  border-radius: 12px;
+  color: var(--error);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px;
+  cursor: pointer;
+}
+.exit-modal-confirm:hover { background: rgba(252,129,129,0.25); }
 
 .chat-messages {
   flex: 1;

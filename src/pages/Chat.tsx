@@ -6,6 +6,73 @@ import type { Message, Match } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 
+const EXIT_REASONS = [
+  "Not enough in common",
+  "Conversation fizzled out",
+  "Met someone else",
+  "Looking for something different",
+  "Not ready to date right now",
+  "Just not feeling the connection",
+];
+
+const GracefulExitModal = ({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: (reason: string) => void;
+  onCancel: () => void;
+}) => {
+  const [selected, setSelected] = useState('');
+  const [custom, setCustom] = useState('');
+
+  const reason = custom.trim() || selected;
+
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal-sheet exit-modal" onClick={(e) => e.stopPropagation()}>
+        <h3 className="modal-title">Not feeling it?</h3>
+        <p className="modal-body">
+          Unmatching can lower your Pearl score. Giving a reason helps the other person grow — and keeps your score intact.
+        </p>
+
+        <p className="exit-modal-section-label">Quick reasons</p>
+        <div className="exit-modal-pills">
+          {EXIT_REASONS.map((r) => (
+            <button
+              key={r}
+              type="button"
+              className={`exit-reason-pill ${selected === r && !custom ? 'active' : ''}`}
+              onClick={() => { setSelected(r); setCustom(''); }}
+            >
+              {r}
+            </button>
+          ))}
+        </div>
+
+        <p className="exit-modal-section-label" style={{ marginTop: 14 }}>Or write your own</p>
+        <textarea
+          className="exit-modal-textarea"
+          placeholder="Add a personal note (optional)…"
+          maxLength={200}
+          rows={3}
+          value={custom}
+          onChange={(e) => { setCustom(e.target.value); if (e.target.value) setSelected(''); }}
+        />
+
+        <div className="modal-actions" style={{ marginTop: 16 }}>
+          <button className="modal-cancel" onClick={onCancel}>Cancel</button>
+          <button
+            className="exit-modal-confirm"
+            onClick={() => onConfirm(reason)}
+          >
+            End conversation
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Chat = () => {
   const { matchId } = useParams<{ matchId: string }>();
   const { user } = useAuth();
@@ -16,6 +83,7 @@ const Chat = () => {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -30,7 +98,6 @@ const Chat = () => {
     }).finally(() => setLoading(false));
   }, [matchId]);
 
-  // Join socket room and listen for real-time events
   useEffect(() => {
     if (!socket || !matchId) return;
     socket.emit('join_match', matchId);
@@ -84,9 +151,9 @@ const Chat = () => {
     setText('');
   };
 
-  const gracefulExit = async () => {
-    if (!window.confirm('End this conversation with a polite goodbye?')) return;
-    await api.patch(`/matches/${matchId}/exit`);
+  const confirmExit = async (reason: string) => {
+    setShowExitModal(false);
+    await api.patch(`/matches/${matchId}/exit`, { reason });
     navigate('/matches');
   };
 
@@ -99,8 +166,8 @@ const Chat = () => {
       <div className="chat-header">
         <button className="back-btn" onClick={() => navigate('/matches')}>←</button>
         <span className="chat-name">{other?.name ?? 'Chat'}</span>
-        <button className="exit-btn" onClick={gracefulExit} title="Politely end conversation">
-          👋 Not feeling it
+        <button className="exit-btn" onClick={() => setShowExitModal(true)} title="End conversation">
+          Not feeling it
         </button>
       </div>
 
@@ -111,10 +178,7 @@ const Chat = () => {
               <span>{msg.text}</span>
             </div>
           ) : (
-            <div
-              key={msg._id}
-              className={`message ${msg.senderId === user?._id ? 'mine' : 'theirs'}`}
-            >
+            <div key={msg._id} className={`message ${msg.senderId === user?._id ? 'mine' : 'theirs'}`}>
               <p>{msg.text}</p>
             </div>
           )
@@ -138,6 +202,13 @@ const Chat = () => {
         </form>
       ) : (
         <div className="chat-closed">This conversation has ended.</div>
+      )}
+
+      {showExitModal && (
+        <GracefulExitModal
+          onConfirm={confirmExit}
+          onCancel={() => setShowExitModal(false)}
+        />
       )}
     </div>
   );
