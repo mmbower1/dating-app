@@ -93,7 +93,7 @@ const UserSchema = new Schema<IUser>(
     school: { type: String, default: '' },
     hometown: { type: String, default: '' },
     languages: { type: String, default: '' },
-    accountabilityScore: { type: Number, default: 75, min: 0, max: 100 },
+    accountabilityScore: { type: Number, default: 100, min: 0, max: 100 },
     responseRate: { type: Number, default: 100, min: 0, max: 100 },
     ghostCount: { type: Number, default: 0 },
     gracefulExitCount: { type: Number, default: 0 },

@@ -240,11 +240,11 @@ async function recalculateScore(userId: string, gender: string) {
   const user = await UserModel.findById(userId);
   if (!user) return;
 
-  const ghostPenalty = Math.min(user.ghostCount * 5, 40);
-  const exitBonus = Math.min(user.gracefulExitCount * 3, 20);
-  const responseBonus = (user.responseRate / 100) * 30;
+  // Start at 100, deduct for bad behaviour
+  const ghostPenalty = Math.min(user.ghostCount * 10, 50);
+  const responsePenalty = Math.round((1 - user.responseRate / 100) * 30);
 
-  const score = Math.max(0, Math.min(100, 50 + exitBonus + responseBonus - ghostPenalty));
+  const score = Math.max(0, Math.min(100, 100 - ghostPenalty - responsePenalty));
   user.accountabilityScore = Math.round(score);
   await user.save();
 }
