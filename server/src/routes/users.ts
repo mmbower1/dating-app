@@ -228,6 +228,23 @@ router.delete('/photo', protect, async (req: AuthRequest, res: Response): Promis
   }
 });
 
+// Reorder profile photos
+router.patch('/photos/reorder', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { photos } = req.body as { photos: string[] };
+    if (!Array.isArray(photos)) { res.status(400).json({ message: 'Invalid photos' }); return; }
+    const UserModel = getUserModel(req.userGender!);
+    const user = await UserModel.findByIdAndUpdate(
+      req.userId,
+      { $set: { photos } },
+      { new: true }
+    );
+    res.json({ photos: user?.photos ?? [] });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
 // Save push subscription
 router.post('/push-subscribe', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {

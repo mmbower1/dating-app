@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -105,6 +105,20 @@ const Profile = () => {
     updateUser({ photos: res.data.photos });
   };
 
+  const dragIndex = useRef<number | null>(null);
+
+  const onDragStart = useCallback((i: number) => { dragIndex.current = i; }, []);
+
+  const onDrop = useCallback(async (dropIndex: number) => {
+    if (dragIndex.current === null || dragIndex.current === dropIndex) return;
+    const reordered = [...(user?.photos ?? [])];
+    const [moved] = reordered.splice(dragIndex.current, 1);
+    reordered.splice(dropIndex, 0, moved);
+    dragIndex.current = null;
+    updateUser({ photos: reordered });
+    await api.patch('/users/photos/reorder', { photos: reordered });
+  }, [user?.photos, updateUser]);
+
   const enableNotifications = async () => {
     if (!('Notification' in window) || !('serviceWorker' in navigator)) { setNotifStatus('denied'); return; }
     const permission = await Notification.requestPermission();
@@ -149,8 +163,15 @@ const Profile = () => {
       <div className="photo-section">
         <h3 className="section-title">Photos</h3>
         <div className="photo-grid">
-          {user.photos.map((url) => (
-            <div key={url} className="photo-thumb">
+          {user.photos.map((url, i) => (
+            <div
+              key={url}
+              className="photo-thumb"
+              draggable
+              onDragStart={() => onDragStart(i)}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => onDrop(i)}
+            >
               <img src={url} alt="profile" />
               <button className="photo-remove" onClick={() => removePhoto(url)} title="Remove">✕</button>
             </div>

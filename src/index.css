@@ -1719,7 +1719,11 @@ form button[type="submit"]:disabled {
   border-radius: 12px;
   overflow: hidden;
   background: var(--bg-input);
+  cursor: grab;
+  transition: opacity 0.15s, transform 0.15s;
 }
+.photo-thumb:active { cursor: grabbing; opacity: 0.7; transform: scale(0.97); }
+.photo-thumb[draggable]:hover { outline: 2px solid var(--accent-purple); }
 
 .photo-thumb img {
   width: 100%;
