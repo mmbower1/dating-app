@@ -35,6 +35,7 @@ export function buildDetails(p: User): string[] {
   if (p.religion) chips.push(p.religion);
   if (p.politicalAssociation) chips.push(p.politicalAssociation);
   if (p.familyPlans) chips.push(p.familyPlans);
+  if (p.hobbies?.length) chips.push(...p.hobbies);
   return chips;
 }
 

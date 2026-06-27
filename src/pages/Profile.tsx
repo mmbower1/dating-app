@@ -30,6 +30,12 @@ function inToDisplay(inches: number) {
 const GENDERS = ['male', 'female', 'non-binary', 'other'];
 const GENDER_LABELS: Record<string, string> = { male: 'Men', female: 'Women', 'non-binary': 'Non-Binary', other: 'Other' };
 
+const HOBBIES = [
+  'Reading', 'Hiking', 'Cooking', 'Gaming', 'Traveling', 'Fitness',
+  'Photography', 'Music', 'Art', 'Dancing', 'Yoga', 'Movies',
+  'Sports', 'Cycling', 'Swimming', 'Writing', 'Volunteering', 'Gardening',
+];
+
 const PROMPT_QUESTIONS = [
   "The most spontaneous thing I've done...",
   "My ideal Sunday looks like...",
@@ -105,6 +111,7 @@ const Profile = () => {
   const [religion, setReligion] = useState(user?.religion || '');
   const [politicalAssociation, setPoliticalAssociation] = useState(user?.politicalAssociation || '');
   const [languages, setLanguages] = useState(user?.languages || '');
+  const [hobbies, setHobbies] = useState<string[]>(user?.hobbies ?? []);
   const [prompts, setPrompts] = useState<{ question: string; answer: string }[]>(user?.prompts ?? []);
 
   // Accordion open state
@@ -138,7 +145,7 @@ const Profile = () => {
       hasChildren: hasChildren === '' ? null : hasChildren === 'yes',
       familyPlans, jobTitle, work, school, educationLevel,
       drinks, smokes, religion, politicalAssociation, languages,
-      prompts,
+      hobbies, prompts,
     };
     await api.patch<User>('/users/me', patch);
     updateUser(patch);
@@ -471,6 +478,22 @@ const Profile = () => {
           <div className="profile-select-wrap">
             <label className="field-label">Languages spoken</label>
             <input type="text" value={languages} onChange={(e) => setLanguages(e.target.value)} placeholder="e.g. English, Spanish" />
+          </div>
+
+          <div>
+            <label className="field-label">Hobbies</label>
+            <div className="pill-group" style={{ marginTop: 8 }}>
+              {HOBBIES.map((h) => (
+                <button
+                  key={h}
+                  type="button"
+                  className={`pill ${hobbies.includes(h) ? 'active' : ''}`}
+                  onClick={() => setHobbies((prev) => prev.includes(h) ? prev.filter((x) => x !== h) : [...prev, h])}
+                >
+                  {h}
+                </button>
+              ))}
+            </div>
           </div>
         </Section>
 
