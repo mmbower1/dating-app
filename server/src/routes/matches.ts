@@ -185,6 +185,16 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
       type: 'graceful_exit',
     });
 
+    // Remove each other from likedUsers so they can appear in discover again
+    const [userA, userB] = match.users;
+    const modelToGender = (m: string) => m === 'MaleUser' ? 'male' : m === 'FemaleUser' ? 'female' : 'other';
+    const ModelA = getUserModel(modelToGender(userA.model));
+    const ModelB = getUserModel(modelToGender(userB.model));
+    await Promise.all([
+      ModelA.findByIdAndUpdate(userA.userId, { $pull: { likedUsers: userB.userId } }),
+      ModelB.findByIdAndUpdate(userB.userId, { $pull: { likedUsers: userA.userId } }),
+    ]);
+
     // Push-notify the other person
     const otherEntry = match.users.find((u) => u.userId.toString() !== req.userId);
     if (otherEntry) {
