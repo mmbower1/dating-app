@@ -182,12 +182,16 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     const systemText = reason
       ? `${me?.name ?? 'Your match'} unmatched and left this note: "${reason}"`
       : `${me?.name ?? 'Your match'} chose not to continue this conversation.`;
-    await Message.create({
+    const systemMsg = await Message.create({
       matchId: match._id,
       senderId: new mongoose.Types.ObjectId(req.userId as string),
       text: systemText,
       type: 'graceful_exit',
     });
+
+    // Push the system message in real-time so the other person sees it without refreshing
+    const { io } = await import('../index');
+    io.to((match._id as mongoose.Types.ObjectId).toString()).emit('new_message', systemMsg);
 
     // Remove each other from likedUsers so they can appear in discover again
     const [userA, userB] = match.users;
