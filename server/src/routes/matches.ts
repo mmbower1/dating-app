@@ -176,12 +176,16 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
     await recalculateScore(req.userId!, req.userGender!);
 
-    // Post a system message visible to both parties
+    // Post a system message visible to both parties, including their reason
     const me = await UserModel.findById(req.userId);
+    const reason = typeof req.body.reason === 'string' ? req.body.reason.trim() : '';
+    const systemText = reason
+      ? `${me?.name ?? 'Your match'} unmatched and left this note: "${reason}"`
+      : `${me?.name ?? 'Your match'} chose not to continue this conversation.`;
     await Message.create({
       matchId: match._id,
       senderId: new mongoose.Types.ObjectId(req.userId as string),
-      text: `${me?.name ?? 'Your match'} chose not to continue this conversation.`,
+      text: systemText,
       type: 'graceful_exit',
     });
 

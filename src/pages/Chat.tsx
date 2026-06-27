@@ -21,13 +21,13 @@ const GracefulExitModal = ({
       <div className="modal-sheet exit-modal" onClick={(e) => e.stopPropagation()}>
         <h3 className="modal-title">Not feeling it?</h3>
         <p className="modal-body">
-          Unmatching can lower your Pearl score. Giving a reason helps the other person grow — and keeps your score intact.
+          Your message will be sent directly to them. Unmatching without a thoughtful reason can lower your Pearl score.
         </p>
 
-        <p className="exit-modal-section-label" style={{ marginTop: 14 }}>Why are you unmatching?</p>
+        <p className="exit-modal-section-label" style={{ marginTop: 14 }}>Your message to them</p>
         <textarea
           className="exit-modal-textarea"
-          placeholder="Be honest — your note stays private and helps them improve."
+          placeholder="e.g. I don't think we're a great fit, but I wish you all the best."
           maxLength={300}
           rows={4}
           value={reason}
