@@ -832,7 +832,7 @@ form button[type="submit"]:disabled {
 
 .pcard-stack {
   width: 100%;
-  max-width: 600px;
+  max-width: 760px;
   display: flex;
   flex-direction: column;
   gap: 12px;
