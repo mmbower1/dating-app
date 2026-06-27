@@ -1171,8 +1171,8 @@ form button[type="submit"]:disabled {
 
 /* ── No match empty state ── */
 .no-match-icon {
-  font-size: 50px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  opacity: 0.9;
 }
 .no-match-title {
   font-size: 20px;
