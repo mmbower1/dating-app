@@ -47,7 +47,6 @@ PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=any_long_random_string
 CLIENT_URL=http://localhost:5173
-ADMIN_SECRET=any_secret_you_choose_for_admin_promotion
 
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
@@ -103,21 +102,6 @@ This starts both the frontend (Vite) and the backend (Express + Socket.io) concu
 |------------|--------------------------|
 | Frontend   | http://localhost:5173    |
 | Backend    | http://localhost:5000    |
-
----
-
-## Promoting an admin
-
-Pearl has an admin panel at `/admin`. To grant a user admin access, call the promote endpoint with your `ADMIN_SECRET`:
-
-```bash
-curl -X POST http://localhost:5000/api/admin/promote \
-  -H "Content-Type: application/json" \
-  -H "x-admin-secret: your_admin_secret_here" \
-  -d '{ "email": "user@example.com" }'
-```
-
-Once promoted, the user will see an **Admin** button in the top-right corner of the app.
 
 ---
 
