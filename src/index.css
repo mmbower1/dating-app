@@ -1431,6 +1431,25 @@ form button[type="submit"]:disabled {
   color: var(--text-secondary);
   line-height: 1.5;
 }
+.match-profile-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+.match-profile-chip {
+  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.match-profile-detail {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
 
 .no-photo-sm {
   width: 100%;
