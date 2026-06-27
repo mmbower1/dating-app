@@ -2877,4 +2877,11 @@ form button[type="submit"]:disabled {
   flex: 1;
   overflow-y: auto;
   padding-bottom: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.preview-scroll .pcard-stack {
+  width: 100%;
+  max-width: 480px;
 }
