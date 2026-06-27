@@ -2132,8 +2132,8 @@ form button[type="submit"]:disabled {
 
 .admin-page {
   flex: 1;
-  padding: 24px 20px calc(var(--nav-height) + 24px);
-  max-width: 860px;
+  padding: 24px 32px calc(var(--nav-height) + 24px);
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
 }
