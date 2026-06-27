@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import Logo from '../components/Logo';
 
 const Terms = () => {
   const navigate = useNavigate();
@@ -7,7 +6,6 @@ const Terms = () => {
     <div className="legal-page">
       <div className="legal-header">
         <button className="back-btn" onClick={() => navigate(-1)}>←</button>
-        <Logo size="sm" showText={true} />
       </div>
       <div className="legal-content">
         <h1>Terms of Service</h1>
