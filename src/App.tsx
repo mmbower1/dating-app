@@ -123,18 +123,23 @@ const Nav = () => {
   );
 };
 
+const RootRoute = () => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="loading">Loading...</div>;
+  return user ? <Home /> : <Welcome />;
+};
+
 const ThemedApp = () => {
   const { theme } = useTheme();
   return (
     <div className="app" data-theme={theme}>
       <TopHeader />
       <Routes>
-        <Route path="/welcome" element={<Welcome />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/" element={<RootRoute />} />
         <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
         <Route path="/chat/:matchId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
