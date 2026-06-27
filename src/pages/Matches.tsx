@@ -49,7 +49,7 @@ const Matches = () => {
         </div>
         <p className="no-match-title">No match yet</p>
         <p className="no-match-sub">The right person is worth the wait.</p>
-        <p className="no-match-note">When you match, swiping pauses so you can give that person your full attention. Getting a match on Pearl is a big deal.</p>
+        <p className="no-match-note">When you match, swiping pauses so you can give that person your full attention.</p>
       </div>
     );
   }
