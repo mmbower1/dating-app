@@ -26,7 +26,7 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
 
 const MatchCelebration = ({ matchedProfile, onDone }: { matchedProfile: User; onDone: () => void }) => {
   useEffect(() => {
-    const t = setTimeout(onDone, 4000);
+    const t = setTimeout(onDone, 7000);
     return () => clearTimeout(t);
   }, [onDone]);
 
