@@ -65,7 +65,7 @@ const UserRow = ({ u, onRescore, onManage, onScoreChange }: {
           {u.likedUsers?.length ?? 0} liked · {u.passedUsers?.length ?? 0} passed
         </span>
       </div>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div className="admin-row-controls">
         <input
           type="number"
           min={1}

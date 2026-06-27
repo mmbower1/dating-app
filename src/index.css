@@ -2343,6 +2343,13 @@ form button[type="submit"]:disabled {
 
 .admin-delete-btn:hover { opacity: 0.75; }
 
+.admin-row-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 /* ── Welcome page ───────────────────────────────────── */
 
 /* ── Welcome page ───────────────────────────────────── */
@@ -3069,4 +3076,82 @@ form button[type="submit"]:disabled {
   max-width: 480px;
   margin: 0 auto;
   width: 100%;
+}
+
+/* ── Admin mobile responsive ────────────────────────── */
+@media (max-width: 600px) {
+  .admin-page {
+    padding: 16px 14px calc(var(--nav-height) + 16px);
+  }
+
+  .admin-header {
+    margin-bottom: 16px;
+  }
+
+  .admin-header h1 {
+    font-size: 22px;
+  }
+
+  .admin-rescore-btn,
+  .admin-wipe-btn {
+    margin-top: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+
+  .admin-tabs {
+    gap: 6px;
+  }
+
+  .admin-tab {
+    padding: 7px 12px;
+    font-size: 14px;
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Match / message rows: stack info above delete button */
+  .admin-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .admin-row-info {
+    gap: 8px;
+  }
+
+  .admin-delete-btn {
+    align-self: flex-end;
+  }
+
+  .admin-msg-text {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  /* User rows: score controls wrap to second line */
+  .admin-row-controls {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .admin-score-input {
+    width: 52px;
+  }
+
+  .admin-swipes-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .swipe-panel {
+    max-height: 90vh;
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .swipe-panel-title {
+    font-size: 15px;
+  }
 }
