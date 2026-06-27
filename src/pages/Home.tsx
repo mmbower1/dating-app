@@ -25,13 +25,20 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 const MatchCelebration = ({ matchedProfile, onDone }: { matchedProfile: User; onDone: () => void }) => {
+  const [showClose, setShowClose] = useState(false);
+
   useEffect(() => {
     const t = setTimeout(onDone, 7000);
-    return () => clearTimeout(t);
+    const t2 = setTimeout(() => setShowClose(true), 4000);
+    return () => { clearTimeout(t); clearTimeout(t2); };
   }, [onDone]);
 
   return (
-    <div className="match-celebration" onClick={onDone}>
+    <div className="match-celebration">
+      {showClose && (
+        <button className="match-celebration-close" onClick={onDone} aria-label="Close">✕</button>
+      )}
+
       <div className="match-celebration-particles">
         {PARTICLES.map((p) => (
           <div
