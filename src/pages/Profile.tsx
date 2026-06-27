@@ -31,10 +31,10 @@ const GENDERS = ['male', 'female', 'non-binary', 'other'];
 const GENDER_LABELS: Record<string, string> = { male: 'Men', female: 'Women', 'non-binary': 'Non-Binary', other: 'Other' };
 
 const HOBBIES = [
-  'Reading', 'Hiking', 'Cooking', 'Gaming', 'Traveling', 'Fitness',
-  'Photography', 'Music', 'Art', 'Dancing', 'Yoga', 'Movies',
-  'Sports', 'Cycling', 'Swimming', 'Writing', 'Volunteering', 'Gardening',
-  'Cars', 'Gym',
+  'Art', 'Cars', 'Cooking', 'Cycling', 'Dancing', 'Fitness',
+  'Gaming', 'Gardening', 'Gym', 'Hiking', 'Movies', 'Music',
+  'Photography', 'Reading', 'Sports', 'Swimming', 'Traveling', 'Volunteering',
+  'Writing', 'Yoga',
 ];
 
 const PROMPT_QUESTIONS = [
