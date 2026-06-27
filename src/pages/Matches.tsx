@@ -4,6 +4,16 @@ import api from '../api/axios';
 import type { Match } from '../types';
 import { useAuth } from '../context/AuthContext';
 
+function scoreColor(score: number): string {
+  if (score >= 95) return '#48bb78';
+  if (score >= 90) return '#68d391';
+  if (score >= 85) return '#9ae05a';
+  if (score >= 80) return '#c6e04a';
+  if (score >= 75) return '#ecc94b';
+  if (score >= 70) return '#ed8936';
+  return '#fc8181';
+}
+
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const hrs = Math.floor(diff / 36e5);
@@ -70,7 +80,7 @@ const Matches = () => {
           )}
           <div className="match-card-photo-overlay">
             <span className="match-card-name">{other.name}{other.age ? `, ${other.age}` : ''}</span>
-            <span className="match-card-score">★ {other.accountabilityScore}</span>
+            <span className="match-card-score" style={{ color: scoreColor(other.accountabilityScore) }}>{other.accountabilityScore}</span>
           </div>
         </div>
 
