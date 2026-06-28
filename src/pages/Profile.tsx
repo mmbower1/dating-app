@@ -338,16 +338,6 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="profile-selects-row">
-            <div className="profile-select-wrap">
-              <label className="field-label">Pets</label>
-              <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
-                <option value="">Select…</option>
-                {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-          </div>
-
           <label className="field-label">Interested in</label>
           <div className="pill-group">
             {GENDERS.map((g) => (
@@ -402,7 +392,7 @@ const Profile = () => {
               <select className="profile-select" value={hasChildren} onChange={(e) => setHasChildren(e.target.value)}>
                 <option value="">Select…</option>
                 <option value="yes">Has kids</option>
-                <option value="no">No kids</option>
+                <option value="no">Doesn't have kids</option>
               </select>
             </div>
             <div className="profile-select-wrap">
@@ -412,6 +402,14 @@ const Profile = () => {
                 {['Want kids','Open to kids',"Don't want kids",'Not sure'].map((f) => <option key={f} value={f}>{f}</option>)}
               </select>
             </div>
+          </div>
+
+          <div className="profile-select-wrap">
+            <label className="field-label">Pets</label>
+            <select className="profile-select" value={pets} onChange={(e) => setPets(e.target.value)}>
+              <option value="">Select…</option>
+              {['Dog','Cat','Dog & Cat','Birds','Fish','Reptile','No pets','Other'].map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
           </div>
         </Section>
 

@@ -122,7 +122,7 @@ export function buildAbout(p: User): DetailChip[] {
   chips.push({ label: p.gender.charAt(0).toUpperCase() + p.gender.slice(1), icon: I.person });
   if (p.height) chips.push({ label: inToDisplay(p.height), icon: I.ruler });
   if (p.location?.city) chips.push({ label: `${p.location.city}${p.location.state ? `, ${p.location.state}` : ''}`, icon: I.mapPin });
-  if (p.hasChildren != null) chips.push({ label: p.hasChildren ? 'Has kids' : 'No kids', icon: I.users });
+  if (p.hasChildren != null) chips.push({ label: p.hasChildren ? 'Has kids' : "Doesn't have kids", icon: I.users });
   if (p.pets) chips.push({ label: p.pets, icon: I.paw });
   if (p.zodiacSign) chips.push({ label: p.zodiacSign, icon: I.constellation });
   return chips;
