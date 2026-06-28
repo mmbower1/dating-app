@@ -210,15 +210,30 @@ const Chat = () => {
     const onTypingStart = () => setOtherTyping(true);
     const onTypingStop = () => setOtherTyping(false);
 
-    // Rejoin the room after a socket reconnect so messages keep flowing
-    socket.on('connect', joinRoom);
+    // On reconnect (mobile browsers suspend sockets on tab switch / screen lock):
+    // rejoin the room AND re-fetch messages + match state to catch any missed events
+    const onReconnect = () => {
+      socket.emit('join_match', matchId);
+      Promise.all([
+        api.get<Message[]>(`/messages/${matchId}`),
+        api.get<Match[]>('/matches'),
+      ]).then(([msgRes, matchRes]) => {
+        setMessages(msgRes.data);
+        const found = matchRes.data.find((m) => m._id === matchId) || null;
+        setMatch(found);
+        if (found?.exitRatedBy) setExitRated(true);
+        if (found?.exitRating) setExitRating(found.exitRating);
+      }).catch(() => {});
+    };
+
+    socket.on('connect', onReconnect);
     socket.on('new_message', onMessage);
     socket.on('typing_start', onTypingStart);
     socket.on('typing_stop', onTypingStop);
 
     return () => {
       socket.emit('leave_match', matchId);
-      socket.off('connect', joinRoom);
+      socket.off('connect', onReconnect);
       socket.off('new_message', onMessage);
       socket.off('typing_start', onTypingStart);
       socket.off('typing_stop', onTypingStop);
