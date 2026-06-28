@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import type { User } from '../types';
 import ProfileCard from '../components/ProfileCard';
+import LocationPicker from '../components/LocationPicker';
 
 function scoreColor(score: number): string {
   if (score >= 95) return '#48bb78';
@@ -97,6 +98,8 @@ const Profile = () => {
   const [hometown, setHometown] = useState(user?.hometown || '');
   const [locationCity, setLocationCity] = useState(user?.location?.city || '');
   const [locationState, setLocationState] = useState(user?.location?.state || '');
+  const [locationLat, setLocationLat] = useState<number | null>(user?.location?.lat ?? null);
+  const [locationLng, setLocationLng] = useState<number | null>(user?.location?.lng ?? null);
   const [zodiacSign, setZodiacSign] = useState(user?.zodiacSign || '');
   const [pets, setPets] = useState(user?.pets || '');
   const [hasChildren, setHasChildren] = useState(
@@ -141,7 +144,7 @@ const Profile = () => {
       name, age: Number(age), bio, pronouns, sexuality, interestedIn,
       height: height ? Number(height) : null,
       ethnicity, hometown,
-      location: { city: locationCity, state: locationState },
+      location: { city: locationCity, state: locationState, lat: locationLat, lng: locationLng },
       zodiacSign, pets,
       hasChildren: hasChildren === '' ? null : hasChildren === 'yes',
       familyPlans, jobTitle, work, school, educationLevel,
@@ -369,17 +372,19 @@ const Profile = () => {
         </Section>
 
         <Section label="Location" open={openLocation} onToggle={() => setOpenLocation((v) => !v)}>
-          <div className="profile-selects-row">
-            <div className="profile-select-wrap">
-              <label className="field-label">City</label>
-              <input type="text" value={locationCity} onChange={(e) => setLocationCity(e.target.value)} placeholder="Current city" />
-            </div>
-            <div className="profile-select-wrap">
-              <label className="field-label">State</label>
-              <input type="text" value={locationState} onChange={(e) => setLocationState(e.target.value)} placeholder="State" />
-            </div>
-          </div>
-          <div className="profile-select-wrap">
+          <LocationPicker
+            city={locationCity}
+            state={locationState}
+            lat={locationLat}
+            lng={locationLng}
+            onChange={(city, state, lat, lng) => {
+              setLocationCity(city);
+              setLocationState(state);
+              setLocationLat(lat);
+              setLocationLng(lng);
+            }}
+          />
+          <div className="profile-select-wrap" style={{ marginTop: 16 }}>
             <label className="field-label">Hometown</label>
             <input type="text" value={hometown} onChange={(e) => setHometown(e.target.value)} placeholder="Where you grew up" />
           </div>

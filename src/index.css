@@ -1067,6 +1067,55 @@ form button[type="submit"]:disabled {
   gap: 12px;
 }
 
+/* ── Location map picker ────────────────────────────── */
+.location-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.location-picker-map {
+  width: 100%;
+  height: 280px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.location-picker-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  text-align: center;
+}
+
+.location-picker-result {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: center;
+}
+
+.location-picker-loading {
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.location-picker-error {
+  color: #fc8181;
+  font-size: 14px;
+  text-align: center;
+  margin: 0;
+}
+
 /* ── Prompts section ─────────────────────────────────── */
 .profile-prompts-hint {
   font-size: 13px;
