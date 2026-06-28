@@ -947,19 +947,30 @@ form button[type="submit"]:disabled {
 }
 
 .pcard-detail-chips {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+  padding: 4px 0;
   line-height: 1.8;
 }
+.pcard-detail-chips::-webkit-scrollbar { display: none; }
+.pcard-detail-chips.dragging { cursor: grabbing; }
 
 .pcard-detail-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   color: var(--text-primary);
   font-size: 17px;
   font-weight: 400;
   white-space: nowrap;
-  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 .pcard-chip-icon {
@@ -970,9 +981,12 @@ form button[type="submit"]:disabled {
 }
 
 .pcard-detail-sep {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
   color: rgba(255,255,255,0.25);
   font-size: 15px;
+  margin: 0 10px;
+  flex-shrink: 0;
 }
 
 /* ── Hobbies section on ProfileCard ─────────────────── */
@@ -1204,11 +1218,6 @@ form button[type="submit"]:disabled {
   justify-content: flex-end;
   margin-top: 12px;
   margin-bottom: 0;
-}
-
-.pcard-detail-chips {
-  text-align: center;
-  line-height: 1.8;
 }
 
 /* ── Pass button — fixed bottom left ────────────────── */

@@ -1,3 +1,4 @@
+import { useRef, useCallback } from 'react';
 import type { User } from '../types';
 
 function scoreColor(score: number): string {
@@ -115,17 +116,55 @@ export function buildDetails(p: User): DetailChip[] {
   return chips;
 }
 
-const ChipRow = ({ chips }: { chips: DetailChip[] }) => (
-  <div className="pcard-detail-chips">
-    {chips.map((chip, i) => (
-      <span key={chip.label} className="pcard-detail-chip">
-        <span className="pcard-chip-icon">{chip.icon}</span>
-        {chip.label}
-        {i < chips.length - 1 && <span className="pcard-detail-sep"> | </span>}
-      </span>
-    ))}
-  </div>
-);
+const ChipRow = ({ chips }: { chips: DetailChip[] }) => {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const drag = useRef({ active: false, startX: 0, scrollLeft: 0 });
+
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    const el = rowRef.current;
+    if (!el) return;
+    drag.current = { active: true, startX: e.pageX - el.offsetLeft, scrollLeft: el.scrollLeft };
+    el.classList.add('dragging');
+  }, []);
+
+  const onMouseLeave = useCallback(() => {
+    drag.current.active = false;
+    rowRef.current?.classList.remove('dragging');
+  }, []);
+
+  const onMouseUp = useCallback(() => {
+    drag.current.active = false;
+    rowRef.current?.classList.remove('dragging');
+  }, []);
+
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!drag.current.active) return;
+    e.preventDefault();
+    const el = rowRef.current;
+    if (!el) return;
+    const x = e.pageX - el.offsetLeft;
+    el.scrollLeft = drag.current.scrollLeft - (x - drag.current.startX) * 1.5;
+  }, []);
+
+  return (
+    <div
+      ref={rowRef}
+      className="pcard-detail-chips"
+      onMouseDown={onMouseDown}
+      onMouseLeave={onMouseLeave}
+      onMouseUp={onMouseUp}
+      onMouseMove={onMouseMove}
+    >
+      {chips.map((chip, i) => (
+        <span key={chip.label || i} className="pcard-detail-chip">
+          {chip.icon && <span className="pcard-chip-icon">{chip.icon}</span>}
+          {chip.label}
+          {i < chips.length - 1 && <span className="pcard-detail-sep">|</span>}
+        </span>
+      ))}
+    </div>
+  );
+};
 
 export type LikeSection = 'photo' | 'bio' | 'details';
 
