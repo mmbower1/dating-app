@@ -1,48 +1,127 @@
 import type { User } from '../types';
 
 function scoreColor(score: number): string {
-  if (score >= 95) return '#48bb78';          // rich green
-  if (score >= 90) return '#68d391';          // light green
-  if (score >= 85) return '#9ae05a';          // green-yellow
-  if (score >= 80) return '#c6e04a';          // yellow-green
-  if (score >= 75) return '#ecc94b';          // yellow
-  if (score >= 70) return '#ed8936';          // orange
-  return '#fc8181';                           // red
+  if (score >= 95) return '#48bb78';
+  if (score >= 90) return '#68d391';
+  if (score >= 85) return '#9ae05a';
+  if (score >= 80) return '#c6e04a';
+  if (score >= 75) return '#ecc94b';
+  if (score >= 70) return '#ed8936';
+  return '#fc8181';
 }
 
 function inToDisplay(inches: number) {
   return `${Math.floor(inches / 12)}'${inches % 12}"`;
 }
 
-export function buildAbout(p: User): string[] {
-  const chips: string[] = [];
-  chips.push(`${p.age}`);
-  chips.push(p.gender.charAt(0).toUpperCase() + p.gender.slice(1));
-  if (p.height) chips.push(inToDisplay(p.height));
-  if (p.location?.city) chips.push(`${p.location.city}${p.location.state ? `, ${p.location.state}` : ''}`);
-  if (p.hasChildren != null) chips.push(p.hasChildren ? 'Has kids' : 'No kids');
-  if (p.pets) chips.push(p.pets);
-  if (p.zodiacSign) chips.push(p.zodiacSign);
+type DetailChip = { label: string; icon: React.ReactNode };
+
+const I = {
+  person: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    </svg>
+  ),
+  ruler: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21.3 8.7 8.7 21.3c-.99.99-2.59.99-3.58 0l-2.4-2.4c-.99-.99-.99-2.59 0-3.58L15.3 2.7c.99-.99 2.59-.99 3.58 0l2.4 2.4c.99.99.99 2.59 0 3.6Z"/>
+      <path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/>
+    </svg>
+  ),
+  mapPin: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+    </svg>
+  ),
+  users: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  ),
+  paw: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/>
+      <path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/>
+      <circle cx="4" cy="8" r="2"/>
+    </svg>
+  ),
+  star: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  ),
+  graduationCap: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+    </svg>
+  ),
+  briefcase: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+    </svg>
+  ),
+  glass: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="m5 3 2 7h10l2-7Z"/>
+    </svg>
+  ),
+  wind: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>
+    </svg>
+  ),
+  sparkles: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+      <path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>
+    </svg>
+  ),
+  landmark: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/>
+      <line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/>
+      <line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>
+    </svg>
+  ),
+  heart: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+  ),
+};
+
+export function buildAbout(p: User): DetailChip[] {
+  const chips: DetailChip[] = [];
+  chips.push({ label: `${p.age}`, icon: I.person });
+  chips.push({ label: p.gender.charAt(0).toUpperCase() + p.gender.slice(1), icon: I.person });
+  if (p.height) chips.push({ label: inToDisplay(p.height), icon: I.ruler });
+  if (p.location?.city) chips.push({ label: `${p.location.city}${p.location.state ? `, ${p.location.state}` : ''}`, icon: I.mapPin });
+  if (p.hasChildren != null) chips.push({ label: p.hasChildren ? 'Has kids' : 'No kids', icon: I.users });
+  if (p.pets) chips.push({ label: p.pets, icon: I.paw });
+  if (p.zodiacSign) chips.push({ label: p.zodiacSign, icon: I.star });
   return chips;
 }
 
-export function buildDetails(p: User): string[] {
-  const chips: string[] = [];
-  if (p.educationLevel) chips.push(p.educationLevel);
-  if (p.jobTitle) chips.push(p.jobTitle);
-  if (p.drinks) chips.push(`Drinks ${p.drinks.toLowerCase()}`);
-  if (p.smokes) chips.push(`Smokes ${p.smokes.toLowerCase()}`);
-  if (p.religion) chips.push(p.religion);
-  if (p.politicalAssociation) chips.push(p.politicalAssociation);
-  if (p.familyPlans) chips.push(p.familyPlans);
+export function buildDetails(p: User): DetailChip[] {
+  const chips: DetailChip[] = [];
+  if (p.educationLevel) chips.push({ label: p.educationLevel, icon: I.graduationCap });
+  if (p.jobTitle) chips.push({ label: p.jobTitle, icon: I.briefcase });
+  if (p.drinks) chips.push({ label: `Drinks ${p.drinks.toLowerCase()}`, icon: I.glass });
+  if (p.smokes) chips.push({ label: `Smokes ${p.smokes.toLowerCase()}`, icon: I.wind });
+  if (p.religion) chips.push({ label: p.religion, icon: I.sparkles });
+  if (p.politicalAssociation) chips.push({ label: p.politicalAssociation, icon: I.landmark });
+  if (p.familyPlans) chips.push({ label: p.familyPlans, icon: I.heart });
   return chips;
 }
 
-const ChipRow = ({ chips }: { chips: string[] }) => (
+const ChipRow = ({ chips }: { chips: DetailChip[] }) => (
   <div className="pcard-detail-chips">
-    {chips.map((label, i) => (
-      <span key={label} className="pcard-detail-chip">
-        {label}{i < chips.length - 1 && <span className="pcard-detail-sep"> | </span>}
+    {chips.map((chip, i) => (
+      <span key={chip.label} className="pcard-detail-chip">
+        <span className="pcard-chip-icon">{chip.icon}</span>
+        {chip.label}
+        {i < chips.length - 1 && <span className="pcard-detail-sep"> | </span>}
       </span>
     ))}
   </div>
@@ -150,7 +229,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {profile.hobbies && profile.hobbies.length > 0 && (
         <div className="pcard-item pcard-item--text">
           <p className="pcard-section-label">Hobbies</p>
-          <ChipRow chips={profile.hobbies} />
+          <ChipRow chips={profile.hobbies.map((h) => ({ label: h, icon: null }))} />
         </div>
       )}
 
