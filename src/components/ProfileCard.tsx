@@ -38,6 +38,16 @@ export function buildDetails(p: User): string[] {
   return chips;
 }
 
+const ChipRow = ({ chips }: { chips: string[] }) => (
+  <div className="pcard-detail-chips">
+    {chips.map((label, i) => (
+      <span key={label} className="pcard-detail-chip">
+        {label}{i < chips.length - 1 && <span className="pcard-detail-sep"> | </span>}
+      </span>
+    ))}
+  </div>
+);
+
 export type LikeSection = 'photo' | 'bio' | 'details';
 
 
@@ -95,11 +105,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
 
       {/* About chips */}
       <div className="pcard-item pcard-item--text">
-        <div className="pcard-detail-chips">
-          {about.map((label) => (
-            <span key={label} className="pcard-detail-chip">{label}</span>
-          ))}
-        </div>
+        <ChipRow chips={about} />
       </div>
 
       {/* Photo 2 */}
@@ -128,11 +134,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {/* Lifestyle details — after photo 3 */}
       {details.length > 0 && (
         <div className="pcard-item pcard-item--text">
-          <div className="pcard-detail-chips">
-            {details.map((label) => (
-              <span key={label} className="pcard-detail-chip">{label}</span>
-            ))}
-          </div>
+          <ChipRow chips={details} />
         </div>
       )}
 
@@ -148,11 +150,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {profile.hobbies && profile.hobbies.length > 0 && (
         <div className="pcard-item pcard-item--text">
           <p className="pcard-section-label">Hobbies</p>
-          <div className="pcard-detail-chips">
-            {profile.hobbies.map((h) => (
-              <span key={h} className="pcard-detail-chip">{h}</span>
-            ))}
-          </div>
+          <ChipRow chips={profile.hobbies} />
         </div>
       )}
 
