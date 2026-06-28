@@ -47,9 +47,33 @@ const I = {
       <circle cx="4" cy="8" r="2"/>
     </svg>
   ),
-  star: (
+  cupcake: (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      {/* frosting swirl */}
+      <path d="M12 3c-1.2 0-2 .8-2 1.8 0 .7.4 1.2 1 1.5-.6.3-1 .9-1 1.7"/>
+      <path d="M12 3c1.2 0 2 .8 2 1.8 0 .7-.4 1.2-1 1.5.6.3 1 .9 1 1.7"/>
+      {/* frosting base / cake dome */}
+      <path d="M7 8C7 8 7.5 12 12 12s5-4 5-4"/>
+      {/* liner */}
+      <path d="M6.5 12h11l-1.5 9h-8L6.5 12z"/>
+      {/* liner crease line */}
+      <line x1="7" y1="16" x2="17" y2="16"/>
+    </svg>
+  ),
+  constellation: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* connecting lines first so dots render on top */}
+      <line x1="5" y1="6" x2="13" y2="3"/>
+      <line x1="13" y1="3" x2="20" y2="8"/>
+      <line x1="20" y1="8" x2="16" y2="17"/>
+      <line x1="16" y1="17" x2="8" y2="20"/>
+      <line x1="8" y1="20" x2="5" y2="6"/>
+      {/* star dots */}
+      <circle cx="5"  cy="6"  r="2" fill="currentColor" stroke="none"/>
+      <circle cx="13" cy="3"  r="2" fill="currentColor" stroke="none"/>
+      <circle cx="20" cy="8"  r="2" fill="currentColor" stroke="none"/>
+      <circle cx="16" cy="17" r="2" fill="currentColor" stroke="none"/>
+      <circle cx="8"  cy="20" r="2" fill="currentColor" stroke="none"/>
     </svg>
   ),
   graduationCap: (
@@ -94,13 +118,13 @@ const I = {
 
 export function buildAbout(p: User): DetailChip[] {
   const chips: DetailChip[] = [];
-  chips.push({ label: `${p.age}`, icon: I.person });
+  chips.push({ label: `${p.age}`, icon: I.cupcake });
   chips.push({ label: p.gender.charAt(0).toUpperCase() + p.gender.slice(1), icon: I.person });
   if (p.height) chips.push({ label: inToDisplay(p.height), icon: I.ruler });
   if (p.location?.city) chips.push({ label: `${p.location.city}${p.location.state ? `, ${p.location.state}` : ''}`, icon: I.mapPin });
   if (p.hasChildren != null) chips.push({ label: p.hasChildren ? 'Has kids' : 'No kids', icon: I.users });
   if (p.pets) chips.push({ label: p.pets, icon: I.paw });
-  if (p.zodiacSign) chips.push({ label: p.zodiacSign, icon: I.star });
+  if (p.zodiacSign) chips.push({ label: p.zodiacSign, icon: I.constellation });
   return chips;
 }
 
