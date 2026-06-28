@@ -276,7 +276,6 @@ const Chat = () => {
     setShowExitModal(false);
     await api.patch(`/matches/${matchId}/exit`, { reason, metInPerson });
     setShowFarewell(true);
-    setTimeout(() => navigate('/'), 5000);
   };
 
   const submitReport = async (category: ReportCategory, description: string) => {
@@ -393,6 +392,7 @@ const Chat = () => {
 
       {showFarewell && (
         <div className="farewell-overlay">
+          <button className="farewell-close" onClick={() => navigate('/')} aria-label="Close">✕</button>
           <div className="farewell-content">
             <p className="farewell-emoji">🌊</p>
             <h2 className="farewell-title">Sorry it didn't work out.</h2>
@@ -400,9 +400,6 @@ const Chat = () => {
               Wishing you the best on your next connection —<br />
               hopefully the last one you'll need.
             </p>
-            <button className="farewell-btn" onClick={() => navigate('/')}>
-              Keep discovering
-            </button>
           </div>
         </div>
       )}

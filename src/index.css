@@ -3446,6 +3446,20 @@ form button[type="submit"]:disabled {
   justify-content: center;
   animation: celebFadeIn 0.4s ease;
 }
+.farewell-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  opacity: 0.7;
+  line-height: 1;
+  padding: 4px;
+}
+.farewell-close:hover { opacity: 1; }
 
 .farewell-content {
   text-align: center;
