@@ -1236,15 +1236,23 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-card);
-  border: 2px solid var(--border-light);
-  color: var(--text-secondary);
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  transition: transform 0.15s, border-color 0.15s, color 0.15s;
+  transition: transform 0.15s, opacity 0.15s;
+  border: none;
 }
-.pass-btn:hover  { border-color: #fc8181; color: #fc8181; transform: scale(1.08); }
+.pass-btn {
+  background: rgba(252, 129, 129, 0.15);
+  border: 2px solid #fc8181;
+  color: #fc8181;
+}
+.like-btn {
+  background: rgba(72, 187, 120, 0.15);
+  border: 2px solid #48bb78;
+  color: #48bb78;
+}
+.pass-btn:hover  { opacity: 0.85; transform: scale(1.08); }
 .pass-btn:active { transform: scale(0.93); }
-.like-btn:hover  { border-color: #b39dfa; color: #b39dfa; transform: scale(1.08); }
+.like-btn:hover  { opacity: 0.85; transform: scale(1.08); }
 .like-btn:active { transform: scale(0.93); }
 
 /* ── Like sheet ──────────────────────────────────────── */
