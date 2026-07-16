@@ -1,4 +1,4 @@
-# Pearl
+# LoveLocked
 
 A modern dating app built for genuine connections. Pearl limits users to one active match at a time, encouraging real conversations over endless swiping.
 
