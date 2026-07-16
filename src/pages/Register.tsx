@@ -74,7 +74,7 @@ const Register = () => {
     if (!form.interestedIn.length) { setError('Please select who you are interested in'); return; }
     if (!form.dateOfBirth) { setError('Please enter your date of birth'); return; }
     const age = calcAgeFromDob(form.dateOfBirth);
-    if (age < 18) { setError('You must be 18 or older to join Pearl'); return; }
+    if (age < 18) { setError('You must be 18 or older to join LoveLocked'); return; }
     if (!ageConfirmed) { setError('Please confirm you are 18 years of age or older'); return; }
     setLoading(true);
     try {
@@ -165,7 +165,7 @@ const Register = () => {
               required
             />
             {form.dateOfBirth && calcAgeFromDob(form.dateOfBirth) < 18 && (
-              <p className="error" style={{ marginTop: 4, marginBottom: 0 }}>You must be 18 or older to join Pearl.</p>
+              <p className="error" style={{ marginTop: 4, marginBottom: 0 }}>You must be 18 or older to join LoveLocked.</p>
             )}
             <label className="age-confirm-label">
               <input

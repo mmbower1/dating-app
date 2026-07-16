@@ -11,12 +11,12 @@ const Footer = () => (
       <div className="footer-links">
         <div className="footer-col">
           <h4>App</h4>
-          <Link to="/welcome">About Pearl</Link>
+          <Link to="/welcome">About LoveLocked</Link>
           <Link to="/welcome">How it works</Link>
         </div>
         <div className="footer-col">
           <h4>Support</h4>
-          <a href="mailto:support@pearlapp.com">Contact Us</a>
+          <a href="mailto:support@lovelockedapp.com">Contact Us</a>
         </div>
         <div className="footer-col">
           <h4>Legal</h4>
@@ -26,7 +26,7 @@ const Footer = () => (
       </div>
     </div>
     <div className="footer-bottom">
-      <span>© {new Date().getFullYear()} Pearl. All rights reserved.</span>
+      <span>© {new Date().getFullYear()} LoveLocked. All rights reserved.</span>
       <span className="footer-motto">Show up. Stay present.</span>
     </div>
   </footer>

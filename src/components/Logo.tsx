@@ -8,7 +8,7 @@ const textSizes = { sm: '22px', md: '30px', lg: '48px' };
 
 const Logo = ({ size = 'md', showText = true }: LogoProps) => {
   const px = sizes[size];
-  const id = `pearl-${size}`;
+  const id = `lovelocked-${size}`;
 
   return (
     <div className="logo-lockup" style={{ gap: size === 'lg' ? 12 : 7 }}>
@@ -26,7 +26,7 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
             <stop offset="100%" stopColor="currentColor" stopOpacity="1" />
           </radialGradient>
         </defs>
-        {/* Pearl body */}
+        {/* LoveLocked body */}
         <circle cx="20" cy="20" r="17" fill={`url(#${id})`} />
         {/* Outer ring shimmer */}
         <circle cx="20" cy="20" r="17" stroke="currentColor" strokeWidth="1" opacity="0.4" fill="none" />
@@ -38,7 +38,7 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
 
       {showText && (
         <span className="logo-text" style={{ fontSize: textSizes[size] }}>
-          Pearl
+          LoveLocked
         </span>
       )}
     </div>

@@ -53,7 +53,7 @@ const ProfileIcon = () => (
   </svg>
 );
 
-const SEEN_MATCH_KEY = 'pearl_seen_match';
+const SEEN_MATCH_KEY = 'lovelocked_seen_match';
 
 const Nav = () => {
   const { user } = useAuth();

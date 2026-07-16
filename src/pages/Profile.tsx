@@ -580,13 +580,13 @@ const Profile = () => {
       {notifStatus === 'denied' && <p className="notif-denied">Notifications blocked — enable in browser settings</p>}
 
       <div className="profile-footer-links">
-        <a href="mailto:support@pearlapp.com" className="profile-footer-link">Contact Us</a>
+        <a href="mailto:support@lovelockedapp.com" className="profile-footer-link">Contact Us</a>
         <span className="profile-footer-dot">·</span>
         <a href="/privacy" className="profile-footer-link">Privacy Policy</a>
         <span className="profile-footer-dot">·</span>
         <a href="/terms" className="profile-footer-link">Terms of Service</a>
       </div>
-      <p className="profile-footer-copy">© {new Date().getFullYear()} Pearl. All rights reserved.</p>
+      <p className="profile-footer-copy">© {new Date().getFullYear()} LoveLocked. All rights reserved.</p>
 
       {showPreview && (
         <div className="preview-overlay">

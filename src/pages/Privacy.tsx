@@ -22,7 +22,7 @@ const Privacy = () => {
 
         <h2>2. How we use your information</h2>
         <ul>
-          <li>To operate and improve Pearl</li>
+          <li>To operate and improve LoveLocked</li>
           <li>To calculate and display your accountability score</li>
           <li>To send push notifications about matches and messages</li>
           <li>To enforce our Terms of Service</li>
@@ -35,22 +35,22 @@ const Privacy = () => {
         <p>We do not sell your personal data. We do not share your data with third parties except as required to operate the service (hosting, storage) or by law.</p>
 
         <h2>5. Your profile visibility</h2>
-        <p>Your name, age, photos, bio, and accountability score are visible to other Pearl users. Your email, phone number, and exact location are never shared with other users.</p>
+        <p>Your name, age, photos, bio, and accountability score are visible to other LoveLocked users. Your email, phone number, and exact location are never shared with other users.</p>
 
         <h2>6. Push notifications</h2>
         <p>If you opt in to push notifications, we store your device subscription to deliver match and message alerts. You can revoke this at any time in your device settings.</p>
 
         <h2>7. Data deletion</h2>
-        <p>You may request deletion of your account and all associated data by contacting us at support@pearlapp.com. We will process requests within 30 days.</p>
+        <p>You may request deletion of your account and all associated data by contacting us at support@lovelockedapp.com. We will process requests within 30 days.</p>
 
         <h2>8. Children</h2>
-        <p>Pearl is not intended for users under 18. We do not knowingly collect data from minors.</p>
+        <p>LoveLocked is not intended for users under 18. We do not knowingly collect data from minors.</p>
 
         <h2>9. Changes</h2>
         <p>We may update this policy. We will notify users of material changes via the app.</p>
 
         <h2>10. Contact</h2>
-        <p>Privacy questions: support@pearlapp.com</p>
+        <p>Privacy questions: support@lovelockedapp.com</p>
       </div>
     </div>
   );

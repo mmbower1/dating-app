@@ -188,7 +188,7 @@ router.post('/upload-photo', protect, upload.single('photo'), async (req: AuthRe
 
     const url = await new Promise<string>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: 'pearl-dating', transformation: [{ width: 800, height: 1000, crop: 'fill', quality: 'auto' }] },
+        { folder: 'lovelocked-dating', transformation: [{ width: 800, height: 1000, crop: 'fill', quality: 'auto' }] },
         (err, result) => { if (err || !result) reject(err); else resolve(result.secure_url); }
       );
       Readable.from(req.file!.buffer).pipe(stream);

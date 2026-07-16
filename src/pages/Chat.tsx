@@ -42,7 +42,7 @@ const ReportModal = ({
         {done ? (
           <div style={{ textAlign: 'center', padding: '24px 0' }}>
             <p style={{ fontSize: 18, fontWeight: 600 }}>Report submitted</p>
-            <p style={{ fontSize: 14, opacity: 0.7, marginTop: 6 }}>Thank you for keeping Pearl safe.</p>
+            <p style={{ fontSize: 14, opacity: 0.7, marginTop: 6 }}>Thank you for keeping LoveLocked safe.</p>
           </div>
         ) : (
           <>
@@ -110,7 +110,7 @@ const GracefulExitModal = ({
         <p className="modal-body">
           {metInPerson
             ? "Glad you gave it a real shot. What didn't click?"
-            : "Your message will be sent directly to them. Unmatching without a thoughtful reason can lower your Pearl score."}
+            : "Your message will be sent directly to them. Unmatching without a thoughtful reason can lower your LoveLocked score."}
         </p>
 
         <button
