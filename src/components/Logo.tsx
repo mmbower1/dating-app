@@ -14,9 +14,9 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
       <svg
         width={px}
         height={px}
-        viewBox="-2 -2 44 44"
+        viewBox="-5 -5 50 50"
         fill="none"
-        style={{ overflow: 'visible' }}
+        overflow="visible"
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Shackle arch */}
