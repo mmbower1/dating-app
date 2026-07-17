@@ -137,8 +137,9 @@ h1, h2, h3 {
   align-items: center;
   padding: 14px 20px;
   background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.09);
   backdrop-filter: blur(12px);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.25);
 }
 
 /* ── Inputs & Buttons ──────────────────────────────── */
@@ -378,12 +379,13 @@ form button[type="submit"]:disabled {
   max-width: 1200px;
   height: var(--nav-height);
   background: var(--bg-secondary);
-  border-top: none;
+  border-top: 1px solid rgba(255,255,255,0.09);
   display: flex;
   align-items: center;
   justify-content: space-around;
   z-index: 100;
   backdrop-filter: blur(12px);
+  box-shadow: 0 -2px 20px rgba(0,0,0,0.3);
 }
 
 .bottom-nav::before {
@@ -394,7 +396,7 @@ form button[type="submit"]:disabled {
   right: 0;
   height: 1px;
   background: var(--gradient);
-  opacity: 0.6;
+  opacity: 0.35;
 }
 
 .nav-item {
@@ -867,15 +869,26 @@ form button[type="submit"]:disabled {
   width: 100%;
   background: var(--bg-card);
   border-radius: 20px;
-  /* border: 1px solid var(--border); */
+  border: 1px solid rgba(255,255,255,0.08);
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.07);
 }
 
 /* Photo items */
 .pcard-item--photo {
   position: relative;
   aspect-ratio: 4/4.2;
+}
+
+.pcard-item--photo::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: linear-gradient(to bottom, transparent, var(--bg-card));
+  pointer-events: none;
 }
 
 .pcard-photo-img {
@@ -918,13 +931,14 @@ form button[type="submit"]:disabled {
 }
 
 .pcard-score {
-  background: var(--bg-card);
-  border: none;
+  background: rgba(179,157,250,0.08);
+  border: 1px solid rgba(179,157,250,0.3);
   color: var(--accent-purple);
   font-size: 19px;
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 20px;
+  box-shadow: 0 0 10px rgba(179,157,250,0.12);
 }
 
 .pcard-location {
@@ -1293,23 +1307,24 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  transition: transform 0.15s, opacity 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s;
   border: none;
 }
 .pass-btn {
-  background: rgba(252, 129, 129, 0.15);
-  border: 2px solid #fc8181;
+  background: rgba(252, 129, 129, 0.12);
+  border: 2px solid rgba(252,129,129,0.8);
   color: #fc8181;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 0 rgba(252,129,129,0);
 }
 .like-btn {
-  background: rgba(72, 187, 120, 0.15);
-  border: 2px solid #48bb78;
+  background: rgba(72, 187, 120, 0.12);
+  border: 2px solid rgba(72,187,120,0.8);
   color: #48bb78;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 0 rgba(72,187,120,0);
 }
-.pass-btn:hover  { opacity: 0.85; transform: scale(1.08); }
+.pass-btn:hover  { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 0 16px rgba(252,129,129,0.35); }
 .pass-btn:active { transform: scale(0.93); }
-.like-btn:hover  { opacity: 0.85; transform: scale(1.08); }
+.like-btn:hover  { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 0 16px rgba(72,187,120,0.35); }
 .like-btn:active { transform: scale(0.93); }
 
 /* ── Like sheet ──────────────────────────────────────── */
