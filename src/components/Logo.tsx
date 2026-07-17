@@ -14,7 +14,7 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
       <svg
         width={px}
         height={px}
-        viewBox="0 0 40 40"
+        viewBox="-2 -2 44 44"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
