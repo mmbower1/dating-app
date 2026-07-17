@@ -224,12 +224,12 @@ const Home = () => {
   if (locked) {
     return (
       <div className="page-center locked-state">
-        <h2 className="locked-title">You have an active connection!</h2>
+        <h2 className="locked-title">You have 2 active connections!</h2>
         <p className="locked-body">
-          Lockheart is built for genuine connections. Focus on the person you matched with before exploring more.
+          Lockheart is built for genuine connections. Focus on your matches before exploring more.
         </p>
         <button className="locked-cta" onClick={() => navigate('/matches')}>
-          Go to your match
+          Go to your matches
         </button>
       </div>
     );

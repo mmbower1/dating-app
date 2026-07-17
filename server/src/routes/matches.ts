@@ -13,8 +13,8 @@ const router = Router();
 // Like a user — creates a match if mutual. Optional comment becomes first message.
 router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const activeMatch = await Match.findOne({ 'users.userId': req.userId, active: true });
-    if (activeMatch) { res.status(403).json({ message: 'Swiping is locked while you have an active match.' }); return; }
+    const activeMatchCount = await Match.countDocuments({ 'users.userId': req.userId, active: true });
+    if (activeMatchCount >= 2) { res.status(403).json({ message: 'Swiping is locked while you have 2 active matches.' }); return; }
 
     const UserModel = getUserModel(req.userGender!);
     const me = await UserModel.findById(req.userId);
@@ -102,8 +102,8 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 // Pass on a user
 router.post('/pass/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const activeMatch = await Match.findOne({ 'users.userId': req.userId, active: true });
-    if (activeMatch) { res.status(403).json({ message: 'Swiping is locked while you have an active match.' }); return; }
+    const activeMatchCount = await Match.countDocuments({ 'users.userId': req.userId, active: true });
+    if (activeMatchCount >= 2) { res.status(403).json({ message: 'Swiping is locked while you have 2 active matches.' }); return; }
 
     const UserModel = getUserModel(req.userGender!);
     const me = await UserModel.findById(req.userId);

@@ -36,8 +36,8 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
     const me = await UserModel.findById(req.userId);
     if (!me) { res.status(404).json({ message: 'User not found' }); return; }
 
-    const activeMatch = await Match.findOne({ 'users.userId': me._id, active: true });
-    if (activeMatch) { res.json({ locked: true }); return; }
+    const activeMatchCount = await Match.countDocuments({ 'users.userId': me._id, active: true });
+    if (activeMatchCount >= 2) { res.json({ locked: true }); return; }
 
     const hardExcluded = [me._id, ...me.likedUsers, ...me.blockedUsers];
     const excluded = [...hardExcluded, ...me.passedUsers];

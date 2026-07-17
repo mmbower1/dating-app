@@ -3,8 +3,8 @@ import Logo from '../components/Logo';
 
 const pillars = [
   {
-    title: 'One connection at a time',
-    body: 'When you match, swiping pauses. Lockheart asks you to be present with the person in front of you.',
+    title: 'Two connections at a time',
+    body: 'Once you have 2 active matches, swiping pauses. Lockheart keeps your focus where it matters.',
   },
   {
     title: 'Graceful goodbyes',

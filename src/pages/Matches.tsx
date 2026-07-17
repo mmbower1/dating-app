@@ -61,7 +61,7 @@ const Matches = () => {
         </div>
         <p className="no-match-title">No match yet</p>
         <p className="no-match-sub">The right person is worth the wait.</p>
-        <p className="no-match-note">When you match, swiping pauses so you can give that person your full attention.</p>
+        <p className="no-match-note">Once you have 2 active matches, swiping pauses so you can give them your full attention.</p>
       </div>
     );
   }
