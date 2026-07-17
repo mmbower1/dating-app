@@ -39,6 +39,12 @@ const Welcome = () => {
       <section className="welcome-hero">
         <h1 className="welcome-headline">Dating the way<br />it should be.</h1>
         <p className="welcome-tagline">Real connections. No games. No ghosting.</p>
+        <div className="welcome-hero-image">
+          <img
+            src="https://images.unsplash.com/photo-1496602910407-bacda74a0fe4?w=1400&h=700&fit=crop&q=80&auto=format"
+            alt="Couple watching the sunset together"
+          />
+        </div>
       </section>
 
       {/* ── Pillars ── */}
