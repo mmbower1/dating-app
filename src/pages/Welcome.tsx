@@ -41,8 +41,8 @@ const Welcome = () => {
         <p className="welcome-tagline">Real connections. No games. No ghosting.</p>
         <div className="welcome-hero-image">
           <img
-            src="https://images.unsplash.com/photo-1496602910407-bacda74a0fe4?w=1400&h=700&fit=crop&q=80&auto=format"
-            alt="Couple watching the sunset together"
+            src="https://images.unsplash.com/photo-1527184478405-b1cf212ab2a3?w=1400&h=700&fit=crop&q=80&auto=format"
+            alt="Man and woman facing each other"
           />
         </div>
       </section>
