@@ -11,6 +11,7 @@ export interface IMatch extends Document {
   users: IMatchUser[];
   active: boolean;
   lastMessageAt: Date | null;
+  slowResponsePenalties: number;
   conversationEndedAt: Date | null;
   endedBy: mongoose.Types.ObjectId | null;
   endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | null;
@@ -38,6 +39,7 @@ const MatchSchema = new Schema<IMatch>(
     },
     active: { type: Boolean, default: true },
     lastMessageAt: { type: Date, default: null },
+    slowResponsePenalties: { type: Number, default: 0 },
     conversationEndedAt: { type: Date, default: null },
     endedBy: { type: Schema.Types.ObjectId, default: null },
     endReason: {

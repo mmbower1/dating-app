@@ -45,6 +45,7 @@ router.post('/:matchId', protect, async (req: AuthRequest, res: Response): Promi
     });
 
     match.lastMessageAt = new Date();
+    match.slowResponsePenalties = 0;
     await match.save();
 
     // Broadcast to everyone in the match room in real time

@@ -12,6 +12,7 @@ import matchRoutes from './routes/matches';
 import messageRoutes from './routes/messages';
 import adminRoutes from './routes/admin';
 import reportRoutes from './routes/reports';
+import { checkSlowResponders } from './utils/slowResponseCheck';
 
 dotenv.config();
 
@@ -99,6 +100,11 @@ mongoose
   .then(() => {
     console.log('Connected to MongoDB');
     httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+    // Check every hour for users who haven't responded in 18+ hours
+    setInterval(() => {
+      checkSlowResponders().catch((err) => console.error('slowResponseCheck error:', err));
+    }, 60 * 60 * 1000);
   })
   .catch((err) => {
     console.error('MongoDB connection error:', err);
