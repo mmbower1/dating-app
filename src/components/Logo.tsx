@@ -57,7 +57,7 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
 
       {showText && (
         <span className="logo-text" style={{ fontSize: textSizes[size] }}>
-          LoveLocked
+          Lockheart
         </span>
       )}
     </div>

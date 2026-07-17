@@ -4,7 +4,7 @@ import Logo from '../components/Logo';
 const pillars = [
   {
     title: 'One connection at a time',
-    body: 'When you match, swiping pauses. LoveLocked asks you to be present with the person in front of you.',
+    body: 'When you match, swiping pauses. Lockheart asks you to be present with the person in front of you.',
   },
   {
     title: 'Graceful goodbyes',
@@ -16,7 +16,7 @@ const pillars = [
   },
   {
     title: 'No infinite scrolling',
-    body: 'LoveLocked isn\'t built for browsing. It\'s built for connecting. Quality over quantity.',
+    body: 'Lockheart isn\'t built for browsing. It\'s built for connecting. Quality over quantity.',
   },
 ];
 

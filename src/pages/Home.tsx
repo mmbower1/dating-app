@@ -226,7 +226,7 @@ const Home = () => {
       <div className="page-center locked-state">
         <h2 className="locked-title">You have an active connection!</h2>
         <p className="locked-body">
-          LoveLocked is built for genuine connections. Focus on the person you matched with before exploring more.
+          Lockheart is built for genuine connections. Focus on the person you matched with before exploring more.
         </p>
         <button className="locked-cta" onClick={() => navigate('/matches')}>
           Go to your match
