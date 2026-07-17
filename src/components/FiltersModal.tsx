@@ -15,13 +15,9 @@ const ETHNICITIES = ['Asian', 'Black / African American', 'Hispanic / Latino', '
 const RELIGIONS = ['Agnostic', 'Atheist', 'Buddhist', 'Catholic', 'Christian', 'Hindu', 'Jewish', 'Muslim', 'Spiritual', 'Other'];
 const DRINKS_OPTS = ['Never', 'Socially', 'Regularly'];
 const SMOKES_OPTS = ['Never', 'Socially', 'Regularly'];
-const POLITICS_OPTS = ['Very Liberal', 'Liberal', 'Moderate', 'Conservative', 'Very Conservative', 'Apolitical'];
+const POLITICS_OPTS = ['Liberal', 'Moderate', 'Conservative', 'Apolitical'];
 const EDUCATION_OPTS = ["High School", "Some College", "Associate's", "Bachelor's", "Master's", "Doctorate", "Trade School"];
 const DISTANCE_OPTS = [10, 25, 50, 100, 150, 200];
-
-function inToDisplay(inches: number) {
-  return `${Math.floor(inches / 12)}'${inches % 12}"`;
-}
 
 const DEFAULT_FILTERS: DiscoverFilters = {
   ethnicities: [],
@@ -41,7 +37,7 @@ const FiltersModal = ({ onClose, onApply }: Props) => {
 
   const [interestedIn, setInterestedIn] = useState<string[]>(user?.interestedIn ?? []);
   const [ageMin, setAgeMin] = useState(user?.agePreference?.min ?? 18);
-  const [ageMax, setAgeMax] = useState(user?.agePreference?.max ?? 99);
+  const [ageMax, setAgeMax] = useState(user?.agePreference?.max ?? 75);
   const [filters, setFilters] = useState<DiscoverFilters>(user?.filters ?? DEFAULT_FILTERS);
   const [saving, setSaving] = useState(false);
 
@@ -63,11 +59,10 @@ const FiltersModal = ({ onClose, onApply }: Props) => {
 
   const activeCount = [
     interestedIn.length > 0 && interestedIn.length < 4 ? 1 : 0,
-    (ageMin > 18 || ageMax < 99) ? 1 : 0,
+    (ageMin > 18 || ageMax < 75) ? 1 : 0,
     filters.maxDistance != null ? 1 : 0,
     filters.ethnicities.length ? 1 : 0,
     filters.religions.length ? 1 : 0,
-    (filters.heightMin != null || filters.heightMax != null) ? 1 : 0,
     filters.hasChildren !== 'any' ? 1 : 0,
     filters.drinks.length ? 1 : 0,
     filters.smokes.length ? 1 : 0,
@@ -78,7 +73,7 @@ const FiltersModal = ({ onClose, onApply }: Props) => {
   const clearAll = () => {
     setInterestedIn([]);
     setAgeMin(18);
-    setAgeMax(99);
+    setAgeMax(75);
     setFilters(DEFAULT_FILTERS);
   };
 
@@ -141,15 +136,15 @@ const FiltersModal = ({ onClose, onApply }: Props) => {
           {/* Age range */}
           <section className="filter-section">
             <h3 className="filter-section-title">
-              Age range <span className="filter-range-label">{ageMin} – {ageMax === 99 ? '99+' : ageMax}</span>
+              Age range <span className="filter-range-label">{ageMin} – {ageMax === 75 ? '75+' : ageMax}</span>
             </h3>
             <div className="age-sliders">
-              <input type="range" min={18} max={80} value={ageMin}
+              <input type="range" min={18} max={74} value={ageMin}
                 onChange={(e) => setAgeMin(Math.min(Number(e.target.value), ageMax - 1))} />
-              <input type="range" min={18} max={99} value={ageMax}
+              <input type="range" min={18} max={75} value={ageMax}
                 onChange={(e) => setAgeMax(Math.max(Number(e.target.value), ageMin + 1))} />
             </div>
-            <div className="age-slider-caps"><span>18</span><span>99+</span></div>
+            <div className="age-slider-caps"><span>18</span><span>75+</span></div>
           </section>
 
           {/* Distance */}
@@ -193,43 +188,6 @@ const FiltersModal = ({ onClose, onApply }: Props) => {
                   className={`chip ${filters.religions.includes(r) ? 'active' : ''}`}
                   onClick={() => toggleArr('religions', r)}>{r}</button>
               ))}
-            </div>
-          </section>
-
-          {/* Height */}
-          <section className="filter-section">
-            <h3 className="filter-section-title">
-              Height <span className="filter-optional">optional</span>
-              {(filters.heightMin != null || filters.heightMax != null) && (
-                <span className="filter-range-label">
-                  {filters.heightMin != null ? inToDisplay(filters.heightMin) : "Any"} – {filters.heightMax != null ? inToDisplay(filters.heightMax) : "Any"}
-                </span>
-              )}
-            </h3>
-            <div className="height-row">
-              <div className="height-select-wrap">
-                <label className="height-label">Min</label>
-                <select className="height-select"
-                  value={filters.heightMin ?? ''}
-                  onChange={(e) => set('heightMin', e.target.value ? Number(e.target.value) : null)}>
-                  <option value="">Any</option>
-                  {Array.from({ length: 29 }, (_, i) => i + 56).map((h) => (
-                    <option key={h} value={h}>{inToDisplay(h)}</option>
-                  ))}
-                </select>
-              </div>
-              <span className="height-dash">–</span>
-              <div className="height-select-wrap">
-                <label className="height-label">Max</label>
-                <select className="height-select"
-                  value={filters.heightMax ?? ''}
-                  onChange={(e) => set('heightMax', e.target.value ? Number(e.target.value) : null)}>
-                  <option value="">Any</option>
-                  {Array.from({ length: 29 }, (_, i) => i + 56).map((h) => (
-                    <option key={h} value={h}>{inToDisplay(h)}</option>
-                  ))}
-                </select>
-              </div>
             </div>
           </section>
 
