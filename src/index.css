@@ -4153,3 +4153,97 @@ form button[type="submit"]:disabled {
   font-weight: 600;
   vertical-align: middle;
 }
+
+/* ══════════════════════════════════════════
+   Global mobile responsiveness — ≤ 480px
+   ══════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+
+  /* ── Page-level padding ── */
+  .top-header           { padding: 10px 14px; }
+  .home-page            { padding: 8px 12px calc(var(--nav-height) + 88px); }
+  .profile-page         { padding: 16px 12px calc(var(--nav-height) + 16px); }
+  .matches-page         { padding: 16px 12px calc(var(--nav-height) + 16px); }
+  .matches-page h2      { font-size: 20px; margin-bottom: 14px; }
+  .settings-page        { padding: 0 12px 100px; }
+
+  /* ── Bottom nav labels ── */
+  .nav-item { font-size: 12px; gap: 2px; }
+
+  /* ── Auth pages ── */
+  .auth-content { padding: 24px 14px; }
+
+  /* ── Welcome page ── */
+  .welcome-nav          { padding: 14px 16px; }
+  .welcome-hero         { padding: 36px 16px 24px; gap: 14px; }
+  .welcome-tagline      { font-size: 16px; }
+  .welcome-hero-image img { height: 200px; }
+  .welcome-pillars      { padding: 0 16px 36px; gap: 12px; }
+  .welcome-pillar       { padding: 20px 18px; }
+  .welcome-footer-cta   { padding: 0 16px 60px; }
+
+  /* ── Discover — profile card ── */
+  .pcard-name           { font-size: 22px; }
+  .pcard-score          { font-size: 16px; padding: 3px 9px; }
+  .pcard-bio            { font-size: 15px; }
+  .pcard-detail-chip    { font-size: 15px; }
+  .pcard-prompt-answer  { font-size: 16px; }
+  .pcard-item--identity { padding: 16px; }
+  .pcard-item--text     { padding: 14px 16px 16px; }
+
+  /* ── Pass / like action buttons ── */
+  .pass-bar             { padding: 0 16px; }
+  .pass-btn, .like-btn  { width: 52px; height: 52px; }
+
+  /* ── Matches page cards ── */
+  .match-card-photo     { max-height: 36vh; }
+  .match-card-name      { font-size: 20px; }
+  .match-card-body      { padding: 14px 14px 16px; gap: 10px; }
+  .match-card-bio       { font-size: 15px; }
+  .match-card-cta       { font-size: 16px; padding: 12px; border-radius: 12px; }
+
+  /* ── Chat ── */
+  .chat-header   { padding: 12px 14px; }
+  .chat-name     { font-size: 16px; }
+  .message       { font-size: 15px; padding: 9px 12px; max-width: 84%; }
+  .chat-input    { padding: 10px 12px; gap: 8px; }
+  .chat-input button { font-size: 14px; padding: 10px 14px; }
+
+  /* ── Profile page ── */
+  .profile-selects-row  { grid-template-columns: 1fr; }
+  .profile-header h2    { font-size: 20px; }
+  .section-title        { font-size: 15px; }
+  .score-stats          { gap: 14px; }
+  .stat-value           { font-size: 18px; }
+  .logout-btn,
+  .settings-row-btn,
+  .theme-toggle-btn     { font-size: 15px; }
+  .settings-title       { font-size: 19px; }
+  .settings-section     { padding: 14px; }
+
+  /* ── Filters modal ── */
+  .filter-section       { padding: 14px 16px 2px; }
+  .chip                 { font-size: 14px; padding: 5px 12px; }
+  .filters-apply        { font-size: 16px; }
+
+  /* ── Like sheet ── */
+  .like-sheet-send,
+  .like-sheet-cancel    { font-size: 15px; padding: 11px; }
+  .like-sheet-label     { font-size: 16px; }
+
+  /* ── Legal pages ── */
+  .legal-content        { padding: 16px 16px 40px; }
+  .legal-content h1     { font-size: 22px; }
+  .legal-content h2     { font-size: 16px; }
+
+  /* ── Modal overlay ── */
+  .modal-overlay { padding: 12px; }
+
+  /* ── Match celebration ── */
+  .match-celebration-title   { font-size: 30px; }
+  .match-celebration-photo   { width: 90px; height: 90px; }
+  .match-celebration-content { padding: 24px 16px; gap: 10px; }
+  .match-celebration-sub     { font-size: 15px; }
+  .match-celebration-btn     { padding: 12px 28px; font-size: 15px; }
+}
