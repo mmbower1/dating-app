@@ -87,6 +87,9 @@ const Matches = () => {
                 ) : (
                   <div className="match-card-no-photo">{other.name[0]}</div>
                 )}
+                {match.unreadCount > 0 && (
+                  <div className="match-card-unread-badge">{match.unreadCount}</div>
+                )}
                 <div className="match-card-photo-overlay">
                   <span className="match-card-name">{other.name}{other.age ? `, ${other.age}` : ''}</span>
                   <span className="match-card-score" style={{ color: scoreColor(other.accountabilityScore) }}>{other.accountabilityScore}</span>

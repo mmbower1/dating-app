@@ -68,6 +68,7 @@ export interface Match {
   exitRating: 'genuine' | 'not_genuine' | null;
   exitRatedBy: string | null;
   createdAt: string;
+  unreadCount: number;
 }
 
 export interface Message {

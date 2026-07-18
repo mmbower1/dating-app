@@ -233,7 +233,19 @@ router.get('/', protect, async (req: AuthRequest, res: Response): Promise<void> 
     const matches = await Match.find({ 'users.userId': req.userId, active: true })
       .populate({ path: 'users.userId', select: 'name photos accountabilityScore bio age gender' })
       .sort({ updatedAt: -1 });
-    res.json(matches);
+
+    const withUnread = await Promise.all(
+      matches.map(async (m) => {
+        const unreadCount = await Message.countDocuments({
+          matchId: m._id,
+          senderId: { $ne: new mongoose.Types.ObjectId(req.userId as string) },
+          read: false,
+        });
+        return { ...m.toObject(), unreadCount };
+      })
+    );
+
+    res.json(withUnread);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
