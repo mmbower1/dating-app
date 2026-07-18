@@ -230,7 +230,7 @@ const Profile = () => {
       const res = await api.post<{ bio: string }>('/users/generate-bio');
       setBio(res.data.bio);
     } catch {
-      setBioGenError('Could not generate bio. Try again.');
+      setBioGenError('Could not generate bio at this time.');
     } finally {
       setGeneratingBio(false);
     }
