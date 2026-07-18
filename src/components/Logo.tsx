@@ -10,11 +10,11 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
   const px = sizes[size];
 
   return (
-    <div className="logo-lockup" style={{ gap: size === 'lg' ? 12 : 7 }}>
+    <div className="logo-lockup" style={{ gap: size === 'lg' ? 12 : 1 }}>
       <svg
         width={px}
         height={px}
-        viewBox="-5 -5 50 50"
+        viewBox="5 2 50 50"
         fill="none"
         overflow="visible"
         xmlns="http://www.w3.org/2000/svg"
