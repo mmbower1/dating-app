@@ -14,35 +14,27 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
       <svg
         width={px}
         height={px}
-        viewBox="5 2 50 50"
+        viewBox="0 0 100 110"
         fill="none"
         overflow="visible"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Shackle arch */}
+        {/* Shackle — drawn first so body covers its base */}
         <path
-          d="M12,20 L12,14 A8,9 0 0,0 28,14 L28,20"
-          stroke="currentColor"
-          strokeWidth="2.5"
+          d="M 26 66 L 26 36 C 26 10 74 10 74 36 L 74 66"
+          stroke="#8B96A4"
+          strokeWidth="16"
           strokeLinecap="round"
           strokeLinejoin="round"
+          fill="none"
         />
-        {/* Lock body */}
-        <rect
-          x="5" y="18" width="30" height="20" rx="5" ry="5"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* Heart replacing the keyhole */}
-        <path
-          d="M20,32 C15.5,29 13,27 13,25 C13,23 14.5,22 16.5,22 C18,22 19,23.5 20,25 C21,23.5 22,22 23.5,22 C25.5,22 27,23 27,25 C27,27 24.5,29 20,32 Z"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        {/* Body */}
+        <rect x="5" y="50" width="90" height="60" rx="13" fill="#E4B84B" />
+        {/* Shine highlight */}
+        <rect x="11" y="57" width="22" height="8" rx="4" fill="rgba(255,255,255,0.42)" />
+        {/* Keyhole — circle + tapered slot */}
+        <circle cx="50" cy="74" r="9" fill="#2B3341" />
+        <path d="M 43 82 L 46 95 L 54 95 L 57 82 Z" fill="#2B3341" />
       </svg>
 
       {showText && (
