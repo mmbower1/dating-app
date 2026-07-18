@@ -1499,8 +1499,8 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.02);
-  border: 2px dashed rgba(255,255,255,0.13);
+  background: rgba(126,179,245,0.05);
+  border: 2px dashed rgba(126,179,245,0.45);
   overflow: visible;
   min-height: 320px;
 }
@@ -1518,12 +1518,13 @@ form button[type="submit"]:disabled {
   font-size: 72px;
   font-weight: 200;
   line-height: 1;
-  color: rgba(255,255,255,0.18);
+  color: rgba(126,179,245,0.55);
 }
 
 .match-card-empty-text {
   font-size: 14px;
-  color: var(--text-muted);
+  color: var(--accent);
+  opacity: 0.7;
   max-width: 130px;
   line-height: 1.55;
 }
