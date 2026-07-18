@@ -40,9 +40,11 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
         <rect x="5" y="50" width="90" height="60" rx="13" fill="url(#lockBodyGrad)" />
         {/* Shine highlight */}
         <rect x="11" y="57" width="22" height="8" rx="4" fill="rgba(255,255,255,0.35)" />
-        {/* Keyhole — circle + tapered slot */}
-        <circle cx="50" cy="74" r="9" fill="#1e2340" />
-        <path d="M 43 82 L 46 95 L 54 95 L 57 82 Z" fill="#1e2340" />
+        {/* Heart-shaped keyhole */}
+        <path
+          d="M 50 85 C 43 80 40 77 40 74 C 40 71 42 69.5 45 69.5 C 47 69.5 48.5 72 50 74 C 51.5 72 53 69.5 55 69.5 C 58 69.5 60 71 60 74 C 60 77 57 80 50 85 Z"
+          fill="#1e2340"
+        />
       </svg>
 
       {showText && (
