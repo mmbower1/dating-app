@@ -18,23 +18,31 @@ const Logo = ({ size = 'md', showText = true }: LogoProps) => {
         fill="none"
         overflow="visible"
         xmlns="http://www.w3.org/2000/svg"
+        style={{ transform: 'translateY(-3px)' }}
       >
+        <defs>
+          <linearGradient id="lockBodyGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#7eb3f5" />
+            <stop offset="100%" stopColor="#b39dfa" />
+          </linearGradient>
+        </defs>
+
         {/* Shackle — drawn first so body covers its base */}
         <path
           d="M 26 66 L 26 36 C 26 10 74 10 74 36 L 74 66"
-          stroke="#8B96A4"
+          stroke="#8aacd4"
           strokeWidth="16"
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
         />
         {/* Body */}
-        <rect x="5" y="50" width="90" height="60" rx="13" fill="#E4B84B" />
+        <rect x="5" y="50" width="90" height="60" rx="13" fill="url(#lockBodyGrad)" />
         {/* Shine highlight */}
-        <rect x="11" y="57" width="22" height="8" rx="4" fill="rgba(255,255,255,0.42)" />
+        <rect x="11" y="57" width="22" height="8" rx="4" fill="rgba(255,255,255,0.35)" />
         {/* Keyhole — circle + tapered slot */}
-        <circle cx="50" cy="74" r="9" fill="#2B3341" />
-        <path d="M 43 82 L 46 95 L 54 95 L 57 82 Z" fill="#2B3341" />
+        <circle cx="50" cy="74" r="9" fill="#1e2340" />
+        <path d="M 43 82 L 46 95 L 54 95 L 57 82 Z" fill="#1e2340" />
       </svg>
 
       {showText && (
