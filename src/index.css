@@ -264,7 +264,7 @@ form button[type="submit"]:disabled {
 .auth-card h1 {
   font-size: 34px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   margin-bottom: 6px;
 }
 
