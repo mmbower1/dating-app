@@ -323,7 +323,7 @@ const Profile = () => {
               )}
               {generatingBio ? 'Generating…' : 'Build with AI'}
             </button>
-            <span className="generate-bio-inactive">not currently active</span>
+            <span className="generate-bio-inactive">Coming soon</span>
           </div>
         </div>
         <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={500} rows={4} placeholder="Tell people about yourself..." />
