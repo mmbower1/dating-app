@@ -70,7 +70,7 @@ const Matches = () => {
 
   return (
     <div className="matches-page">
-      <h2>Your {matches.length === 1 ? 'Match' : 'Matches'}</h2>
+      <h2>Your Matches</h2>
 
       <div className="matches-grid">
         {matches.map((match) => {

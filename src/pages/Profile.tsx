@@ -132,6 +132,8 @@ const Profile = () => {
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [generatingBio, setGeneratingBio] = useState(false);
+  const [bioGenError, setBioGenError] = useState('');
   const [notifStatus, setNotifStatus] = useState<'idle' | 'enabled' | 'denied'>('idle');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -221,6 +223,19 @@ const Profile = () => {
   const updatePromptAnswer = (i: number, answer: string) =>
     setPrompts((prev) => prev.map((p, idx) => idx === i ? { ...p, answer } : p));
 
+  const generateBio = async () => {
+    setGeneratingBio(true);
+    setBioGenError('');
+    try {
+      const res = await api.post<{ bio: string }>('/users/generate-bio');
+      setBio(res.data.bio);
+    } catch {
+      setBioGenError('Could not generate bio. Try again.');
+    } finally {
+      setGeneratingBio(false);
+    }
+  };
+
   const usedQuestions = new Set(prompts.map((p) => p.question));
   const availableQuestions = PROMPT_QUESTIONS.filter((q) => !usedQuestions.has(q));
 
@@ -295,8 +310,24 @@ const Profile = () => {
 
         {/* Bio always visible */}
         <p className="profile-section-header">About me</p>
-        <label className="field-label">Bio</label>
+        <div className="bio-label-row">
+          <label className="field-label">Bio</label>
+          <div className="generate-bio-wrap">
+            <button type="button" className="generate-bio-btn" onClick={generateBio} disabled={generatingBio}>
+              {generatingBio ? (
+                <span className="generate-bio-spinner" />
+              ) : (
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74L12 2z"/>
+                </svg>
+              )}
+              {generatingBio ? 'Generating…' : 'Build with AI'}
+            </button>
+            <span className="generate-bio-inactive">not currently active</span>
+          </div>
+        </div>
         <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={500} rows={4} placeholder="Tell people about yourself..." />
+        {bioGenError && <p className="bio-gen-error">{bioGenError}</p>}
 
         <Section label="Details" open={openAbout} onToggle={() => setOpenAbout((v) => !v)}>
           <div className="profile-selects-row">

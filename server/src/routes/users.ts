@@ -4,6 +4,7 @@ import multer from 'multer';
 import { Readable } from 'stream';
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
+import Anthropic from '@anthropic-ai/sdk';
 import { protect, AuthRequest } from '../middleware/auth';
 import { getUserModel, getModelName, findUserById } from '../models/User';
 import Match from '../models/Match';
@@ -325,6 +326,58 @@ router.delete('/:id/block', protect, async (req: AuthRequest, res: Response): Pr
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// POST /users/generate-bio — AI-generated bio using profile data
+router.post('/generate-bio', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey || apiKey === 'your_anthropic_api_key_here') {
+      res.status(503).json({ message: 'AI bio generation is not configured.' });
+      return;
+    }
+
+    const UserModel = getUserModel(req.userGender!);
+    const me = await UserModel.findById(req.userId);
+    if (!me) { res.status(404).json({ message: 'User not found' }); return; }
+
+    const traits: string[] = [];
+    if (me.name) traits.push(`Name: ${me.name}`);
+    if (me.age) traits.push(`Age: ${me.age}`);
+    if (me.jobTitle) traits.push(`Job: ${me.jobTitle}${me.work ? ` at ${me.work}` : ''}`);
+    if (me.school) traits.push(`School: ${me.school}`);
+    if (me.hometown) traits.push(`Hometown: ${me.hometown}`);
+    if ((me as any).location?.city) traits.push(`Lives in: ${(me as any).location.city}${(me as any).location.state ? `, ${(me as any).location.state}` : ''}`);
+    if (me.hobbies?.length) traits.push(`Hobbies: ${me.hobbies.join(', ')}`);
+    if (me.zodiacSign) traits.push(`Zodiac: ${me.zodiacSign}`);
+    if (me.pets) traits.push(`Pets: ${me.pets}`);
+    if (me.drinks) traits.push(`Drinks: ${me.drinks}`);
+    if (me.smokes) traits.push(`Smokes: ${me.smokes}`);
+    if (me.religion) traits.push(`Religion: ${me.religion}`);
+    if (me.familyPlans) traits.push(`Family plans: ${me.familyPlans}`);
+    if (me.prompts?.length) {
+      me.prompts.forEach((p: { question: string; answer: string }) => {
+        if (p.answer) traits.push(`"${p.question}" → ${p.answer}`);
+      });
+    }
+
+    const client = new Anthropic({ apiKey });
+    const message = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 300,
+      messages: [
+        {
+          role: 'user',
+          content: `Write a warm, authentic, first-person dating profile bio for someone with these details:\n\n${traits.join('\n')}\n\nGuidelines:\n- 2-4 sentences, max 400 characters\n- Conversational and genuine, not salesy\n- Highlight personality, not just facts\n- End with something inviting (a question or open hook)\n- Return ONLY the bio text, no quotes or labels`,
+        },
+      ],
+    });
+
+    const bio = (message.content[0] as { type: string; text: string }).text.trim();
+    res.json({ bio });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to generate bio', error: err });
   }
 });
 
