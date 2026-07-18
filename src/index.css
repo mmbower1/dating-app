@@ -1476,7 +1476,7 @@ form button[type="submit"]:disabled {
   gap: 16px;
   width: 100%;
   max-width: 760px;
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (max-width: 560px) {
