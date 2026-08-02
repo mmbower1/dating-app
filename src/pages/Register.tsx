@@ -91,13 +91,13 @@ const Register = () => {
 
   return (
     <div className="auth-page">
+      <button className="auth-back-btn" onClick={() => navigate('/')} aria-label="Back to home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7" />
+        </svg>
+      </button>
       <div className="auth-content">
         <div className="auth-card">
-          <button className="auth-back-btn" onClick={() => navigate('/')} aria-label="Back to home">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
-          </button>
           <div className="auth-logo">
             <Logo size="lg" showText={true} />
           </div>
@@ -214,6 +214,14 @@ const Register = () => {
           <p className="auth-link">
             Already have an account? <Link to="/login">Sign in</Link>
           </p>
+        </div>
+      </div>
+      <div className="auth-footer">
+        <span className="auth-footer-tagline">The place where monogamy is restored.</span>
+        <div className="auth-footer-links">
+          <a href="/privacy">Privacy</a>
+          <span>·</span>
+          <a href="/terms">Terms</a>
         </div>
       </div>
     </div>

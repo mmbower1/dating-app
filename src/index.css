@@ -131,6 +131,7 @@ h1, h2, h3 {
   position: absolute;
   top: 20px;
   left: 20px;
+  z-index: 10;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
@@ -147,6 +148,43 @@ h1, h2, h3 {
 .auth-back-btn:hover {
   background: rgba(255, 255, 255, 0.14);
   color: #fff;
+}
+
+.auth-footer {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 16px 20px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-footer-tagline {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  font-style: italic;
+  font-family: 'Lora', serif;
+  letter-spacing: 0.02em;
+}
+
+.auth-footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+}
+
+.auth-footer-links a {
+  color: rgba(255, 255, 255, 0.25);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-footer-links a:hover {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* ── Top Header ─────────────────────────────────────── */
