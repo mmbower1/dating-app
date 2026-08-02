@@ -218,7 +218,7 @@ const Register = () => {
           </svg>
         </button>
         <div className="auth-footer-center">
-          <span className="auth-footer-tagline">The place where monogamy is restored.</span>
+          <span className="auth-footer-tagline">Where monogamy still matters.</span>
           <div className="auth-footer-links">
             <a href="/privacy">Privacy</a>
             <span>·</span>
