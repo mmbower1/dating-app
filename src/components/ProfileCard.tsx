@@ -208,10 +208,10 @@ const ProfileCard = ({ profile, className, onHeart, onPass }: ProfileCardProps) 
   const details = buildDetails(profile);
   const extraPhotos = profile.photos.slice(1);
 
-  const PhotoActions = ({ section }: { section: LikeSection }) =>
+  const PhotoActions = ({ section, showPass = false }: { section: LikeSection; showPass?: boolean }) =>
     (onPass || onHeart) ? (
       <>
-        {onPass && (
+        {showPass && onPass && (
           <button
             className="photo-action-btn photo-action-btn--pass"
             onClick={(e) => { e.stopPropagation(); onPass(); }}
@@ -245,7 +245,7 @@ const ProfileCard = ({ profile, className, onHeart, onPass }: ProfileCardProps) 
         ) : (
           <div className="pcard-no-photo">{profile.name[0]}</div>
         )}
-        <PhotoActions section="photo" />
+        <PhotoActions section="photo" showPass />
       </div>
 
       {/* Identity */}
