@@ -4,6 +4,7 @@ import Message from '../models/Message';
 import { getUserModel, findUserById } from '../models/User';
 import { sendPush } from './push';
 import type webpush from 'web-push';
+import { calcScore } from './scoreCalc';
 
 const GHOST_TIMEOUT_MS = 48 * 60 * 60 * 1000; // 48 hours
 
@@ -58,10 +59,7 @@ export async function checkStaleMatches(userId: string, gender: string) {
       const UserModel = getUserModel(target.gender);
       const updated = await UserModel.findByIdAndUpdate(id, { $inc: { ghostCount: 1 } }, { new: true });
       if (!updated) return;
-      const ghostPenalty = Math.min(updated.ghostCount * 5, 40);
-      const exitBonus = Math.min(updated.gracefulExitCount * 3, 20);
-      const responseBonus = (updated.responseRate / 100) * 30;
-      updated.accountabilityScore = Math.round(Math.max(0, Math.min(100, 50 + exitBonus + responseBonus - ghostPenalty)));
+      updated.accountabilityScore = calcScore(Math.max(0, updated.gracefulExitCount), Math.max(0, updated.ghostCount));
       await updated.save();
     };
 

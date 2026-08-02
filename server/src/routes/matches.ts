@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import { sendPush } from '../utils/push';
 import type webpush from 'web-push';
 import { emitToUser } from '../index';
+import { calcScore } from '../utils/scoreCalc';
 
 const router = Router();
 
@@ -369,17 +370,16 @@ router.patch('/:matchId/rate-exit', protect, async (req: AuthRequest, res: Respo
     match.exitRatedBy = new mongoose.Types.ObjectId(req.userId as string);
     await match.save();
 
-    // Penalise the unmatcher if reason was rated as not genuine
+    // Penalise the unmatcher if reason was rated as not genuine:
+    // flip the amicable exit to non-amicable and recalculate
     if (rating === 'not_genuine' && endedBy) {
       const unmatcher = await findUserById(endedBy);
       if (unmatcher) {
         const UserModel = getUserModel(unmatcher.gender);
-        const updated = await UserModel.findById(endedBy);
-        if (updated) {
-          let score = Math.max(0, updated.accountabilityScore - 10);
-          if (score === 69) score = 68;
-          await UserModel.findByIdAndUpdate(endedBy, { $set: { accountabilityScore: score } });
-        }
+        await UserModel.findByIdAndUpdate(endedBy, {
+          $inc: { ghostCount: 1, gracefulExitCount: -1 },
+        });
+        await recalculateScore(endedBy, unmatcher.gender);
       }
     }
 
@@ -393,14 +393,9 @@ async function recalculateScore(userId: string, gender: string) {
   const UserModel = getUserModel(gender);
   const user = await UserModel.findById(userId);
   if (!user) return;
-
-  // Start at 100, deduct for bad behaviour
-  const ghostPenalty = Math.min(user.ghostCount * 10, 50);
-  const responsePenalty = Math.round((1 - user.responseRate / 100) * 30);
-
-  let score = Math.max(0, Math.min(100, 100 - ghostPenalty - responsePenalty));
-  if (score === 69) score = 70;
-  user.accountabilityScore = Math.round(score);
+  const amicable = Math.max(0, user.gracefulExitCount);
+  const nonAmicable = Math.max(0, user.ghostCount);
+  user.accountabilityScore = calcScore(amicable, nonAmicable);
   await user.save();
 }
 
