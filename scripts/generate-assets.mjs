@@ -18,7 +18,7 @@ const iconSvg = `
     </linearGradient>
   </defs>
   <rect width="1024" height="1024" rx="230" fill="url(#bg)"/>
-  <g transform="translate(262, 212) scale(5)">
+  <g transform="translate(152, 80) scale(7.2)">
     <path d="M 26 66 L 26 36 C 26 10 74 10 74 36 L 74 66" stroke="#8aacd4" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <rect x="5" y="50" width="90" height="60" rx="13" fill="url(#lockBodyGrad)"/>
     <rect x="11" y="57" width="22" height="8" rx="4" fill="rgba(255,255,255,0.35)"/>
