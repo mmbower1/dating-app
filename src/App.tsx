@@ -131,10 +131,17 @@ const RootRoute = () => {
   return user ? <Home /> : <Welcome />;
 };
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+};
+
 const ThemedApp = () => {
   const { theme } = useTheme();
   return (
     <div className="app" data-theme={theme}>
+      <ScrollToTop />
       <TopHeader />
       <Routes>
         <Route path="/terms" element={<Terms />} />
