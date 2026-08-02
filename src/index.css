@@ -3180,6 +3180,10 @@ form button[type="submit"]:disabled {
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 6px;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* shared buttons */
