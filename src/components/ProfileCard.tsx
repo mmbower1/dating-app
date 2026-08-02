@@ -236,7 +236,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
           <span className="pcard-name">{profile.name}</span>
           <span
             className="pcard-score"
-            title="Accountability score"
+            title="Score"
             style={{
               background: `linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(${scoreColor(profile.accountabilityScore)}, ${scoreColor(profile.accountabilityScore)}) border-box`,
               color: scoreColor(profile.accountabilityScore),

@@ -8,10 +8,10 @@ const pillars = [
   },
   {
     title: 'Graceful goodbyes',
-    body: 'Not feeling it? Say why respectfully. Ghosting lowers your accountability score and limits your visibility.',
+    body: 'Not feeling it? Say why respectfully. Ghosting lowers your score and limits your visibility.',
   },
   {
-    title: 'Accountability score',
+    title: 'Score',
     body: 'Your score reflects how you treat people — response rate, graceful exits, and ghost count all factor in.',
   },
   {

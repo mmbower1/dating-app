@@ -23,7 +23,7 @@ const Privacy = () => {
         <h2>2. How we use your information</h2>
         <ul>
           <li>To operate and improve Lockheart</li>
-          <li>To calculate and display your accountability score</li>
+          <li>To calculate and display your score</li>
           <li>To send push notifications about matches and messages</li>
           <li>To enforce our Terms of Service</li>
         </ul>
@@ -35,7 +35,7 @@ const Privacy = () => {
         <p>We do not sell your personal data. We do not share your data with third parties except as required to operate the service (hosting, storage) or by law.</p>
 
         <h2>5. Your profile visibility</h2>
-        <p>Your name, age, photos, bio, and accountability score are visible to other Lockheart users. Your email, phone number, and exact location are never shared with other users.</p>
+        <p>Your name, age, photos, bio, and score are visible to other Lockheart users. Your email, phone number, and exact location are never shared with other users.</p>
 
         <h2>6. Push notifications</h2>
         <p>If you opt in to push notifications, we store your device subscription to deliver match and message alerts. You can revoke this at any time in your device settings.</p>

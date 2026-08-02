@@ -26,11 +26,11 @@ const Terms = () => {
           <li>Harass, abuse, or harm other users</li>
           <li>Create fake profiles or impersonate others</li>
           <li>Use the platform for commercial solicitation</li>
-          <li>Attempt to circumvent the accountability system</li>
+          <li>Attempt to circumvent the scoring system</li>
         </ul>
 
-        <h2>5. Accountability system</h2>
-        <p>Lockheart's accountability score is intended to encourage respectful behavior. Ghosting, non-response, and abuse of the graceful exit feature may result in score reductions or account suspension.</p>
+        <h2>5. Score system</h2>
+        <p>Lockheart's score is intended to encourage respectful behavior. Ghosting, non-response, and abuse of the graceful exit feature may result in score reductions or account suspension.</p>
 
         <h2>6. Content</h2>
         <p>You retain ownership of content you upload (photos, bio). By uploading content, you grant Lockheart a non-exclusive license to display it within the app. You may not upload content that is illegal, explicit without consent, or violates third-party rights.</p>

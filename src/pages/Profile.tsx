@@ -292,7 +292,7 @@ const Profile = () => {
 
       {/* Accountability */}
       <div className="accountability-card">
-        <h3>Accountability Score</h3>
+        <h3>Score</h3>
         <div
           className="score-ring"
           style={{
