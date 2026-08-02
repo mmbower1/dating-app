@@ -153,11 +153,15 @@ h1, h2, h3 {
   padding: 16px 20px 36px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+}
+
+.auth-footer .auth-back-btn {
+  position: absolute;
+  left: 20px;
 }
 
 .auth-footer-center {
-  flex: 1;
   text-align: center;
   display: flex;
   flex-direction: column;
