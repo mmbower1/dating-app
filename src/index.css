@@ -363,6 +363,10 @@ form button[type="submit"]:disabled {
   gap: 14px;
 }
 
+.auth-card form button[type="submit"] {
+  margin-top: 14px;
+}
+
 .auth-link {
   text-align: center;
   color: rgba(255, 255, 255, 0.6);
