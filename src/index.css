@@ -259,6 +259,18 @@ form button[type="submit"]:disabled {
 .auth-card {
   width: 100%;
   max-width: 560px;
+  background: rgba(20, 23, 40, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 36px 32px;
+}
+
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 28px 20px;
+  }
 }
 
 .auth-card h1 {
@@ -269,7 +281,7 @@ form button[type="submit"]:disabled {
 }
 
 .auth-subtitle {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.65);
   font-size: 17px;
   margin-bottom: 32px;
 }
@@ -282,7 +294,7 @@ form button[type="submit"]:disabled {
 
 .auth-link {
   text-align: center;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
   margin-top: 20px;
 }
@@ -338,7 +350,7 @@ form button[type="submit"]:disabled {
 }
 
 .field-label {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 15px;
   font-weight: 500;
   margin-bottom: -6px;
@@ -3983,7 +3995,7 @@ form button[type="submit"]:disabled {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.65);
   cursor: pointer;
   padding: 4px 0;
 }
