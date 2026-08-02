@@ -347,20 +347,14 @@ form button[type="submit"]:disabled {
   font-weight: 700;
   margin-bottom: 6px;
   text-align: center;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #f2f5fb;
 }
 
 .auth-subtitle {
   font-size: 17px;
   margin-bottom: 32px;
   text-align: center;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #f2f5fb;
 }
 
 .auth-card form {
