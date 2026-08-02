@@ -17,6 +17,8 @@ import Admin from './pages/Admin';
 import Welcome from './pages/Welcome';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const TopHeader = () => {
   const { user } = useAuth();
@@ -139,6 +141,8 @@ const ThemedApp = () => {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<RootRoute />} />
         <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
         <Route path="/chat/:matchId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />

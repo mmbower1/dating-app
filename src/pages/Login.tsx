@@ -81,6 +81,9 @@ const Login = () => {
             </button>
           </form>
           <p className="auth-link">
+            <Link to="/forgot-password" style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Forgot password?</Link>
+          </p>
+          <p className="auth-link">
             No account? <Link to="/register">Create one</Link>
           </p>
         </div>

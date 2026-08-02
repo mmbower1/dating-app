@@ -38,6 +38,8 @@ export interface IUser extends Document {
   ghostCount: number;
   gracefulExitCount: number;
   totalConversations: number;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiry?: Date | null;
   agePreference: { min: number; max: number };
   // Discover filter preferences
   filters?: {
@@ -109,6 +111,8 @@ const UserSchema = new Schema<IUser>(
     ghostCount: { type: Number, default: 0 },
     gracefulExitCount: { type: Number, default: 0 },
     totalConversations: { type: Number, default: 0 },
+    resetPasswordToken: { type: String, default: null },
+    resetPasswordExpiry: { type: Date, default: null },
     agePreference: {
       min: { type: Number, default: 18 },
       max: { type: Number, default: 99 },
