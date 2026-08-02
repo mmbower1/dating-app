@@ -8,10 +8,15 @@
     "dev:client": "vite",
     "dev:server": "cd server && npm run dev",
     "build": "tsc -b && vite build",
+    "build:app": "tsc -b && vite build && npx cap sync",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/ios": "^8.5.0",
     "@react-google-maps/api": "^2.20.8",
     "axios": "^1.18.1",
     "react": "^19.2.7",
