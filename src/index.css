@@ -345,16 +345,22 @@ form button[type="submit"]:disabled {
 .auth-card h1 {
   font-size: 34px;
   font-weight: 700;
-  color: #ffffff;
   margin-bottom: 6px;
   text-align: center;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .auth-subtitle {
-  color: rgba(255, 255, 255, 0.65);
   font-size: 17px;
   margin-bottom: 32px;
   text-align: center;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .auth-card form {
