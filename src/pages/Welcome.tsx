@@ -24,7 +24,7 @@ const pillars = [
   },
   {
     title: 'No infinite scrolling',
-    body: 'Lockheart isn\'t built for browsing. It\'s built for connecting. Quality over quantity.',
+    body: 'Lockheart isn\'t built for browsing. We aren\'t here to keep you hooked. It\'s built for connecting. Quality over quantity.',
   },
 ];
 
