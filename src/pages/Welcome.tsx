@@ -45,7 +45,7 @@ const Welcome = () => {
 
       {/* ── Hero ── */}
       <section className="welcome-hero">
-        <h1 className="welcome-headline">Dating the way<br />it should be.</h1>
+        <h1 className="welcome-headline">Dating - the way<br />it should be.</h1>
         <p className="welcome-tagline">The place where monogamy is restored.</p>
         <div className="welcome-hero-image">
           <img
