@@ -7,12 +7,20 @@ const pillars = [
     body: 'Once you have 2 active matches, swiping pauses. Lockheart keeps your focus where it matters.',
   },
   {
+    title: 'Think before you swipe',
+    body: 'Swiping on Lockheart carries weight. With limited connections, every swipe is a choice — make it a deliberate one.',
+  },
+  {
+    title: 'A match is a big deal',
+    body: 'Getting matched on Lockheart isn\'t a casual thing. It means two people chose each other. Honor that.',
+  },
+  {
     title: 'Graceful goodbyes',
     body: 'Not feeling it? Say why respectfully. Ghosting lowers your score and limits your visibility.',
   },
   {
-    title: 'Score',
-    body: 'Your score reflects how you treat people — response rate, graceful exits, and ghost count all factor in.',
+    title: 'Integrity score',
+    body: 'Your score reflects how you treat people — how often you respond, whether you exit gracefully, and whether you ghost.',
   },
   {
     title: 'No infinite scrolling',
@@ -38,7 +46,7 @@ const Welcome = () => {
       {/* ── Hero ── */}
       <section className="welcome-hero">
         <h1 className="welcome-headline">Dating the way<br />it should be.</h1>
-        <p className="welcome-tagline">Real connections. No games. No ghosting.</p>
+        <p className="welcome-tagline">The place where monogamy is restored.</p>
         <div className="welcome-hero-image">
           <img
             src="https://images.unsplash.com/photo-1527184478405-b1cf212ab2a3?w=1400&h=700&fit=crop&q=80&auto=format"
