@@ -343,12 +343,14 @@ form button[type="submit"]:disabled {
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 6px;
+  text-align: center;
 }
 
 .auth-subtitle {
   color: rgba(255, 255, 255, 0.65);
   font-size: 17px;
   margin-bottom: 32px;
+  text-align: center;
 }
 
 .auth-card form {
