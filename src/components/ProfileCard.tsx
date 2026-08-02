@@ -197,25 +197,43 @@ interface ProfileCardProps {
   profile: User;
   /** Extra class name forwarded to the root pcard-stack div (e.g. exit animation) */
   className?: string;
-  /** When provided, renders interactive heart buttons; called with section key */
+  /** Called when user taps the like button on a photo */
   onHeart?: (section: LikeSection) => void;
+  /** Called when user taps the pass button on a photo */
+  onPass?: () => void;
 }
 
-const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
+const ProfileCard = ({ profile, className, onHeart, onPass }: ProfileCardProps) => {
   const about = buildAbout(profile);
   const details = buildDetails(profile);
   const extraPhotos = profile.photos.slice(1);
-  const HeartBtn = ({ section, onPhoto = false }: { section: LikeSection; onPhoto?: boolean }) =>
-    onHeart ? (
-      <button
-        className={`heart-btn ${onPhoto ? 'heart-btn--photo' : ''}`}
-        onClick={(e) => { e.stopPropagation(); onHeart(section); }}
-        aria-label="Like"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-      </button>
+
+  const PhotoActions = ({ section }: { section: LikeSection }) =>
+    (onPass || onHeart) ? (
+      <>
+        {onPass && (
+          <button
+            className="photo-action-btn photo-action-btn--pass"
+            onClick={(e) => { e.stopPropagation(); onPass(); }}
+            aria-label="Pass"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        )}
+        {onHeart && (
+          <button
+            className="photo-action-btn photo-action-btn--like"
+            onClick={(e) => { e.stopPropagation(); onHeart(section); }}
+            aria-label="Like"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        )}
+      </>
     ) : null;
 
   return (
@@ -227,7 +245,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
         ) : (
           <div className="pcard-no-photo">{profile.name[0]}</div>
         )}
-        <HeartBtn section="photo" onPhoto />
+        <PhotoActions section="photo" />
       </div>
 
       {/* Identity */}
@@ -254,7 +272,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {extraPhotos[0] && (
         <div className="pcard-item pcard-item--photo">
           <img src={extraPhotos[0]} alt={`${profile.name} 2`} className="pcard-photo-img" />
-          <HeartBtn section="photo" onPhoto />
+          <PhotoActions section="photo" />
         </div>
       )}
 
@@ -269,7 +287,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {extraPhotos[1] && (
         <div className="pcard-item pcard-item--photo">
           <img src={extraPhotos[1]} alt={`${profile.name} 3`} className="pcard-photo-img" />
-          <HeartBtn section="photo" onPhoto />
+          <PhotoActions section="photo" />
         </div>
       )}
 
@@ -284,7 +302,7 @@ const ProfileCard = ({ profile, className, onHeart }: ProfileCardProps) => {
       {extraPhotos.slice(2).map((photo, i) => (
         <div key={i} className="pcard-item pcard-item--photo">
           <img src={photo} alt={`${profile.name} ${i + 4}`} className="pcard-photo-img" />
-          <HeartBtn section="photo" onPhoto />
+          <PhotoActions section="photo" />
         </div>
       ))}
 
