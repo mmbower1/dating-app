@@ -41,8 +41,6 @@ function makeSplashSvg(w, h) {
     </linearGradient>
   </defs>
   <rect width="${w}" height="${h}" fill="#1a1d2e"/>
-  <ellipse cx="${w * 0.75}" cy="${h * 0.1}" rx="${w * 0.3}" ry="${h * 0.15}" fill="rgba(179,157,250,0.15)"/>
-  <ellipse cx="${w * 0.2}" cy="${h * 0.9}" rx="${w * 0.26}" ry="${h * 0.12}" fill="rgba(126,179,245,0.12)"/>
   <g transform="translate(${x}, ${y}) scale(${scale})">
     <path d="M 26 66 L 26 36 C 26 10 74 10 74 36 L 74 66" stroke="#8aacd4" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <rect x="5" y="50" width="90" height="60" rx="13" fill="url(#lockBodyGrad)"/>
