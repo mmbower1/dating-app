@@ -461,10 +461,6 @@ form button[type="submit"]:disabled {
   font-weight: 500;
 }
 
-.auth-card .field-label {
-  text-align: center;
-}
-
 .auth-card .pill-group {
   justify-content: center;
 }
