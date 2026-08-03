@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -118,6 +118,40 @@ const Profile = () => {
   const [hobbies, setHobbies] = useState<string[]>(user?.hobbies ?? []);
   const [prompts, setPrompts] = useState<{ question: string; answer: string }[]>(user?.prompts ?? []);
 
+  // Re-sync form when user data loads (guards against saving before auth context is ready)
+  useEffect(() => {
+    if (!user) return;
+    setName(user.name || '');
+    setAge(user.age ?? 18);
+    setBio(user.bio || '');
+    setPronouns(user.pronouns || '');
+    setSexuality(user.sexuality || '');
+    setInterestedIn(user.interestedIn ?? []);
+    setHeight(user.height ? String(user.height) : '');
+    setEthnicity(user.ethnicity || '');
+    setHometown(user.hometown || '');
+    setLocationCity(user.location?.city || '');
+    setLocationState(user.location?.state || '');
+    setLocationLat(user.location?.lat ?? null);
+    setLocationLng(user.location?.lng ?? null);
+    setZodiacSign(user.zodiacSign || '');
+    setPets(user.pets || '');
+    setHasChildren(user.hasChildren == null ? '' : user.hasChildren ? 'yes' : 'no');
+    setFamilyPlans(user.familyPlans || '');
+    setJobTitle(user.jobTitle || '');
+    setWork(user.work || '');
+    setSchool(user.school || '');
+    setEducationLevel(user.educationLevel || '');
+    setDrinks(user.drinks || '');
+    setSmokes(user.smokes || '');
+    setReligion(user.religion || '');
+    setPoliticalAssociation(user.politicalAssociation || '');
+    setLanguages(user.languages || '');
+    setHobbies(user.hobbies ?? []);
+    setPrompts(user.prompts ?? []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?._id]);
+
   // Accordion open state
   const [openAbout, setOpenAbout] = useState(false);
   const [openPhysical, setOpenPhysical] = useState(false);
@@ -142,7 +176,7 @@ const Profile = () => {
 
   const save = async (e: FormEvent) => {
     e.preventDefault();
-    const patch: Partial<User> & { location?: { city: string; state: string } } = {
+    const raw: Record<string, unknown> = {
       name, age: Number(age), bio, pronouns, sexuality, interestedIn,
       height: height ? Number(height) : null,
       ethnicity, hometown,
@@ -153,6 +187,8 @@ const Profile = () => {
       drinks, smokes, religion, politicalAssociation, languages,
       hobbies, prompts,
     };
+    // Strip empty strings so we never overwrite existing profile data with blanks
+    const patch = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== ''));
     await api.patch<User>('/users/me', patch);
     updateUser(patch);
     setSaved(true);
