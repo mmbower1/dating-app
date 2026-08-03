@@ -2530,6 +2530,7 @@ form button[type="submit"]:disabled {
 .profile-header h2 {
   font-size: 24px;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
 .accountability-card {
