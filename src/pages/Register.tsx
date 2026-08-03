@@ -176,7 +176,7 @@ const Register = () => {
               />
               I confirm I am 18 years of age or older.
             </label>
-            <label className="field-label">I am a</label>
+            <label className="field-label">I am a:</label>
             <div className="pill-group">
               {GENDERS.map((g) => (
                 <button
@@ -189,7 +189,7 @@ const Register = () => {
                 </button>
               ))}
             </div>
-            <label className="field-label">Interested in</label>
+            <label className="field-label">Interested in:</label>
             <div className="pill-group">
               {GENDERS.map((g) => (
                 <button
@@ -218,7 +218,7 @@ const Register = () => {
           </svg>
         </button>
         <div className="auth-footer-center">
-          <span className="auth-footer-tagline">Where monogamy still matters.</span>
+          <span className="auth-footer-tagline">Where monogamy matters.</span>
           <div className="auth-footer-links">
             <a href="/privacy">Privacy</a>
             <span>·</span>
