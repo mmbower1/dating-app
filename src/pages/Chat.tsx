@@ -165,17 +165,19 @@ const OpeningMoveModal = ({
   senderName,
   promptText,
   onSend,
+  onDismiss,
 }: {
   senderName: string;
   promptText: string;
   onSend: (reply: string) => void;
+  onDismiss: () => void;
 }) => {
   const [reply, setReply] = useState('');
   return (
     <div className="opening-move-overlay">
       <div className="opening-move-modal">
+        <button className="opening-move-dismiss-btn" onClick={onDismiss} aria-label="Dismiss">✕</button>
         <div className="opening-move-modal-label">Opening Move</div>
-        <p className="opening-move-modal-sender">{senderName} wants to know...</p>
         <p className="opening-move-modal-text">"{promptText}"</p>
         <textarea
           className="opening-move-reply-input"
@@ -214,6 +216,7 @@ const Chat = () => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showFarewell, setShowFarewell] = useState(false);
   const [openingMoveSubmitting, setOpeningMoveSubmitting] = useState(false);
+  const [openingMoveDismissed, setOpeningMoveDismissed] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -329,7 +332,7 @@ const Chat = () => {
   const other = match?.users.find((u) => u.userId._id !== user?._id)?.userId;
   const openingMoveMsg = messages.find((m) => m.type === 'opening_move');
   const hasReplied = messages.some((m) => m.type === 'text' && m.senderId === user?._id);
-  const showOpeningMove = !loading && match?.active && openingMoveMsg && openingMoveMsg.senderId !== user?._id && !hasReplied;
+  const showOpeningMove = !loading && match?.active && openingMoveMsg && openingMoveMsg.senderId !== user?._id && !hasReplied && !openingMoveDismissed;
 
   const sendOpeningMoveReply = async (reply: string) => {
     if (openingMoveSubmitting) return;
@@ -397,6 +400,14 @@ const Chat = () => {
                 <span className="opening-move-chat-label">Opening Move</span>
                 <p className="opening-move-chat-text">"{msg.text}"</p>
                 {isMe && <p className="opening-move-chat-hint">Waiting for {other?.name} to respond...</p>}
+                {!isMe && !hasReplied && (
+                  <button
+                    className="opening-move-reply-btn"
+                    onClick={() => setOpeningMoveDismissed(false)}
+                  >
+                    Reply to this
+                  </button>
+                )}
               </div>
             );
           }
@@ -461,6 +472,7 @@ const Chat = () => {
           senderName={other.name}
           promptText={openingMoveMsg!.text}
           onSend={sendOpeningMoveReply}
+          onDismiss={() => setOpeningMoveDismissed(true)}
         />
       )}
 
