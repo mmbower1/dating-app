@@ -15,13 +15,12 @@ function scoreColor(score: number): string {
   return '#fc8181';
 }
 
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hrs = Math.floor(diff / 36e5);
-  if (hrs < 1) return 'just now';
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return `${days}d ago`;
+function formatMatchDate(dateStr: string) {
+  const d = new Date(dateStr);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const yy = String(d.getFullYear()).slice(2);
+  return `on ${mm}/${dd}/${yy}`;
 }
 
 function hoursUntilExpiry(createdAt: string, lastMessageAt: string | null) {
@@ -104,7 +103,7 @@ const Matches = () => {
 
               <div className="match-card-body">
                 <div className="match-card-meta">
-                  <span className="match-card-time">Matched {timeAgo(match.createdAt)}</span>
+                  <span className="match-card-time">Matched {formatMatchDate(match.createdAt)}</span>
                   {hrsLeft !== null && hrsLeft <= 24 && (
                     <span className="match-card-expiry">⚠ {hrsLeft}h left to say hi</span>
                   )}
