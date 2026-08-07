@@ -14,6 +14,7 @@ const router = Router();
 // Like a user — creates a match if mutual. Optional comment becomes first message.
 router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    await expireStaleMatches(req.userId!);
     const activeMatchCount = await Match.countDocuments({ 'users.userId': req.userId, active: true });
     if (activeMatchCount >= 2) { res.status(403).json({ message: 'Swiping is locked while you have 2 active matches.' }); return; }
 
@@ -118,6 +119,7 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
 // Pass on a user
 router.post('/pass/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    await expireStaleMatches(req.userId!);
     const activeMatchCount = await Match.countDocuments({ 'users.userId': req.userId, active: true });
     if (activeMatchCount >= 2) { res.status(403).json({ message: 'Swiping is locked while you have 2 active matches.' }); return; }
 
@@ -414,5 +416,13 @@ async function recalculateScore(userId: string, gender: string) {
   await user.save();
 }
 
-export { recalculateScore };
+async function expireStaleMatches(userId: string) {
+  const threshold = new Date(Date.now() - 72 * 60 * 60 * 1000);
+  await Match.updateMany(
+    { 'users.userId': userId, active: true, lastMessageAt: null, createdAt: { $lt: threshold } },
+    { $set: { active: false, endReason: 'expired', conversationEndedAt: new Date() } }
+  );
+}
+
+export { recalculateScore, expireStaleMatches };
 export default router;

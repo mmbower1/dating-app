@@ -8,6 +8,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { protect, AuthRequest } from '../middleware/auth';
 import { getUserModel, getModelName, findUserById } from '../models/User';
 import Match from '../models/Match';
+import { expireStaleMatches } from './matches';
 import { vapidPublicKey } from '../utils/push';
 
 cloudinary.config({
@@ -37,6 +38,7 @@ router.get('/discover', protect, async (req: AuthRequest, res: Response): Promis
     const me = await UserModel.findById(req.userId);
     if (!me) { res.status(404).json({ message: 'User not found' }); return; }
 
+    await expireStaleMatches(me._id.toString());
     const activeMatchCount = await Match.countDocuments({ 'users.userId': me._id, active: true });
     if (activeMatchCount >= 2) { res.json({ locked: true }); return; }
 
