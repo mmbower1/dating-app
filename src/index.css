@@ -4493,3 +4493,147 @@ input[type="date"]::-webkit-date-and-time-value {
   .match-celebration-sub     { font-size: 15px; }
   .match-celebration-btn     { padding: 12px 28px; font-size: 15px; }
 }
+
+/* ── Opening Move ─────────────────────────────────────────── */
+
+/* Overlay + modal card */
+.opening-move-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.opening-move-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px 22px 24px;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.opening-move-modal-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b39dfa;
+}
+
+.opening-move-modal-sender {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.opening-move-modal-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin: 0;
+  font-style: italic;
+}
+
+.opening-move-reply-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-primary);
+  resize: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.opening-move-reply-input:focus {
+  border-color: #b39dfa;
+}
+
+.opening-move-send-btn {
+  background: var(--gradient);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.opening-move-send-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* In-chat card (shows after reply is sent) */
+.opening-move-chat-card {
+  margin: 12px 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(126,179,245,0.08) 0%, rgba(179,157,250,0.12) 100%);
+  border: 1px solid rgba(179, 157, 250, 0.3);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.opening-move-chat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b39dfa;
+}
+
+.opening-move-chat-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-style: italic;
+  margin: 0;
+}
+
+.opening-move-chat-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Profile page field */
+.opening-move-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.opening-move-textarea {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-primary);
+  resize: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.opening-move-textarea:focus {
+  border-color: #b39dfa;
+}

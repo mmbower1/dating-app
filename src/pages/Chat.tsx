@@ -161,6 +161,43 @@ const GracefulExitModal = ({
   );
 };
 
+const OpeningMoveModal = ({
+  senderName,
+  promptText,
+  onSend,
+}: {
+  senderName: string;
+  promptText: string;
+  onSend: (reply: string) => void;
+}) => {
+  const [reply, setReply] = useState('');
+  return (
+    <div className="opening-move-overlay">
+      <div className="opening-move-modal">
+        <div className="opening-move-modal-label">Opening Move</div>
+        <p className="opening-move-modal-sender">{senderName} wants to know...</p>
+        <p className="opening-move-modal-text">"{promptText}"</p>
+        <textarea
+          className="opening-move-reply-input"
+          placeholder={`Reply to ${senderName}...`}
+          value={reply}
+          onChange={(e) => setReply(e.target.value)}
+          rows={4}
+          maxLength={500}
+          autoFocus
+        />
+        <button
+          className="opening-move-send-btn"
+          disabled={!reply.trim()}
+          onClick={() => onSend(reply.trim())}
+        >
+          Send reply
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const Chat = () => {
   const { matchId } = useParams<{ matchId: string }>();
   const { user } = useAuth();
@@ -176,6 +213,7 @@ const Chat = () => {
   const [showExitModal, setShowExitModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showFarewell, setShowFarewell] = useState(false);
+  const [openingMoveSubmitting, setOpeningMoveSubmitting] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -289,6 +327,24 @@ const Chat = () => {
   };
 
   const other = match?.users.find((u) => u.userId._id !== user?._id)?.userId;
+  const openingMoveMsg = messages.find((m) => m.type === 'opening_move');
+  const hasReplied = messages.some((m) => m.type === 'text' && m.senderId === user?._id);
+  const showOpeningMove = !loading && match?.active && openingMoveMsg && openingMoveMsg.senderId !== user?._id && !hasReplied;
+
+  const sendOpeningMoveReply = async (reply: string) => {
+    if (openingMoveSubmitting) return;
+    setOpeningMoveSubmitting(true);
+    try {
+      if (socket && matchId) socket.emit('typing_stop', matchId);
+      const res = await api.post<Message>(`/messages/${matchId}`, { text: reply });
+      setMessages((m) => {
+        if (m.some((msg) => msg._id === res.data._id)) return m;
+        return [...m, res.data];
+      });
+    } finally {
+      setOpeningMoveSubmitting(false);
+    }
+  };
 
   if (loading) return <div className="page-center">Loading chat...</div>;
 
@@ -331,6 +387,16 @@ const Chat = () => {
                     )}
                   </div>
                 )}
+              </div>
+            );
+          }
+          if (msg.type === 'opening_move') {
+            const isMe = msg.senderId === user?._id;
+            return (
+              <div key={msg._id} className="opening-move-chat-card">
+                <span className="opening-move-chat-label">Opening Move</span>
+                <p className="opening-move-chat-text">"{msg.text}"</p>
+                {isMe && <p className="opening-move-chat-hint">Waiting for {other?.name} to respond...</p>}
               </div>
             );
           }
@@ -387,6 +453,14 @@ const Chat = () => {
         <ReportModal
           onSubmit={submitReport}
           onClose={() => setShowReportModal(false)}
+        />
+      )}
+
+      {showOpeningMove && other && (
+        <OpeningMoveModal
+          senderName={other.name}
+          promptText={openingMoveMsg!.text}
+          onSend={sendOpeningMoveReply}
         />
       )}
 

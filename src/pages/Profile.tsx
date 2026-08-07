@@ -117,6 +117,7 @@ const Profile = () => {
   const [languages, setLanguages] = useState(user?.languages || '');
   const [hobbies, setHobbies] = useState<string[]>(user?.hobbies ?? []);
   const [prompts, setPrompts] = useState<{ question: string; answer: string }[]>(user?.prompts ?? []);
+  const [openingMove, setOpeningMove] = useState(user?.openingMove || '');
 
   // Re-sync form when user data loads (guards against saving before auth context is ready)
   useEffect(() => {
@@ -149,6 +150,7 @@ const Profile = () => {
     setLanguages(user.languages || '');
     setHobbies(user.hobbies ?? []);
     setPrompts(user.prompts ?? []);
+    setOpeningMove(user.openingMove || '');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?._id]);
 
@@ -185,7 +187,7 @@ const Profile = () => {
       hasChildren: hasChildren === '' ? null : hasChildren === 'yes',
       familyPlans, jobTitle, work, school, educationLevel,
       drinks, smokes, religion, politicalAssociation, languages,
-      hobbies, prompts,
+      hobbies, prompts, openingMove,
     };
     // Strip empty strings so we never overwrite existing profile data with blanks
     const patch = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== ''));
@@ -568,6 +570,21 @@ const Profile = () => {
             </div>
           </div>
         </Section>
+
+        {/* ── Opening Move ──────────────────── */}
+        <p className="profile-section-header" style={{ marginTop: 24 }}>Opening Move</p>
+        <p className="profile-prompts-hint">Set a question that your matches will be asked to answer before they can message you.</p>
+        <div className="opening-move-field">
+          <textarea
+            className="opening-move-textarea"
+            placeholder="e.g. What's something you're proud of that's not on your resume?"
+            maxLength={150}
+            rows={3}
+            value={openingMove}
+            onChange={(e) => setOpeningMove(e.target.value)}
+          />
+          <span className="prompt-char-count">{openingMove.length}/150</span>
+        </div>
 
         {/* ── Prompts ───────────────────────── */}
         <p className="profile-section-header" style={{ marginTop: 24 }}>Prompts</p>

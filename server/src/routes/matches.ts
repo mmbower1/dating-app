@@ -48,6 +48,21 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
         matchedUser: { _id: me._id, name: me.name, photos: me.photos },
       });
 
+      // Post opening move if either user has one (second liker's takes priority)
+      const omText = me.openingMove?.trim() || target.openingMove?.trim() || '';
+      const omSender = me.openingMove?.trim()
+        ? new mongoose.Types.ObjectId(req.userId as string)
+        : (target._id as mongoose.Types.ObjectId);
+      if (omText) {
+        const omMsg = await Message.create({
+          matchId: match._id,
+          senderId: omSender,
+          text: omText,
+          type: 'opening_move',
+        });
+        io.to(matchRoomId).emit('new_message', omMsg);
+      }
+
       // Always post a 'like' context message so both parties see what sparked the match
       const likeText = section
         ? `${me.name} liked your ${section}${comment ? `\n\n"${comment}"` : ''}`

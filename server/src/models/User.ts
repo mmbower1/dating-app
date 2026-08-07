@@ -33,6 +33,7 @@ export interface IUser extends Document {
   languages?: string;
   hobbies?: string[];
   prompts?: { question: string; answer: string }[];
+  openingMove?: string;
   accountabilityScore: number;
   responseRate: number;
   ghostCount: number;
@@ -106,6 +107,7 @@ const UserSchema = new Schema<IUser>(
       question: { type: String },
       answer: { type: String },
     }],
+    openingMove: { type: String, default: '' },
     accountabilityScore: { type: Number, default: 90, min: 0, max: 100 },
     responseRate: { type: Number, default: 100, min: 0, max: 100 },
     ghostCount: { type: Number, default: 0 },

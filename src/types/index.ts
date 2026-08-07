@@ -41,6 +41,7 @@ export interface User {
   languages?: string;
   hobbies?: string[];
   prompts?: { question: string; answer: string }[];
+  openingMove?: string;
   accountabilityScore: number;
   responseRate: number;
   ghostCount: number;
@@ -77,7 +78,7 @@ export interface Message {
   senderId: string;
   text: string;
   read: boolean;
-  type: 'text' | 'graceful_exit' | 'like';
+  type: 'text' | 'graceful_exit' | 'like' | 'opening_move';
   createdAt: string;
 }
 
