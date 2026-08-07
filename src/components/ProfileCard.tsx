@@ -272,7 +272,7 @@ const ProfileCard = ({ profile, className, onHeart, onPass }: ProfileCardProps) 
       {extraPhotos[0] && (
         <div className="pcard-item pcard-item--photo">
           <img src={extraPhotos[0]} alt={`${profile.name} 2`} className="pcard-photo-img" />
-          <PhotoActions section="photo" />
+          <PhotoActions section="photo" showPass />
         </div>
       )}
 
@@ -287,7 +287,7 @@ const ProfileCard = ({ profile, className, onHeart, onPass }: ProfileCardProps) 
       {extraPhotos[1] && (
         <div className="pcard-item pcard-item--photo">
           <img src={extraPhotos[1]} alt={`${profile.name} 3`} className="pcard-photo-img" />
-          <PhotoActions section="photo" />
+          <PhotoActions section="photo" showPass />
         </div>
       )}
 
@@ -302,7 +302,7 @@ const ProfileCard = ({ profile, className, onHeart, onPass }: ProfileCardProps) 
       {extraPhotos.slice(2).map((photo, i) => (
         <div key={i} className="pcard-item pcard-item--photo">
           <img src={photo} alt={`${profile.name} ${i + 4}`} className="pcard-photo-img" />
-          <PhotoActions section="photo" />
+          <PhotoActions section="photo" showPass />
         </div>
       ))}
 
