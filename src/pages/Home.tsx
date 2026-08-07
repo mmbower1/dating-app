@@ -198,7 +198,7 @@ const Home = () => {
     const passed = profile;
     const idx = current;
     animateThen('left', async () => {
-      advance();
+      setCandidates((prev) => prev.filter((_, i) => i !== idx));
       setUndoTarget({ profile: passed, idx });
       await api.post(`/matches/pass/${passed._id}`);
     });
