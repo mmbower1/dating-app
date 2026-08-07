@@ -3832,7 +3832,7 @@ form button[type="submit"]:disabled {
   right: 20px;
   background: none;
   border: none;
-  color: white;
+  color: var(--text-primary);
   font-size: 22px;
   cursor: pointer;
   opacity: 0.7;
