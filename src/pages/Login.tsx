@@ -95,8 +95,7 @@ const Login = () => {
           </svg>
         </button>
         <div className="auth-footer-center">
-          <span className="auth-footer-tagline">Where getting a match is a big deal.</span>
-          <div className="auth-footer-links">
+<div className="auth-footer-links">
             <a href="/privacy">Privacy</a>
             <span>·</span>
             <a href="/terms">Terms</a>
