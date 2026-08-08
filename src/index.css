@@ -3256,6 +3256,9 @@ form button[type="submit"]:disabled {
   .welcome-nav {
     padding: 16px 20px;
   }
+  .welcome-nav-install {
+    display: none;
+  }
 }
 
 /* ── Legal pages ────────────────────────────────────── */
@@ -4517,23 +4520,21 @@ input[type="date"]::-webkit-date-and-time-value {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text-secondary);
   font-size: 15px;
   font-weight: 500;
-  padding: 13px;
+  padding: 14px;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: border-color 0.2s, color 0.2s;
   width: 100%;
-  max-width: 340px;
-  margin: 0 auto;
 }
 
 .welcome-install-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
 }
 
 /* iOS install modal */
