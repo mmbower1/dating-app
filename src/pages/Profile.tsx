@@ -6,6 +6,7 @@ import api from '../api/axios';
 import type { User } from '../types';
 import ProfileCard from '../components/ProfileCard';
 import LocationPicker from '../components/LocationPicker';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 function scoreColor(score: number): string {
   if (score >= 95) return '#48bb78';
@@ -171,6 +172,8 @@ const Profile = () => {
   const [generatingBio, setGeneratingBio] = useState(false);
   const [bioGenError, setBioGenError] = useState('');
   const [notifStatus, setNotifStatus] = useState<'idle' | 'enabled' | 'denied'>('idle');
+  const [showIOSInstall, setShowIOSInstall] = useState(false);
+  const { canInstall, isIOS, triggerInstall } = useInstallPrompt();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const toggleInterest = (g: string) =>
@@ -662,6 +665,50 @@ const Profile = () => {
       )}
       {notifStatus === 'enabled' && <p className="notif-ok">✓ Notifications enabled</p>}
       {notifStatus === 'denied' && <p className="notif-denied">Notifications blocked — enable in browser settings</p>}
+
+      {canInstall && (
+        <button className="notif-btn" onClick={() => isIOS ? setShowIOSInstall(true) : triggerInstall()}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Get the app
+        </button>
+      )}
+
+      {showIOSInstall && (
+        <div className="ios-install-overlay" onClick={() => setShowIOSInstall(false)}>
+          <div className="ios-install-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="ios-install-close" onClick={() => setShowIOSInstall(false)} aria-label="Close">✕</button>
+            <div className="ios-install-icon">
+              <img src="/apple-touch-icon.png" alt="Lockheart" width={60} height={60} style={{ borderRadius: 14 }} />
+            </div>
+            <h3 className="ios-install-title">Add to Home Screen</h3>
+            <p className="ios-install-subtitle">Install Lockheart for the full app experience.</p>
+            <ol className="ios-install-steps">
+              <li>
+                <span className="ios-step-num">1</span>
+                <span>Tap the <strong>Share</strong> button at the bottom of your browser
+                  <svg className="ios-share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                    <polyline points="16 6 12 2 8 6"/>
+                    <line x1="12" y1="2" x2="12" y2="15"/>
+                  </svg>
+                </span>
+              </li>
+              <li>
+                <span className="ios-step-num">2</span>
+                <span>Scroll down and tap <strong>Add to Home Screen</strong></span>
+              </li>
+              <li>
+                <span className="ios-step-num">3</span>
+                <span>Tap <strong>Add</strong> in the top right corner</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+      )}
 
       <div className="profile-footer-links">
         <a href="mailto:support@lockheartapp.com" className="profile-footer-link">Contact Us</a>
