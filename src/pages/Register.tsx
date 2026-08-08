@@ -1,32 +1,57 @@
 import { useState } from 'react';
-import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 
 const GENDERS = ['male', 'female', 'non-binary', 'other'];
 const GENDER_LABELS: Record<string, string> = {
-  male: 'Male',
-  female: 'Female',
-  'non-binary': 'Non-Binary',
-  other: 'Other',
+  male: 'Male', female: 'Female', 'non-binary': 'Non-Binary', other: 'Other',
 };
+const GENDER_ICONS = {
+  male: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="10" cy="14" r="5"/><line x1="21" y1="3" x2="15" y2="9"/><polyline points="15 3 21 3 21 9"/>
+    </svg>
+  ),
+  female: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="5"/><line x1="12" y1="13" x2="12" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/>
+    </svg>
+  ),
+  'non-binary': (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/>
+      <line x1="9" y1="5" x2="15" y2="5"/>
+    </svg>
+  ),
+  other: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  ),
+};
+
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
     </svg>
   ) : (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-      <line x1="1" y1="1" x2="23" y2="23" />
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
     </svg>
   );
 
-function calcAgeFromDob(dob: string): number {
+function calcAge(dob: string): number {
   if (!dob) return 0;
   const d = new Date(dob);
   const today = new Date();
@@ -36,195 +61,283 @@ function calcAgeFromDob(dob: string): number {
   return age;
 }
 
+const TOTAL_STEPS = 6;
+
 const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  const [step, setStep] = useState(0);
   const [form, setForm] = useState({
     name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
     dateOfBirth: '',
     gender: '',
     interestedIn: [] as string[],
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
   });
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const toggle = (g: string) =>
-    setForm((f) => ({
-      ...f,
-      interestedIn: f.interestedIn.includes(g)
-        ? f.interestedIn.filter((x) => x !== g)
-        : [...f.interestedIn, g],
-    }));
+  const age = calcAge(form.dateOfBirth);
+  const maxDob = new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+    .toISOString().split('T')[0];
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
-    if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match');
-      return;
+  const canContinue = (): boolean => {
+    switch (step) {
+      case 0: return form.name.trim().length >= 2;
+      case 1: return !!form.dateOfBirth && age >= 18;
+      case 2: return !!form.gender;
+      case 3: return form.interestedIn.length > 0;
+      case 4: return /\S+@\S+\.\S+/.test(form.email);
+      case 5: return form.password.length >= 6 && form.password === form.confirmPassword;
+      default: return false;
     }
-    if (!form.gender) { setError('Please select your gender'); return; }
-    if (!form.interestedIn.length) { setError('Please select who you are interested in'); return; }
-    if (!form.dateOfBirth) { setError('Please enter your date of birth'); return; }
-    const age = calcAgeFromDob(form.dateOfBirth);
-    if (age < 18) { setError('You must be 18 or older to join Lockheart'); return; }
-    if (!ageConfirmed) { setError('Please confirm you are 18 years of age or older'); return; }
+  };
+
+  const handleNext = async () => {
+    setError('');
+    if (step < TOTAL_STEPS - 1) { setStep(s => s + 1); return; }
     setLoading(true);
     try {
-      const { confirmPassword, ...rest } = form;
-      void confirmPassword;
-      await register({ ...rest, age, dateOfBirth: rest.dateOfBirth });
+      await register({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        age,
+        dateOfBirth: form.dateOfBirth,
+        gender: form.gender,
+        interestedIn: form.interestedIn,
+        phone: form.phone,
+      });
       navigate('/');
     } catch {
-      setError('Registration failed. Email may already be in use.');
+      setError('Registration failed. That email may already be in use.');
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="auth-page">
-      <div className="auth-content">
-        <div className="auth-card">
-          <div className="auth-logo">
-            <Logo size="lg" showText={true} />
-          </div>
-          <h1>Create account</h1>
-          <p className="auth-subtitle">Genuine connection begins here.</p>
-          {error && <p className="error">{error}</p>}
-          <form onSubmit={handleSubmit}>
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && canContinue()) handleNext();
+  };
+
+  const toggle = (g: string) =>
+    setForm(f => ({
+      ...f,
+      interestedIn: f.interestedIn.includes(g)
+        ? f.interestedIn.filter(x => x !== g)
+        : [...f.interestedIn, g],
+    }));
+
+  const renderStep = () => {
+    switch (step) {
+      case 0:
+        return (
+          <>
+            <h2 className="reg-question">What's your name?</h2>
+            <p className="reg-subtitle">Your first name is how matches will see you.</p>
             <input
-              placeholder="Full name"
+              className="reg-input"
+              placeholder="First name"
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
+              autoFocus
+              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              onKeyDown={onKey}
             />
+          </>
+        );
+
+      case 1:
+        return (
+          <>
+            <h2 className="reg-question">When's your birthday?</h2>
+            <p className="reg-subtitle">Lockheart is for adults 18 and up.</p>
+            {form.dateOfBirth && age >= 18 && (
+              <div className="reg-age-display">{age}</div>
+            )}
             <input
+              className="reg-input"
+              type="date"
+              value={form.dateOfBirth}
+              max={maxDob}
+              onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))}
+            />
+            {form.dateOfBirth && age < 18 && (
+              <p className="reg-error-inline">You must be 18 or older to join.</p>
+            )}
+          </>
+        );
+
+      case 2:
+        return (
+          <>
+            <h2 className="reg-question">I am a...</h2>
+            <p className="reg-subtitle">This helps us find the right people for you.</p>
+            <div className="reg-options">
+              {GENDERS.map(g => (
+                <button
+                  key={g}
+                  type="button"
+                  className={`reg-option ${form.gender === g ? 'selected' : ''}`}
+                  onClick={() => setForm(f => ({ ...f, gender: g }))}
+                >
+                  <span className="reg-option-icon">{GENDER_ICONS[g as keyof typeof GENDER_ICONS]}</span>
+                  <span className="reg-option-label">{GENDER_LABELS[g]}</span>
+                  <span className={`reg-option-check ${form.gender === g ? 'checked' : ''}`}>
+                    {form.gender === g && <CheckIcon />}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </>
+        );
+
+      case 3:
+        return (
+          <>
+            <h2 className="reg-question">I'm open to...</h2>
+            <p className="reg-subtitle">Select all that apply.</p>
+            <div className="reg-options">
+              {GENDERS.map(g => (
+                <button
+                  key={g}
+                  type="button"
+                  className={`reg-option ${form.interestedIn.includes(g) ? 'selected' : ''}`}
+                  onClick={() => toggle(g)}
+                >
+                  <span className="reg-option-icon">{GENDER_ICONS[g as keyof typeof GENDER_ICONS]}</span>
+                  <span className="reg-option-label">{GENDER_LABELS[g]}</span>
+                  <span className={`reg-option-check ${form.interestedIn.includes(g) ? 'checked' : ''}`}>
+                    {form.interestedIn.includes(g) && <CheckIcon />}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </>
+        );
+
+      case 4:
+        return (
+          <>
+            <h2 className="reg-question">What's your email?</h2>
+            <p className="reg-subtitle">We'll use it to keep your account safe. No spam.</p>
+            <input
+              className="reg-input"
               type="email"
-              placeholder="Email"
+              placeholder="your@email.com"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              required
+              autoFocus
+              onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+              onKeyDown={onKey}
             />
             <input
+              className="reg-input"
               type="tel"
-              placeholder="Phone number"
+              placeholder="Phone number (optional)"
               value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              required
+              onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+              onKeyDown={onKey}
             />
-            <div className="password-field">
+          </>
+        );
+
+      case 5:
+        return (
+          <>
+            <h2 className="reg-question">Create a password</h2>
+            <p className="reg-subtitle">At least 6 characters. Make it something strong.</p>
+            <div className="reg-pw-wrap">
               <input
+                className="reg-input"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password (min 6 chars)"
+                placeholder="Password"
                 value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                required
-                minLength={6}
+                autoFocus
+                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                onKeyDown={onKey}
               />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
+              <button type="button" className="reg-eye-btn" onClick={() => setShowPassword(v => !v)}>
                 <EyeIcon open={showPassword} />
               </button>
             </div>
-            <div className="password-field">
+            <div className="reg-pw-wrap">
               <input
+                className="reg-input"
                 type={showConfirm ? 'text' : 'password'}
                 placeholder="Confirm password"
                 value={form.confirmPassword}
-                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-                required
-                minLength={6}
+                onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
+                onKeyDown={onKey}
               />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowConfirm((v) => !v)}
-                aria-label={showConfirm ? 'Hide password' : 'Show password'}
-              >
+              <button type="button" className="reg-eye-btn" onClick={() => setShowConfirm(v => !v)}>
                 <EyeIcon open={showConfirm} />
               </button>
             </div>
-            <label className="field-label">Date of birth</label>
-            <input
-              type="date"
-              value={form.dateOfBirth}
-              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
-              onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
-              required
-            />
-            {form.dateOfBirth && calcAgeFromDob(form.dateOfBirth) < 18 && (
-              <p className="error" style={{ marginTop: 4, marginBottom: 0 }}>You must be 18 or older to join Lockheart.</p>
+            {form.confirmPassword && form.password !== form.confirmPassword && (
+              <p className="reg-error-inline">Passwords don't match.</p>
             )}
-            <label className="age-confirm-label">
-              <input
-                type="checkbox"
-                checked={ageConfirmed}
-                onChange={(e) => setAgeConfirmed(e.target.checked)}
-                required
-              />
-              I confirm I am 18 years of age or older.
-            </label>
-            <label className="field-label">I am a:</label>
-            <div className="pill-group">
-              {GENDERS.map((g) => (
-                <button
-                  key={g}
-                  type="button"
-                  className={`pill ${form.gender === g ? 'active' : ''}`}
-                  onClick={() => setForm({ ...form, gender: g })}
-                >
-                  {GENDER_LABELS[g]}
-                </button>
-              ))}
-            </div>
-            <label className="field-label">Interested in:</label>
-            <div className="pill-group">
-              {GENDERS.map((g) => (
-                <button
-                  key={g}
-                  type="button"
-                  className={`pill ${form.interestedIn.includes(g) ? 'active' : ''}`}
-                  onClick={() => toggle(g)}
-                >
-                  {GENDER_LABELS[g]}
-                </button>
-              ))}
-            </div>
-            <button type="submit" disabled={loading}>
-              {loading ? 'Creating account...' : 'Get started'}
-            </button>
-          </form>
-          <p className="auth-link">
-            Already have an account? <Link to="/login">Sign in</Link>
-          </p>
-        </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="reg-wizard">
+
+      {/* Progress bar */}
+      <div className="reg-progress-track">
+        <div
+          className="reg-progress-fill"
+          style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
+        />
       </div>
-      <div className="auth-footer">
-        <button className="auth-back-btn" onClick={() => navigate('/')} aria-label="Back to home">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 5l-7 7 7 7" />
-          </svg>
+
+      {/* Back button */}
+      <button
+        className="reg-back-btn"
+        onClick={() => step === 0 ? navigate('/') : setStep(s => s - 1)}
+        aria-label="Back"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+      </button>
+
+      {/* Card */}
+      <div className="reg-card">
+        <div className="reg-card-header">
+          <Logo size="sm" showText={true} />
+          <span className="reg-step-label">{step + 1} / {TOTAL_STEPS}</span>
+        </div>
+
+        <div className="reg-step-body" key={step}>
+          {renderStep()}
+          {error && <p className="reg-error-inline" style={{ marginTop: 12 }}>{error}</p>}
+        </div>
+
+        <button
+          className="reg-continue-btn"
+          disabled={!canContinue() || loading}
+          onClick={handleNext}
+        >
+          {step === TOTAL_STEPS - 1
+            ? (loading ? 'Creating account…' : 'Create account')
+            : 'Continue'}
         </button>
-        <div className="auth-footer-center">
-<div className="auth-footer-links">
-            <a href="/privacy">Privacy</a>
-            <span>·</span>
-            <a href="/terms">Terms</a>
-          </div>
-        </div>
       </div>
+
+      <p className="reg-signin-hint">
+        Already have an account? <Link to="/login">Sign in</Link>
+      </p>
+
     </div>
   );
 };

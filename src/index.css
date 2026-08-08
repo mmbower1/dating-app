@@ -271,6 +271,282 @@ form button[type="submit"]:disabled {
 
 /* ── Auth Pages ─────────────────────────────────────── */
 
+/* ── Registration Wizard ───────────────────────────────────── */
+
+.reg-wizard {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px 32px;
+  position: relative;
+  gap: 20px;
+}
+
+.app:has(.reg-wizard) {
+  background: var(--bg-primary);
+}
+
+/* Progress bar */
+.reg-progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--border);
+  z-index: 10;
+}
+
+.reg-progress-fill {
+  height: 100%;
+  background: var(--gradient);
+  border-radius: 0 2px 2px 0;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Back button */
+.reg-back-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.reg-back-btn:hover { background: var(--bg-input); }
+
+/* Card */
+.reg-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.reg-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+
+.reg-step-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+
+/* Step body */
+.reg-step-body {
+  padding: 24px 24px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: regSlideIn 0.22s ease;
+}
+
+@keyframes regSlideIn {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.reg-question {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.reg-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Inputs */
+.reg-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  color: var(--text-primary);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.reg-input:focus { border-color: var(--accent); }
+.reg-input::placeholder { color: var(--text-muted); }
+
+/* Password wrapper */
+.reg-pw-wrap {
+  position: relative;
+}
+.reg-pw-wrap .reg-input { padding-right: 48px; }
+
+.reg-eye-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+.reg-eye-btn:hover { color: var(--text-primary); }
+
+/* Age display */
+.reg-age-display {
+  font-size: 72px;
+  font-weight: 800;
+  text-align: center;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  padding: 8px 0;
+}
+
+/* Selection options (gender / interested-in) */
+.reg-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reg-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: left;
+  width: 100%;
+  color: var(--text-primary);
+}
+
+.reg-option:hover {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.reg-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.reg-option-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.reg-option.selected .reg-option-icon {
+  background: var(--gradient);
+  color: #fff;
+}
+
+.reg-option-label {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.reg-option-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+  color: #fff;
+}
+
+.reg-option-check.checked {
+  background: var(--gradient);
+  border-color: transparent;
+}
+
+/* Inline error */
+.reg-error-inline {
+  font-size: 13px;
+  color: #fc8181;
+  margin: 0;
+}
+
+/* Continue button */
+.reg-continue-btn {
+  margin: 16px 24px 24px;
+  padding: 15px;
+  border-radius: 50px;
+  background: var(--gradient);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  letter-spacing: 0.2px;
+}
+.reg-continue-btn:hover:not(:disabled) { opacity: 0.88; }
+.reg-continue-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Bottom sign-in hint */
+.reg-signin-hint {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.reg-signin-hint a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.reg-signin-hint a:hover { text-decoration: underline; }
+
+/* ── Auth page (Login etc.) ──────────────────────────────── */
+
 .auth-page {
   display: grid;
   grid-template-rows: 1fr auto;
