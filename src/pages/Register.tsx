@@ -94,7 +94,12 @@ const Register = () => {
       case 2: return !!form.gender;
       case 3: return form.interestedIn.length > 0;
       case 4: return /\S+@\S+\.\S+/.test(form.email);
-      case 5: return form.password.length >= 6 && form.password === form.confirmPassword;
+      case 5: return (
+        form.password.length >= 8 &&
+        /[0-9]/.test(form.password) &&
+        /[^A-Za-z0-9]/.test(form.password) &&
+        form.password === form.confirmPassword
+      );
       default: return false;
     }
   };
@@ -246,11 +251,17 @@ const Register = () => {
           </>
         );
 
-      case 5:
+      case 5: {
+        const pw = form.password;
+        const rules = [
+          { label: 'At least 8 characters', met: pw.length >= 8 },
+          { label: 'Contains a number',      met: /[0-9]/.test(pw) },
+          { label: 'Contains a symbol',      met: /[^A-Za-z0-9]/.test(pw) },
+        ];
         return (
           <>
             <h2 className="reg-question">Create a password</h2>
-            <p className="reg-subtitle">At least 6 characters. Make it something strong.</p>
+            <p className="reg-subtitle">Make it something only you'd know.</p>
             <div className="reg-pw-wrap">
               <input
                 className="reg-input"
@@ -265,6 +276,16 @@ const Register = () => {
                 <EyeIcon open={showPassword} />
               </button>
             </div>
+            {pw.length > 0 && (
+              <ul className="reg-pw-rules">
+                {rules.map(r => (
+                  <li key={r.label} className={r.met ? 'met' : ''}>
+                    <span className="reg-pw-rule-dot" />
+                    {r.label}
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="reg-pw-wrap">
               <input
                 className="reg-input"
@@ -283,6 +304,7 @@ const Register = () => {
             )}
           </>
         );
+      }
 
       default:
         return null;
