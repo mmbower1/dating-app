@@ -43,78 +43,93 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      {/* Background photo */}
-      <img
-        className="login-bg"
-        src="https://images.unsplash.com/photo-1527184478405-b1cf212ab2a3?w=1200&h=1600&fit=crop&crop=center&q=85&auto=format"
-        alt=""
-      />
-      <div className="login-overlay" />
 
-      {/* Top: logo + back */}
-      <div className="login-top">
-        <Logo size="sm" showText={true} />
-        <button className="login-back-pill" onClick={() => navigate('/')}>← Back</button>
-      </div>
+      {/* ── Left / content panel ── */}
+      <div className="login-content-panel">
 
-      {/* Bottom: form pinned to bottom */}
-      <div className="login-bottom">
-        <form className="login-form" onSubmit={handleSubmit}>
-          {/* Frosted glass input group */}
-          <div className="login-fields">
-            <input
-              className="login-field"
-              type="email"
-              placeholder="Email"
-              value={email}
-              autoComplete="email"
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
-            <div className="login-divider" />
-            <div className="login-pw-row">
+        {/* Top: logo + back */}
+        <div className="login-top">
+          <Logo size="sm" showText={true} />
+          <button className="login-back-pill" onClick={() => navigate('/')}>← Back</button>
+        </div>
+
+        {/* Middle: branding (mobile only — fills the top half) */}
+        <div className="login-branding">
+          <h1 className="login-headline">Welcome<br />back.</h1>
+          <p className="login-tagline">Good to see you here.</p>
+        </div>
+
+        {/* Bottom: form */}
+        <div className="login-bottom">
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="login-fields">
               <input
                 className="login-field"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
-                value={password}
-                autoComplete="current-password"
-                onChange={e => setPassword(e.target.value)}
+                type="email"
+                placeholder="Email"
+                value={email}
+                autoComplete="email"
+                onChange={e => setEmail(e.target.value)}
                 required
               />
-              <button
-                type="button"
-                className="login-eye-btn"
-                onClick={() => setShowPassword(v => !v)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                <EyeIcon open={showPassword} />
-              </button>
+              <div className="login-divider" />
+              <div className="login-pw-row">
+                <input
+                  className="login-field"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  value={password}
+                  autoComplete="current-password"
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="login-eye-btn"
+                  onClick={() => setShowPassword(v => !v)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  <EyeIcon open={showPassword} />
+                </button>
+              </div>
             </div>
-          </div>
 
-          {error && <p className="login-error">{error}</p>}
+            {error && <p className="login-error">{error}</p>}
 
-          <Link to="/forgot-password" className="login-forgot">Forgot password?</Link>
+            <Link to="/forgot-password" className="login-forgot">Forgot password?</Link>
 
-          <button
-            type="submit"
-            className="login-submit-btn"
-            disabled={loading || !email || !password}
-          >
-            {loading ? 'Signing in…' : 'Log in'}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="login-submit-btn"
+              disabled={loading || !email || !password}
+            >
+              {loading ? 'Signing in…' : 'Log in'}
+            </button>
+          </form>
 
-        <p className="login-create-hint">
-          No account?{' '}
-          <span className="login-create-link" onClick={() => navigate('/register')}>Create one</span>
-        </p>
-        <p className="login-legal">
-          By continuing you agree to our{' '}
-          <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
-        </p>
+          <p className="login-create-hint">
+            No account?{' '}
+            <span className="login-create-link" onClick={() => navigate('/register')}>
+              Create one
+            </span>
+          </p>
+          <p className="login-legal">
+            By continuing you agree to our{' '}
+            <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+          </p>
+        </div>
       </div>
+
+      {/* ── Right / photo panel ── */}
+      <div className="login-photo-panel">
+        <img
+          className="login-bg"
+          src="https://images.unsplash.com/photo-1527184478405-b1cf212ab2a3?w=1200&h=1600&fit=crop&crop=center&q=85&auto=format"
+          alt=""
+        />
+        <div className="login-overlay" />
+      </div>
+
     </div>
   );
 };

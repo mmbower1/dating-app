@@ -271,23 +271,35 @@ form button[type="submit"]:disabled {
 
 /* ── Auth Pages ─────────────────────────────────────── */
 
-/* ── Login page (full-screen hero) ────────────────────────── */
+/* ── Login page ────────────────────────────────────────────── */
 
 .login-page {
-  position: relative;
   height: 100dvh;
   min-height: 600px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
+  flex-direction: row;
 }
 
 .app:has(.login-page) { background: none; }
 
-.login-bg {
+/* ── Content panel (left on desktop, full-width on mobile) ── */
+.login-content-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ── Photo panel (absolute bg on mobile, right column on desktop) ── */
+.login-photo-panel {
   position: absolute;
   inset: 0;
+  z-index: 0;
+}
+
+.login-bg {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -300,16 +312,15 @@ form button[type="submit"]:disabled {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.2) 0%,
-    rgba(0,0,0,0.05) 30%,
-    rgba(0,0,0,0.6) 65%,
-    rgba(0,0,0,0.88) 100%
+    rgba(0,0,0,0.18) 0%,
+    rgba(0,0,0,0.04) 30%,
+    rgba(0,0,0,0.58) 62%,
+    rgba(0,0,0,0.86) 100%
   );
 }
 
+/* Top: logo + back */
 .login-top {
-  position: relative;
-  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -336,15 +347,32 @@ form button[type="submit"]:disabled {
 }
 .login-back-pill:hover { background: rgba(255,255,255,0.28); }
 
+/* Middle: branding text (fills empty top half on mobile) */
+.login-branding {
+  padding: 0 28px;
+}
+
+.login-headline {
+  font-size: clamp(36px, 10vw, 52px);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin: 0 0 10px;
+}
+
+.login-tagline {
+  font-size: 17px;
+  color: rgba(255,255,255,0.7);
+  margin: 0;
+}
+
+/* Bottom: form */
 .login-bottom {
-  position: relative;
-  z-index: 1;
   padding: 0 24px 44px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 420px;
-  width: 100%;
 }
 
 .login-form {
@@ -354,7 +382,7 @@ form button[type="submit"]:disabled {
   width: 100%;
 }
 
-/* Grouped frosted-glass input card */
+/* Grouped frosted-glass inputs */
 .login-fields {
   border-radius: 16px;
   overflow: hidden;
@@ -382,9 +410,7 @@ form button[type="submit"]:disabled {
   background: rgba(255,255,255,0.14);
 }
 
-.login-pw-row {
-  position: relative;
-}
+.login-pw-row { position: relative; }
 .login-pw-row .login-field { padding-right: 50px; }
 
 .login-eye-btn {
@@ -461,9 +487,89 @@ form button[type="submit"]:disabled {
   text-decoration: underline;
 }
 
+/* ── Desktop: two-column layout ── */
 @media (min-width: 768px) {
-  .login-bottom { padding: 0 40px 56px; }
-  .login-top    { padding: 40px 40px 0; }
+  .login-content-panel {
+    width: 420px;
+    flex-shrink: 0;
+    background: var(--bg-primary);
+    justify-content: space-between;
+  }
+
+  /* Photo panel becomes right column */
+  .login-photo-panel {
+    position: relative;
+    flex: 1;
+  }
+
+  /* On desktop: no overlay gradient needed on left column */
+  .login-top .logo-text {
+    color: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .login-back-pill {
+    background: var(--gradient-subtle);
+    border-color: var(--border);
+    color: var(--accent-purple);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .login-back-pill:hover { background: var(--accent-purple-glow); }
+
+  .login-top { padding: 36px 36px 0; }
+
+  /* Hide branding on desktop (left panel has no overlay) */
+  .login-branding { display: none; }
+
+  /* Desktop: center the form vertically */
+  .login-bottom {
+    flex: 1;
+    justify-content: center;
+    padding: 0 36px 52px;
+  }
+
+  /* Desktop: use theme inputs instead of frosted glass */
+  .login-fields {
+    border-color: var(--border);
+    border-radius: 14px;
+  }
+
+  .login-field {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .login-field::placeholder { color: var(--text-muted); }
+  .login-field:focus { background: var(--bg-input); }
+
+  .login-divider { background: var(--border); }
+
+  .login-eye-btn { color: var(--text-muted); }
+  .login-eye-btn:hover { color: var(--text-primary); }
+
+  .login-forgot { color: var(--text-secondary); }
+  .login-forgot:hover { color: var(--text-primary); }
+
+  .login-create-hint { color: var(--text-secondary); }
+  .login-create-link { color: var(--accent); text-decoration: none; }
+
+  .login-legal { color: var(--text-muted); }
+  .login-legal a { color: var(--text-secondary); }
+
+  .login-overlay {
+    background: linear-gradient(to right, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%);
+  }
+
+  /* Also add a headline to center of left panel on desktop */
+  .login-content-panel::after {
+    content: none;
+  }
 }
 
 /* ── Registration Wizard ───────────────────────────────────── */
