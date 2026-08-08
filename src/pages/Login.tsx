@@ -7,14 +7,14 @@ import Logo from '../components/Logo';
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
     </svg>
   ) : (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-      <line x1="1" y1="1" x2="23" y2="23" />
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
     </svg>
   );
 
@@ -35,72 +35,85 @@ const Login = () => {
       await login(email, password);
       navigate('/');
     } catch {
-      setError('Invalid email or password');
+      setError('Invalid email or password.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-content">
-        <div className="auth-card">
-          <div className="auth-logo">
-            <Logo size="lg" showText={true} />
-          </div>
-          <h1>Welcome back</h1>
-          <p className="auth-subtitle">Good to see you here</p>
-          {error && <p className="error">{error}</p>}
-          <form onSubmit={handleSubmit}>
+    <div className="login-page">
+      {/* Background photo */}
+      <img
+        className="login-bg"
+        src="https://images.unsplash.com/photo-1527184478405-b1cf212ab2a3?w=1200&h=1600&fit=crop&crop=center&q=85&auto=format"
+        alt=""
+      />
+      <div className="login-overlay" />
+
+      {/* Top: logo + back */}
+      <div className="login-top">
+        <Logo size="sm" showText={true} />
+        <button className="login-back-pill" onClick={() => navigate('/')}>← Back</button>
+      </div>
+
+      {/* Bottom: form pinned to bottom */}
+      <div className="login-bottom">
+        <form className="login-form" onSubmit={handleSubmit}>
+          {/* Frosted glass input group */}
+          <div className="login-fields">
             <input
+              className="login-field"
               type="email"
               placeholder="Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              onChange={e => setEmail(e.target.value)}
               required
             />
-            <div className="password-field">
+            <div className="login-divider" />
+            <div className="login-pw-row">
               <input
+                className="login-field"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                onChange={e => setPassword(e.target.value)}
                 required
               />
               <button
                 type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword((v) => !v)}
+                className="login-eye-btn"
+                onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 <EyeIcon open={showPassword} />
               </button>
             </div>
-            <button type="submit" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </form>
-          <p className="auth-link">
-            <Link to="/forgot-password" style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Forgot password?</Link>
-          </p>
-          <p className="auth-link">
-            No account? <Link to="/register">Create one</Link>
-          </p>
-        </div>
-      </div>
-      <div className="auth-footer">
-        <button className="auth-back-btn" onClick={() => navigate('/')} aria-label="Back to home">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <div className="auth-footer-center">
-<div className="auth-footer-links">
-            <a href="/privacy">Privacy</a>
-            <span>·</span>
-            <a href="/terms">Terms</a>
           </div>
-        </div>
+
+          {error && <p className="login-error">{error}</p>}
+
+          <Link to="/forgot-password" className="login-forgot">Forgot password?</Link>
+
+          <button
+            type="submit"
+            className="login-submit-btn"
+            disabled={loading || !email || !password}
+          >
+            {loading ? 'Signing in…' : 'Log in'}
+          </button>
+        </form>
+
+        <p className="login-create-hint">
+          No account?{' '}
+          <span className="login-create-link" onClick={() => navigate('/register')}>Create one</span>
+        </p>
+        <p className="login-legal">
+          By continuing you agree to our{' '}
+          <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+        </p>
       </div>
     </div>
   );
