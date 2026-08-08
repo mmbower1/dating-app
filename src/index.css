@@ -3093,32 +3093,43 @@ form button[type="submit"]:disabled {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  /* Override the .app background so the hero photo shows through */
-  margin: -0px;
 }
 
 .app:has(.welcome-page) {
   background: none;
 }
 
-/* ── Full-screen hero ── */
+/* ── Hero wrapper ── */
 .welcome-hero {
-  position: relative;
   height: 100dvh;
   min-height: 600px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+
+/* ── Left content panel ── */
+.welcome-content-panel {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  /* Mobile: full width over the photo */
+  width: 100%;
+}
+
+/* Mobile: photo sits behind content panel */
+.welcome-photo-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 .welcome-bg-img {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center center;
   display: block;
 }
 
@@ -3136,8 +3147,6 @@ form button[type="submit"]:disabled {
 
 /* Top: logo row */
 .welcome-top {
-  position: relative;
-  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3166,8 +3175,6 @@ form button[type="submit"]:disabled {
 
 /* Bottom: headline + CTA */
 .welcome-bottom {
-  position: relative;
-  z-index: 1;
   padding: 0 24px 44px;
 }
 
@@ -3253,9 +3260,107 @@ form button[type="submit"]:disabled {
   text-decoration: underline;
 }
 
-@media (min-width: 600px) {
-  .welcome-bottom { padding: 0 40px 56px; }
-  .welcome-top    { padding: 40px 40px 0; }
+/* ── Desktop: two-column layout ── */
+@media (min-width: 768px) {
+  .welcome-hero {
+    flex-direction: row;
+  }
+
+  /* Left: content panel takes fixed width, uses app background */
+  .welcome-content-panel {
+    width: 420px;
+    flex-shrink: 0;
+    background: var(--bg-primary);
+    justify-content: flex-start;
+    padding: 0;
+  }
+
+  .welcome-bottom {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Right: photo panel is positioned normally in the flow */
+  .welcome-photo-panel {
+    position: relative;
+    flex: 1;
+  }
+
+  /* Logo text uses theme color on desktop (no photo behind it) */
+  .welcome-top .logo-text {
+    color: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .welcome-top {
+    padding: 36px 36px 0;
+  }
+
+  .welcome-get-app-btn {
+    background: var(--gradient-subtle);
+    border: 1px solid var(--border);
+    color: var(--accent-purple);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .welcome-get-app-btn:hover {
+    background: var(--accent-purple-glow);
+  }
+
+  .welcome-bottom {
+    padding: 0 36px 52px;
+  }
+
+  .welcome-headline {
+    font-size: clamp(32px, 3vw, 48px);
+    color: var(--text-primary);
+  }
+
+  .welcome-tagline {
+    color: var(--text-secondary);
+  }
+
+  .welcome-btn-dark {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .welcome-btn-dark:hover {
+    background: var(--bg-input);
+  }
+
+  .welcome-login-hint {
+    color: var(--text-secondary);
+  }
+
+  .welcome-login-link {
+    color: var(--accent);
+  }
+
+  .welcome-legal-text {
+    color: var(--text-muted);
+  }
+
+  .welcome-legal-text a {
+    color: var(--text-secondary);
+  }
+
+  /* Desktop overlay: subtle vignette on the photo side only */
+  .welcome-overlay {
+    background: linear-gradient(
+      to right,
+      rgba(0,0,0,0.18) 0%,
+      rgba(0,0,0,0) 40%
+    );
+  }
 }
 
 /* ── Legal pages ────────────────────────────────────── */

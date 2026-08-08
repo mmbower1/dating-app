@@ -42,55 +42,56 @@ const Welcome = () => {
   const [showIOSModal, setShowIOSModal] = useState(false);
 
   const handleInstall = async () => {
-    if (isIOS) {
-      setShowIOSModal(true);
-    } else {
-      await triggerInstall();
-    }
+    if (isIOS) setShowIOSModal(true);
+    else await triggerInstall();
   };
 
   return (
     <div className="welcome-page">
-
-      {/* ── Full-screen hero ── */}
       <div className="welcome-hero">
-        <img
-          className="welcome-bg-img"
-          src="https://images.unsplash.com/photo-1527184478405-b1cf212ab2a3?w=1200&h=1600&fit=crop&crop=top&q=85&auto=format"
-          alt=""
-        />
-        <div className="welcome-overlay" />
 
-        {/* Top: logo */}
-        <div className="welcome-top">
-          <Logo size="sm" showText={true} />
-          {canInstall && (
-            <button className="welcome-get-app-btn" onClick={handleInstall}>Get the app</button>
-          )}
-        </div>
+        {/* ── Left content panel ── */}
+        <div className="welcome-content-panel">
+          <div className="welcome-top">
+            <Logo size="sm" showText={true} />
+            {canInstall && (
+              <button className="welcome-get-app-btn" onClick={handleInstall}>Get the app</button>
+            )}
+          </div>
 
-        {/* Bottom: headline + buttons */}
-        <div className="welcome-bottom">
-          <h1 className="welcome-headline">Dating - the way<br />it should be.</h1>
-          <p className="welcome-tagline">Two connections at a time.</p>
+          <div className="welcome-bottom">
+            <h1 className="welcome-headline">Dating - the way<br />it should be.</h1>
+            <p className="welcome-tagline">Two connections at a time.</p>
 
-          <div className="welcome-actions">
-            <button className="welcome-btn-primary" onClick={() => navigate('/register')}>
-              Create account
-            </button>
-            <button className="welcome-btn-dark" onClick={() => navigate('/login')}>
-              Sign in
-            </button>
-            <p className="welcome-login-hint">
-              Already have an account?{' '}
-              <span className="welcome-login-link" onClick={() => navigate('/login')}>Log in</span>
-            </p>
-            <p className="welcome-legal-text">
-              By continuing you agree to our{' '}
-              <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
-            </p>
+            <div className="welcome-actions">
+              <button className="welcome-btn-primary" onClick={() => navigate('/register')}>
+                Create account
+              </button>
+              <button className="welcome-btn-dark" onClick={() => navigate('/login')}>
+                Sign in
+              </button>
+              <p className="welcome-login-hint">
+                Already have an account?{' '}
+                <span className="welcome-login-link" onClick={() => navigate('/login')}>Log in</span>
+              </p>
+              <p className="welcome-legal-text">
+                By continuing you agree to our{' '}
+                <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+              </p>
+            </div>
           </div>
         </div>
+
+        {/* ── Right photo panel ── */}
+        <div className="welcome-photo-panel">
+          <img
+            className="welcome-bg-img"
+            src="https://images.unsplash.com/photo-1527184478405-b1cf212ab2a3?w=1200&h=1600&fit=crop&crop=center&q=85&auto=format"
+            alt=""
+          />
+          <div className="welcome-overlay" />
+        </div>
+
       </div>
 
       {showIOSModal && <IOSInstallModal onClose={() => setShowIOSModal(false)} />}
