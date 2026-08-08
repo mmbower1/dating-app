@@ -167,6 +167,7 @@ const Profile = () => {
 
   const [showPreview, setShowPreview] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [generatingBio, setGeneratingBio] = useState(false);
@@ -182,6 +183,7 @@ const Profile = () => {
 
   const save = async (e: FormEvent) => {
     e.preventDefault();
+    setSaveError('');
     const raw: Record<string, unknown> = {
       name, age: Number(age), bio, pronouns, sexuality, interestedIn,
       height: height ? Number(height) : null,
@@ -195,10 +197,14 @@ const Profile = () => {
     };
     // Strip empty strings so we never overwrite existing profile data with blanks
     const patch = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== ''));
-    await api.patch<User>('/users/me', patch);
-    updateUser(patch);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    try {
+      await api.patch<User>('/users/me', patch);
+      updateUser(patch);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch {
+      setSaveError('Failed to save. Please try signing out and back in.');
+    }
   };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -686,6 +692,7 @@ const Profile = () => {
           )}
         </Section>
 
+        {saveError && <p className="upload-error" style={{ marginTop: 12 }}>{saveError}</p>}
         <button type="submit" style={{ marginTop: 16 }}>{saved ? 'Saved!' : 'Save changes'}</button>
       </form>
 

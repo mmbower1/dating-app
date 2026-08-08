@@ -3093,192 +3093,169 @@ form button[type="submit"]:disabled {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-image:
-    radial-gradient(ellipse at 75% 10%, rgba(179,157,250,0.22) 0%, transparent 55%),
-    radial-gradient(ellipse at 20% 85%, rgba(126,179,245,0.18) 0%, transparent 55%);
+  /* Override the .app background so the hero photo shows through */
+  margin: -0px;
 }
 
-/* nav */
-.welcome-nav {
-  width: 100%;
-  max-width: 1400px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 32px;
+.app:has(.welcome-page) {
+  background: none;
 }
 
-.welcome-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.welcome-nav-signin {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 8px 14px;
-  border-radius: 50px;
-  transition: color 0.2s;
-}
-.welcome-nav-signin:hover { color: var(--text-primary); }
-
-.welcome-nav-cta {
-  background: var(--gradient);
-  border: none;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 10px 22px;
-  border-radius: 50px;
-  transition: opacity 0.2s;
-}
-.welcome-nav-cta:hover { opacity: 0.88; }
-
-/* hero */
+/* ── Full-screen hero ── */
 .welcome-hero {
+  position: relative;
+  height: 100dvh;
+  min-height: 600px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 72px 24px 64px;
-  gap: 20px;
-  max-width: 900px;
+  justify-content: space-between;
 }
 
-.welcome-headline {
-  font-size: clamp(42px, 8vw, 72px);
-  font-weight: 700;
-  line-height: 1.1;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.welcome-tagline {
-  font-size: 20px;
-  color: var(--text-secondary);
-  letter-spacing: 0.2px;
-}
-
-/* hero image */
-.welcome-hero-image {
+.welcome-bg-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  max-width: 860px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.07);
-  margin-top: 12px;
-}
-
-.welcome-hero-image img {
-  width: 100%;
-  height: 420px;
+  height: 100%;
   object-fit: cover;
+  object-position: center top;
   display: block;
 }
 
-/* pillars grid */
-.welcome-pillars {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  width: 100%;
-  max-width: 1400px;
-  padding: 0 32px 64px;
+.welcome-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.15) 0%,
+    rgba(0,0,0,0.05) 35%,
+    rgba(0,0,0,0.55) 65%,
+    rgba(0,0,0,0.82) 100%
+  );
 }
 
-.welcome-pillar {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px 24px;
+/* Top: logo row */
+.welcome-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 52px 28px 0;
 }
 
-.welcome-pillar h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
+.welcome-top .logo-text {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+.welcome-get-app-btn {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.welcome-get-app-btn:hover { background: rgba(255,255,255,0.28); }
+
+/* Bottom: headline + CTA */
+.welcome-bottom {
+  position: relative;
+  z-index: 1;
+  padding: 0 24px 44px;
+}
+
+.welcome-headline {
+  font-size: clamp(34px, 9vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  color: #fff;
+  letter-spacing: -0.5px;
   margin-bottom: 10px;
 }
 
-.welcome-pillar p {
-  font-size: 15px;
-  color: var(--text-secondary);
-  line-height: 1.6;
+.welcome-tagline {
+  font-size: 17px;
+  color: rgba(255,255,255,0.72);
+  margin-bottom: 28px;
+  font-weight: 400;
 }
 
-/* footer cta */
-.welcome-footer-cta {
+.welcome-actions {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 14px;
+  gap: 12px;
+  max-width: 420px;
+}
+
+.welcome-btn-primary {
   width: 100%;
-  max-width: 480px;
-  padding: 0 24px 80px;
-  text-align: center;
-}
-
-.welcome-footer-cta h2 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* shared buttons */
-.welcome-cta {
-  padding: 15px 32px;
+  padding: 16px;
   border-radius: 50px;
   background: var(--gradient);
   color: #fff;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   border: none;
   cursor: pointer;
-  width: 100%;
   transition: opacity 0.2s;
+  letter-spacing: 0.2px;
 }
-.welcome-cta:hover { opacity: 0.88; }
+.welcome-btn-primary:hover { opacity: 0.9; }
 
-.welcome-secondary {
-  padding: 14px;
-  border-radius: 50px;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
+.welcome-btn-dark {
   width: 100%;
-  transition: border-color 0.2s, color 0.2s;
+  padding: 16px;
+  border-radius: 50px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.22);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.2px;
 }
-.welcome-secondary:hover {
-  border-color: var(--accent-purple);
-  color: var(--accent-purple);
+.welcome-btn-dark:hover { background: rgba(0,0,0,0.7); }
+
+.welcome-login-hint {
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 2px;
 }
 
-@media (max-width: 560px) {
-  .welcome-pillars {
-    grid-template-columns: 1fr;
-  }
-  .welcome-nav {
-    padding: 16px 20px;
-  }
-  .welcome-nav-install {
-    display: none;
-  }
+.welcome-login-link {
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.welcome-legal-text {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.5;
+}
+
+.welcome-legal-text a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: underline;
+}
+
+@media (min-width: 600px) {
+  .welcome-bottom { padding: 0 40px 56px; }
+  .welcome-top    { padding: 40px 40px 0; }
 }
 
 /* ── Legal pages ────────────────────────────────────── */
@@ -4443,15 +4420,6 @@ input[type="date"]::-webkit-date-and-time-value {
   /* ── Auth pages ── */
   .auth-content { padding: 24px 14px; }
 
-  /* ── Welcome page ── */
-  .welcome-nav          { padding: 14px 16px; }
-  .welcome-hero         { padding: 36px 16px 24px; gap: 14px; }
-  .welcome-tagline      { font-size: 16px; }
-  .welcome-hero-image img { height: 200px; }
-  .welcome-pillars      { padding: 0 16px 36px; gap: 12px; }
-  .welcome-pillar       { padding: 20px 18px; }
-  .welcome-footer-cta   { padding: 0 16px 60px; }
-
   /* ── Discover — profile card ── */
   .pcard-name           { font-size: 22px; }
   .pcard-score          { font-size: 16px; padding: 3px 9px; }
@@ -4519,43 +4487,6 @@ input[type="date"]::-webkit-date-and-time-value {
 
 /* ── Get the App / Install ────────────────────────────────── */
 
-.welcome-nav-install {
-  background: none;
-  border: 1px solid rgba(179, 157, 250, 0.5);
-  border-radius: 20px;
-  color: #b39dfa;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 7px 14px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.welcome-nav-install:hover {
-  background: rgba(179, 157, 250, 0.08);
-}
-
-.welcome-install-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 50px;
-  color: var(--text-secondary);
-  font-size: 15px;
-  font-weight: 500;
-  padding: 14px;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-  width: 100%;
-}
-
-.welcome-install-btn:hover {
-  border-color: var(--accent-purple);
-  color: var(--accent-purple);
-}
 
 /* iOS install modal */
 .ios-install-overlay {
