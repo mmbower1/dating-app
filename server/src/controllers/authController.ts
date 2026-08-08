@@ -75,21 +75,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     const token = signToken(user._id.toString(), user.gender, user.isAdmin);
-    res.status(201).json({
-      token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        age: user.age,
-        gender: user.gender,
-        interestedIn: user.interestedIn,
-        bio: user.bio,
-        photos: user.photos,
-        accountabilityScore: user.accountabilityScore,
-        isAdmin: user.isAdmin,
-      },
-    });
+    const { password: _pw, likedUsers: _lu, passedUsers: _pu, blockedUsers: _bu, ...safeUser } = user.toObject();
+    res.status(201).json({ token, user: safeUser });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
@@ -124,21 +111,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     const token = signToken(user._id.toString(), user.gender, user.isAdmin);
-    res.json({
-      token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        age: user.age,
-        gender: user.gender,
-        interestedIn: user.interestedIn,
-        bio: user.bio,
-        photos: user.photos,
-        accountabilityScore: user.accountabilityScore,
-        isAdmin: user.isAdmin,
-      },
-    });
+    const { password: _pw, likedUsers: _lu, passedUsers: _pu, blockedUsers: _bu, ...safeUser } = user.toObject();
+    res.json({ token, user: safeUser });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }

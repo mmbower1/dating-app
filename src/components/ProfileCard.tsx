@@ -123,8 +123,8 @@ export function buildAbout(p: User): DetailChip[] {
   if (p.height) chips.push({ label: inToDisplay(p.height), icon: I.ruler });
   if (p.location?.city) chips.push({ label: `${p.location.city}${p.location.state ? `, ${p.location.state}` : ''}`, icon: I.mapPin });
   if (p.hasChildren != null) chips.push({ label: p.hasChildren ? 'Has kids' : "Doesn't have kids", icon: I.users });
+  if (p.familyPlans) chips.push({ label: p.familyPlans, icon: I.heart });
   if (p.pets) chips.push({ label: p.pets, icon: I.paw });
-  if (p.zodiacSign) chips.push({ label: p.zodiacSign, icon: I.constellation });
   return chips;
 }
 
@@ -134,9 +134,9 @@ export function buildDetails(p: User): DetailChip[] {
   if (p.jobTitle) chips.push({ label: p.jobTitle, icon: I.briefcase });
   if (p.drinks) chips.push({ label: `Drinks ${p.drinks.toLowerCase()}`, icon: I.glass });
   if (p.smokes) chips.push({ label: `Smokes ${p.smokes.toLowerCase()}`, icon: I.wind });
+  if (p.zodiacSign) chips.push({ label: p.zodiacSign, icon: I.constellation });
   if (p.religion) chips.push({ label: p.religion, icon: I.sparkles });
   if (p.politicalAssociation) chips.push({ label: p.politicalAssociation, icon: I.landmark });
-  if (p.familyPlans) chips.push({ label: p.familyPlans, icon: I.heart });
   return chips;
 }
 
