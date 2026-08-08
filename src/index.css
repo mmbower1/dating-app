@@ -486,7 +486,7 @@ form button[type="submit"]:disabled {
   max-width: 1200px;
   height: var(--nav-height);
   background: var(--bg-secondary);
-  border-top: 3px solid rgba(255,255,255,0.11);
+  border-top: none;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -495,16 +495,6 @@ form button[type="submit"]:disabled {
   box-shadow: 0 -2px 20px rgba(0,0,0,0.3);
 }
 
-.bottom-nav::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--gradient);
-  opacity: 0.35;
-}
 
 .nav-item {
   flex: 1;
