@@ -2370,6 +2370,36 @@ form button[type="submit"]:disabled {
   background-origin: padding-box, border-box;
 }
 
+.profile-avatar--editable {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar-camera-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.profile-avatar--editable:hover .avatar-camera-overlay,
+.profile-avatar--editable:active .avatar-camera-overlay {
+  opacity: 1;
+}
+
+.avatar-uploading-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
+  animation: pulse 0.8s ease-in-out infinite alternate;
+}
+
 /* ── Photo Grid ─────────────────────────────────────── */
 
 .photo-section {

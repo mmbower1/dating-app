@@ -175,6 +175,7 @@ const Profile = () => {
   const [showIOSInstall, setShowIOSInstall] = useState(false);
   const { canInstall, isIOS, triggerInstall } = useInstallPrompt();
   const fileRef = useRef<HTMLInputElement>(null);
+  const avatarFileRef = useRef<HTMLInputElement>(null);
 
   const toggleInterest = (g: string) =>
     setInterestedIn((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]);
@@ -217,6 +218,29 @@ const Profile = () => {
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
+  const handleAvatarUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError('');
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append('photo', file);
+      const res = await api.post<{ url: string; photos: string[] }>('/users/upload-photo', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      // Move the newly uploaded photo (last in array) to position 0
+      const reordered = [res.data.url, ...res.data.photos.filter((p) => p !== res.data.url)];
+      updateUser({ photos: reordered });
+      await api.patch('/users/photos/reorder', { photos: reordered });
+    } catch {
+      setUploadError('Upload failed.');
+    } finally {
+      setUploading(false);
+      if (avatarFileRef.current) avatarFileRef.current.value = '';
     }
   };
 
@@ -297,8 +321,19 @@ const Profile = () => {
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
         </button>
-        <div className="profile-avatar">
+        <div className="profile-avatar profile-avatar--editable" onClick={() => avatarFileRef.current?.click()} title="Change photo">
           {user.photos[0] ? <img src={user.photos[0]} alt={user.name} /> : <div className="no-photo-lg">{user.name[0]}</div>}
+          <div className="avatar-camera-overlay">
+            {uploading ? (
+              <span className="avatar-uploading-dot" />
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            )}
+          </div>
+          <input ref={avatarFileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
         </div>
         <h2>{user.name}, {user.age}</h2>
       </div>
