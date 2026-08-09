@@ -29,7 +29,8 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
     me.likedUsers.push(target._id as mongoose.Types.ObjectId);
     await me.save();
 
-    const mutualLike = target.likedUsers.some((id) => id.equals(me._id as mongoose.Types.ObjectId));
+    const myIdStr = (me._id as mongoose.Types.ObjectId).toString();
+    const mutualLike = target.likedUsers.some((id) => id.toString() === myIdStr);
     if (mutualLike) {
       // Mark the current user (me, second liker) as having seen the celebration already
       const match = await Match.create({

@@ -2434,6 +2434,19 @@ form button[type="submit"]:disabled {
   to   { transform: scale(1);   opacity: 1; }
 }
 
+.liked-me-error {
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: rgba(252, 129, 129, 0.15);
+  border: 1px solid var(--error);
+  border-radius: 10px;
+  color: var(--error);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
 /* Liked Me section */
 .liked-me-section {
   width: 100%;

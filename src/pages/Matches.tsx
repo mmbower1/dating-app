@@ -41,6 +41,7 @@ const Matches = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [likedMe, setLikedMe] = useState<User[]>([]);
   const [likedMeAction, setLikedMeAction] = useState<string | null>(null);
+  const [likedMeError, setLikedMeError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showProfile, setShowProfile] = useState<string | null>(null);
   const [likedMePreview, setLikedMePreview] = useState<User | null>(null);
@@ -57,14 +58,19 @@ const Matches = () => {
 
   const handleLikeBack = async (target: User) => {
     setLikedMeAction(target._id);
+    setLikedMeError(null);
     try {
       await api.post(`/matches/like/${target._id}`);
       setLikedMe((prev) => prev.filter((u) => u._id !== target._id));
       const res = await api.get<Match[]>('/matches');
       setMatches(res.data);
-    } catch {
-      // locked (2 active matches) — still remove from liked-me view
-      setLikedMe((prev) => prev.filter((u) => u._id !== target._id));
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 403) {
+        setLikedMeError('You have 2 active matches — close one before liking someone new.');
+      } else {
+        setLikedMeError('Something went wrong. Please try again.');
+      }
     } finally {
       setLikedMeAction(null);
     }
@@ -90,6 +96,9 @@ const Matches = () => {
     <div className="matches-page">
 
       {/* ── Liked You ── */}
+      {likedMeError && (
+        <div className="liked-me-error">{likedMeError}</div>
+      )}
       {likedMe.length > 0 && (
         <div className="liked-me-section">
           <h3 className="liked-me-heading">
@@ -126,9 +135,11 @@ const Matches = () => {
                   onClick={() => handleLikeBack(person)}
                   aria-label="Like back"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                  </svg>
+                  {likedMeAction === person._id ? '…' : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
