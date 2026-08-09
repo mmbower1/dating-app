@@ -26,26 +26,41 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+const CACHED_USER_KEY = 'lockheart_user';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const cached = localStorage.getItem(CACHED_USER_KEY);
+      return cached ? (JSON.parse(cached) as User) : null;
+    } catch { return null; }
+  });
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true);
+  // Only block rendering if there is no token at all — if we have a token+cache, render instantly
+  const [loading, setLoading] = useState(!localStorage.getItem('token'));
 
   useEffect(() => {
     const stored = localStorage.getItem('token');
-    if (stored) {
-      api.get<User>('/auth/me')
-        .then((res) => setUser(res.data))
-        .catch(() => { localStorage.removeItem('token'); setToken(null); })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    if (!stored) { setLoading(false); return; }
+    // Verify the token and refresh user data in the background
+    api.get<User>('/auth/me')
+      .then((res) => {
+        setUser(res.data);
+        localStorage.setItem(CACHED_USER_KEY, JSON.stringify(res.data));
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem(CACHED_USER_KEY);
+        setToken(null);
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (email: string, password: string) => {
     const res = await api.post<AuthResponse>('/auth/login', { email, password });
     localStorage.setItem('token', res.data.token);
+    localStorage.setItem(CACHED_USER_KEY, JSON.stringify(res.data.user));
     setToken(res.data.token);
     setUser(res.data.user);
   };
@@ -53,18 +68,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (data: RegisterData) => {
     const res = await api.post<AuthResponse>('/auth/register', data);
     localStorage.setItem('token', res.data.token);
+    localStorage.setItem(CACHED_USER_KEY, JSON.stringify(res.data.user));
     setToken(res.data.token);
     setUser(res.data.user);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem(CACHED_USER_KEY);
     setToken(null);
     setUser(null);
   };
 
   const updateUser = (partial: Partial<User>) => {
-    setUser((prev) => prev ? { ...prev, ...partial } : prev);
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...partial };
+      localStorage.setItem(CACHED_USER_KEY, JSON.stringify(next));
+      return next;
+    });
   };
 
   return (
