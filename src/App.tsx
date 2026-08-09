@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { usePullToRefresh } from './hooks/usePullToRefresh';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { SocketProvider } from './context/SocketContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -137,11 +138,46 @@ const ScrollToTop = () => {
   return null;
 };
 
+const PullIndicator = () => {
+  const { user } = useAuth();
+  const refresh = useCallback(() => window.location.reload(), []);
+  const { pullY, refreshing, progress } = usePullToRefresh(refresh);
+
+  if (!user) return null;
+  if (pullY === 0 && !refreshing) return null;
+
+  const size = 28;
+  const stroke = 3;
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+
+  return (
+    <div
+      className="ptr-indicator"
+      style={{ transform: `translateY(${refreshing ? 52 : Math.min(pullY * 0.6, 52)}px)` }}
+    >
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className={refreshing ? 'ptr-spinning' : ''}>
+        <circle
+          cx={size / 2} cy={size / 2} r={r}
+          fill="none"
+          stroke="var(--accent)"
+          strokeWidth={stroke}
+          strokeDasharray={circ}
+          strokeDashoffset={circ * (1 - (refreshing ? 0.75 : progress))}
+          strokeLinecap="round"
+          style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
+        />
+      </svg>
+    </div>
+  );
+};
+
 const ThemedApp = () => {
   const { theme } = useTheme();
   return (
     <div className="app" data-theme={theme}>
       <ScrollToTop />
+      <PullIndicator />
       <TopHeader />
       <Routes>
         <Route path="/terms" element={<Terms />} />

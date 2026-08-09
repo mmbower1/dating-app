@@ -101,6 +101,36 @@ h1, h2, h3 {
     radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.1) 0%, transparent 70%);
 }
 
+/* ── Pull to refresh ────────────────────────────────── */
+.ptr-indicator {
+  position: fixed;
+  top: -44px;
+  left: calc(50% - 20px);
+  z-index: 9999;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  will-change: transform;
+}
+
+@keyframes ptr-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ptr-spinning {
+  animation: ptr-spin 0.8s linear infinite;
+}
+
+/* Prevent native browser pull-to-refresh on supported browsers */
+body {
+  overscroll-behavior-y: contain;
+}
+
 /* ── Logo ───────────────────────────────────────────── */
 
 .logo-lockup {
