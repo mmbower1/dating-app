@@ -165,6 +165,17 @@ router.patch('/me/password', protect, async (req: AuthRequest, res: Response): P
   }
 });
 
+// Clear passed users — lets previously passed profiles reappear in discover
+router.delete('/me/passed', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const UserModel = getUserModel(req.userGender!);
+    await UserModel.findByIdAndUpdate(req.userId, { $set: { passedUsers: [] } });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
 // Delete account
 router.delete('/me', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
