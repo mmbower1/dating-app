@@ -104,7 +104,7 @@ h1, h2, h3 {
 /* ── Pull to refresh ────────────────────────────────── */
 .ptr-indicator {
   position: fixed;
-  top: -44px;
+  top: -52px;
   left: calc(50% - 20px);
   z-index: 9999;
   width: 40px;
@@ -114,8 +114,9 @@ h1, h2, h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-  will-change: transform;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  will-change: transform, opacity;
+  pointer-events: none;
 }
 
 @keyframes ptr-spin {
@@ -123,10 +124,10 @@ h1, h2, h3 {
 }
 
 .ptr-spinning {
-  animation: ptr-spin 0.8s linear infinite;
+  animation: ptr-spin 0.75s linear infinite;
 }
 
-/* Prevent native browser pull-to-refresh on supported browsers */
+/* Prevent native browser pull-to-refresh */
 body {
   overscroll-behavior-y: contain;
 }

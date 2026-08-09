@@ -138,32 +138,41 @@ const ScrollToTop = () => {
   return null;
 };
 
+const SIZE = 28;
+const STROKE = 3;
+const R = (SIZE - STROKE) / 2;
+const CIRC = 2 * Math.PI * R;
+
 const PullIndicator = () => {
   const { user } = useAuth();
+  const { pathname } = useLocation();
+  const allowed = new Set(['/', '/matches', '/profile']);
+  const enabled = !!user && allowed.has(pathname);
+
   const refresh = useCallback(() => window.location.reload(), []);
-  const { pullY, refreshing, progress } = usePullToRefresh(refresh);
+  const { wrapRef, circleRef, refreshing } = usePullToRefresh(refresh, enabled);
 
   if (!user) return null;
-  if (pullY === 0 && !refreshing) return null;
-
-  const size = 28;
-  const stroke = 3;
-  const r = (size - stroke) / 2;
-  const circ = 2 * Math.PI * r;
 
   return (
     <div
+      ref={wrapRef}
       className="ptr-indicator"
-      style={{ transform: `translateY(${refreshing ? 52 : Math.min(pullY * 0.6, 52)}px)` }}
+      style={{ opacity: 0, transform: 'translateY(0px)' }}
     >
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className={refreshing ? 'ptr-spinning' : ''}>
+      <svg
+        width={SIZE} height={SIZE}
+        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        className={refreshing ? 'ptr-spinning' : ''}
+      >
         <circle
-          cx={size / 2} cy={size / 2} r={r}
+          ref={circleRef}
+          cx={SIZE / 2} cy={SIZE / 2} r={R}
           fill="none"
           stroke="var(--accent)"
-          strokeWidth={stroke}
-          strokeDasharray={circ}
-          strokeDashoffset={circ * (1 - (refreshing ? 0.75 : progress))}
+          strokeWidth={STROKE}
+          strokeDasharray={CIRC}
+          strokeDashoffset={CIRC}
           strokeLinecap="round"
           style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
         />
