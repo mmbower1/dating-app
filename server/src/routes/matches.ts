@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 import { sendPush } from '../utils/push';
 import type webpush from 'web-push';
 import { emitToUser } from '../index';
-import { calcScore } from '../utils/scoreCalc';
+import { calcScore, unmatchPenalty } from '../utils/scoreCalc';
 
 const router = Router();
 
@@ -334,20 +334,22 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
         }
       }
     } else {
-      // Graceful exit — count it but do NOT recalculate score upward; score stays as-is
+      // Graceful exit — apply tiered penalty based on current score tier
       await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
+      const current = await UserModel.findById(req.userId);
+      if (current) {
+        const penalty = unmatchPenalty(current.accountabilityScore);
+        current.accountabilityScore = Math.max(0, current.accountabilityScore - penalty);
+        await current.save();
+      }
     }
 
     // Post a system message visible to both parties, including their reason
     const me = await UserModel.findById(req.userId);
     const reason = typeof req.body.reason === 'string' ? req.body.reason.trim() : '';
-    const systemText = metInPerson
-      ? (reason
-          ? `${me?.name ?? 'Your match'} met you in person and left this note: "${reason}"`
-          : `${me?.name ?? 'Your match'} met you in person but decided not to continue.`)
-      : (reason
-          ? `${me?.name ?? 'Your match'} unmatched and left this note: "${reason}"`
-          : `${me?.name ?? 'Your match'} chose not to continue this conversation.`);
+    const systemText = reason
+      ? `${me?.name ?? 'Your match'} unmatched and left this note: "${reason}"`
+      : `${me?.name ?? 'Your match'} chose not to continue this conversation.`;
     const systemMsg = await Message.create({
       matchId: match._id,
       senderId: new mongoose.Types.ObjectId(req.userId as string),

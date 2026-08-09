@@ -15,3 +15,11 @@ export function calcScore(amicable: number, nonAmicable: number): number {
   if (ratio >= 0.4) return 80;
   return 75;
 }
+
+// Tiered unmatch penalty applied at the moment of a voluntary graceful exit.
+// Score >= 90 → -8, score in 80s → -6, score below 80 → -3.
+export function unmatchPenalty(currentScore: number): number {
+  if (currentScore >= 90) return 8;
+  if (currentScore >= 80) return 6;
+  return 3;
+}
