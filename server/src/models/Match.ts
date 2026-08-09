@@ -14,7 +14,8 @@ export interface IMatch extends Document {
   slowResponsePenalties: number;
   conversationEndedAt: Date | null;
   endedBy: mongoose.Types.ObjectId | null;
-  endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | null;
+  endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | 'met_in_person' | null;
+  metInPersonConfirmations: mongoose.Types.ObjectId[];
   ghostedUserId: mongoose.Types.ObjectId | null;
   exitRating: 'genuine' | 'not_genuine' | null;
   exitRatedBy: mongoose.Types.ObjectId | null;
@@ -44,9 +45,10 @@ const MatchSchema = new Schema<IMatch>(
     endedBy: { type: Schema.Types.ObjectId, default: null },
     endReason: {
       type: String,
-      enum: ['graceful_exit', 'ghosted', 'mutual', 'expired', null],
+      enum: ['graceful_exit', 'ghosted', 'mutual', 'expired', 'met_in_person', null],
       default: null,
     },
+    metInPersonConfirmations: [{ type: Schema.Types.ObjectId }],
     ghostedUserId: { type: Schema.Types.ObjectId, default: null },
     exitRating: { type: String, enum: ['genuine', 'not_genuine', null], default: null },
     exitRatedBy: { type: Schema.Types.ObjectId, default: null },

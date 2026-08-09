@@ -2,7 +2,7 @@ import Match from '../models/Match';
 import Message from '../models/Message';
 import { findUserById, getUserModel } from '../models/User';
 
-const TICK_MS = 18 * 60 * 60 * 1000;  // 18 hours per penalty tick
+const TICK_MS = 24 * 60 * 60 * 1000;  // 24 hours per penalty tick
 const GHOST_MS = 48 * 60 * 60 * 1000; // ghost check owns anything beyond 48 h
 
 export async function checkSlowResponders(): Promise<void> {

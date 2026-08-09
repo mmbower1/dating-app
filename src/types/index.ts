@@ -64,10 +64,11 @@ export interface Match {
   users: MatchUser[];
   active: boolean;
   lastMessageAt: string | null;
-  endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | null;
+  endReason: 'graceful_exit' | 'ghosted' | 'mutual' | 'expired' | 'met_in_person' | null;
   endedBy: string | null;
   exitRating: 'genuine' | 'not_genuine' | null;
   exitRatedBy: string | null;
+  metInPersonConfirmations: string[];
   createdAt: string;
   unreadCount: number;
 }

@@ -215,6 +215,8 @@ const Chat = () => {
   const [showExitModal, setShowExitModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showFarewell, setShowFarewell] = useState(false);
+  const [metConfirmations, setMetConfirmations] = useState<string[]>([]);
+  const [metConfirming, setMetConfirming] = useState(false);
   const [openingMoveSubmitting, setOpeningMoveSubmitting] = useState(false);
   const [openingMoveDismissed, setOpeningMoveDismissed] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -230,6 +232,7 @@ const Chat = () => {
       setMatch(foundMatch);
       if (foundMatch?.exitRatedBy) setExitRated(true);
       if (foundMatch?.exitRating) setExitRating(foundMatch.exitRating);
+      if (foundMatch?.metInPersonConfirmations) setMetConfirmations(foundMatch.metInPersonConfirmations);
       api.post(`/matches/${matchId}/mark-read`).catch(() => {});
     }).finally(() => setLoading(false));
   }, [matchId]);
@@ -264,6 +267,7 @@ const Chat = () => {
         setMatch(found);
         if (found?.exitRatedBy) setExitRated(true);
         if (found?.exitRating) setExitRating(found.exitRating);
+        if (found?.metInPersonConfirmations) setMetConfirmations(found.metInPersonConfirmations);
       }).catch(() => {});
     };
 
@@ -319,6 +323,20 @@ const Chat = () => {
     setShowFarewell(true);
   };
 
+  const confirmMetInPerson = async () => {
+    if (!user || metConfirming) return;
+    setMetConfirming(true);
+    try {
+      const res = await api.post<{ status: string; both: boolean }>(`/matches/${matchId}/confirm-met`);
+      const updated = [...metConfirmations];
+      if (!updated.includes(user._id)) updated.push(user._id);
+      setMetConfirmations(updated);
+      if (res.data.both) setShowFarewell(true);
+    } finally {
+      setMetConfirming(false);
+    }
+  };
+
   const submitReport = async (category: ReportCategory, description: string) => {
     if (!other) return;
     await api.post('/reports', {
@@ -363,6 +381,39 @@ const Chat = () => {
           </svg>
         </button>
       </div>
+
+      {match?.active && (() => {
+        const iConfirmed = user ? metConfirmations.includes(user._id) : false;
+        const otherConfirmed = metConfirmations.length > 0 && !iConfirmed && metConfirmations.length >= 1;
+        if (iConfirmed && metConfirmations.length < 2) {
+          return (
+            <div className="met-banner met-banner--waiting">
+              <span>✓ You confirmed — waiting for {other?.name} to confirm too.</span>
+            </div>
+          );
+        }
+        if (otherConfirmed && !iConfirmed) {
+          return (
+            <div className="met-banner met-banner--pending">
+              <span>{other?.name} says you met in person.</span>
+              <button className="met-banner-btn" onClick={confirmMetInPerson} disabled={metConfirming}>
+                Confirm
+              </button>
+            </div>
+          );
+        }
+        if (!iConfirmed) {
+          return (
+            <div className="met-banner">
+              <span>Did you meet in person?</span>
+              <button className="met-banner-btn" onClick={confirmMetInPerson} disabled={metConfirming}>
+                {metConfirming ? '…' : 'We met ✓'}
+              </button>
+            </div>
+          );
+        }
+        return null;
+      })()}
 
       <div className="chat-messages">
         {messages.map((msg) => {

@@ -309,33 +309,34 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     await match.save();
 
     const UserModel = getUserModel(req.userGender!);
-    const metInPerson = req.body.metInPerson === true;
 
-    if (metInPerson) {
-      // They went on a real date — always a graceful exit, no penalties
-      await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
-    } else {
-      // Check if the unmatcher ever sent a message in this conversation
-      const sentAMessage = await Message.exists({
-        matchId: match._id,
-        senderId: new mongoose.Types.ObjectId(req.userId as string),
-        type: 'text',
-      });
-      const otherSentMessage = await Message.exists({
-        matchId: match._id,
-        senderId: { $ne: new mongoose.Types.ObjectId(req.userId as string) },
-        type: 'text',
-      });
+    // Check if the unmatcher ever sent a message in this conversation
+    const sentAMessage = await Message.exists({
+      matchId: match._id,
+      senderId: new mongoose.Types.ObjectId(req.userId as string),
+      type: 'text',
+    });
+    const otherSentMessage = await Message.exists({
+      matchId: match._id,
+      senderId: { $ne: new mongoose.Types.ObjectId(req.userId as string) },
+      type: 'text',
+    });
 
-      // Ghosting: received messages but never replied before unmatching
-      if (otherSentMessage && !sentAMessage) {
-        await UserModel.findByIdAndUpdate(req.userId, { $inc: { ghostCount: 1 } });
-      } else {
-        await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
+    // Ghosting: received messages but never replied before unmatching — penalise downward only
+    if (otherSentMessage && !sentAMessage) {
+      await UserModel.findByIdAndUpdate(req.userId, { $inc: { ghostCount: 1 } });
+      const updated = await UserModel.findById(req.userId);
+      if (updated) {
+        const penalty = calcScore(Math.max(0, updated.gracefulExitCount), Math.max(0, updated.ghostCount));
+        if (penalty < updated.accountabilityScore) {
+          updated.accountabilityScore = penalty;
+          await updated.save();
+        }
       }
+    } else {
+      // Graceful exit — count it but do NOT recalculate score upward; score stays as-is
+      await UserModel.findByIdAndUpdate(req.userId, { $inc: { gracefulExitCount: 1 } });
     }
-
-    await recalculateScore(req.userId!, req.userGender!);
 
     // Post a system message visible to both parties, including their reason
     const me = await UserModel.findById(req.userId);
@@ -384,6 +385,83 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     }
 
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+// Confirm meeting in person — requires both users; when both confirm the match closes positively
+router.post('/:matchId/confirm-met', protect, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const match = await Match.findOne({ _id: req.params.matchId, 'users.userId': req.userId });
+    if (!match) { res.status(404).json({ message: 'Match not found' }); return; }
+
+    const userId = new mongoose.Types.ObjectId(req.userId!);
+    const alreadyConfirmed = match.metInPersonConfirmations.some((id) => id.toString() === req.userId);
+    if (alreadyConfirmed) {
+      const both = match.metInPersonConfirmations.length === 2;
+      res.json({ status: 'already_confirmed', both }); return;
+    }
+
+    match.metInPersonConfirmations.push(userId);
+    const both = match.metInPersonConfirmations.length === 2;
+
+    if (both && match.active) {
+      // Both confirmed — close the match as genuinely met
+      match.active = false;
+      match.conversationEndedAt = new Date();
+      match.endReason = 'met_in_person';
+      await match.save();
+
+      // Give both users a graceful exit and allow score to recover
+      for (const userEntry of match.users) {
+        const uid = userEntry.userId.toString();
+        const target = await findUserById(uid);
+        if (!target) continue;
+        const UModel = getUserModel(target.gender);
+        await UModel.findByIdAndUpdate(uid, { $inc: { gracefulExitCount: 1 } });
+        await recalculateScore(uid, target.gender);
+      }
+
+      // Remove from each other's likedUsers so discover reopens
+      const [uA, uB] = match.users;
+      const genderOf = (m: string) => m === 'MaleUser' ? 'male' : m === 'FemaleUser' ? 'female' : 'other';
+      const MA = getUserModel(genderOf(uA.model));
+      const MB = getUserModel(genderOf(uB.model));
+      await Promise.all([
+        MA.findByIdAndUpdate(uA.userId, { $pull: { likedUsers: uB.userId } }),
+        MB.findByIdAndUpdate(uB.userId, { $pull: { likedUsers: uA.userId } }),
+      ]);
+
+      // System message visible to both
+      const systemMsg = await Message.create({
+        matchId: match._id,
+        senderId: userId,
+        text: 'Both of you confirmed meeting in person. We hope it was great! 🎉',
+        type: 'graceful_exit',
+      });
+
+      const { io } = await import('../index');
+      io.to((match._id as mongoose.Types.ObjectId).toString()).emit('new_message', systemMsg);
+
+      // Notify each user their match closed positively
+      for (const userEntry of match.users) {
+        if (userEntry.userId.toString() === req.userId) continue;
+        const other = await findUserById(userEntry.userId.toString());
+        if (other?.pushSubscription) {
+          await sendPush(
+            other.pushSubscription as unknown as webpush.PushSubscription,
+            'Connection closed — genuine ✓',
+            'Both you and your match confirmed meeting in person. Your score is protected.'
+          );
+        }
+        emitToUser(userEntry.userId.toString(), 'match_ended', { matchId: match._id });
+      }
+    } else {
+      await match.save();
+    }
+
+    res.json({ status: 'confirmed', both });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }

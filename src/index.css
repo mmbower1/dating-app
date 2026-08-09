@@ -2880,6 +2880,45 @@ form button[type="submit"]:disabled {
   cursor: not-allowed;
 }
 
+.met-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--gradient-subtle);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.met-banner--waiting {
+  color: var(--accent);
+}
+
+.met-banner--pending {
+  color: var(--accent-purple);
+  background: var(--accent-purple-glow);
+}
+
+.met-banner-btn {
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: var(--gradient);
+  color: #fff;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.met-banner-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .chat-messages {
   flex: 1;
   overflow-y: auto;
