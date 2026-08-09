@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, NavLink, useLocation } from 're
 import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { SocketProvider } from './context/SocketContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Logo from './components/Logo';
@@ -59,6 +60,7 @@ const SEEN_MATCH_KEY = 'lockheart_seen_match';
 
 const Nav = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const [badge, setBadge] = useState(0);
 
@@ -108,18 +110,18 @@ const Nav = () => {
     <nav className="bottom-nav">
       <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
         <DiscoverIcon />
-        Discover
+        {t.nav.discover}
       </NavLink>
       <NavLink to="/matches" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
         <span className="nav-icon-wrap">
           <MatchesIcon />
           {badge > 0 && <span className="nav-badge">{badge > 9 ? '9+' : badge}</span>}
         </span>
-        Message
+        {t.nav.messages}
       </NavLink>
       <NavLink to="/profile" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
         <ProfileIcon />
-        Profile
+        {t.nav.profile}
       </NavLink>
     </nav>
   );
@@ -164,15 +166,17 @@ const ThemedApp = () => {
 };
 
 const App = () => (
-  <ThemeProvider>
-    <AuthProvider>
-      <SocketProvider>
-        <BrowserRouter>
-          <ThemedApp />
-        </BrowserRouter>
-      </SocketProvider>
-    </AuthProvider>
-  </ThemeProvider>
+  <LanguageProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <SocketProvider>
+          <BrowserRouter>
+            <ThemedApp />
+          </BrowserRouter>
+        </SocketProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  </LanguageProvider>
 );
 
 export default App;

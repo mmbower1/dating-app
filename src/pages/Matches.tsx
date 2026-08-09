@@ -4,6 +4,7 @@ import api from '../api/axios';
 import type { Match, User } from '../types';
 import { useAuth } from '../context/AuthContext';
 import ProfileCard from '../components/ProfileCard';
+import { useLanguage } from '../context/LanguageContext';
 
 function scoreColor(score: number): string {
   if (score >= 95) return '#48bb78';
@@ -36,6 +37,7 @@ const MAX_MATCHES = 2;
 const Matches = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [matches, setMatches] = useState<Match[]>([]);
   const [likedMe, setLikedMe] = useState<User[]>([]);
   const [likedMeAction, setLikedMeAction] = useState<string | null>(null);
@@ -78,7 +80,7 @@ const Matches = () => {
     }
   };
 
-  if (loading) return <div className="page-center">Loading...</div>;
+  if (loading) return <div className="page-center">{t.common.loading}</div>;
 
   const emptySlots = MAX_MATCHES - matches.length;
   const profileMatch = showProfile ? matches.find((m) => m._id === showProfile) : null;
@@ -94,7 +96,7 @@ const Matches = () => {
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            Liked You
+            {t.matches.likedYou}
           </h3>
           {likedMe.map((person) => (
             <div key={person._id} className="liked-me-card">
@@ -134,7 +136,7 @@ const Matches = () => {
         </div>
       )}
 
-      <h2>{matches.length === 0 && likedMe.length === 0 ? '' : 'Your Matches'}</h2>
+      <h2>{matches.length === 0 && likedMe.length === 0 ? '' : t.matches.yourMatches}</h2>
 
       {matches.length === 0 && likedMe.length === 0 && (
         <div className="page-center">
@@ -143,9 +145,9 @@ const Matches = () => {
               <path d="M32 56S6 38.5 6 20.5C6 13.1 11.8 7 19 7c4.8 0 9 2.6 11.5 6.5L32 16l1.5-2.5C36 9.6 40.2 7 45 7c7.2 0 13 6.1 13 13.5C58 38.5 32 56 32 56Z" fill="none" stroke="white" strokeWidth="3" strokeLinejoin="round"/>
             </svg>
           </div>
-          <p className="no-match-title">No matches yet</p>
-          <p className="no-match-sub">The right person is worth the wait.</p>
-          <p className="no-match-note">Once you have 2 active matches, swiping pauses so you can give them your full attention.</p>
+          <p className="no-match-title">{t.matches.noMatchesYet}</p>
+          <p className="no-match-sub">{t.matches.rightPersonWorth}</p>
+          <p className="no-match-note">{t.matches.focusNote}</p>
         </div>
       )}
 
@@ -181,9 +183,9 @@ const Matches = () => {
 
               <div className="match-card-body">
                 <div className="match-card-meta">
-                  <span className="match-card-time">Matched {formatMatchDate(match.createdAt)}</span>
+                  <span className="match-card-time">{t.matches.matchedOn} {formatMatchDate(match.createdAt)}</span>
                   {hrsLeft !== null && hrsLeft <= 24 && (
-                    <span className="match-card-expiry">⚠ {hrsLeft}h left to say hi</span>
+                    <span className="match-card-expiry">⚠ {hrsLeft}{t.matches.hoursLeft}</span>
                   )}
                 </div>
                 {other.bio && <p className="match-card-bio">{other.bio}</p>}
@@ -191,7 +193,7 @@ const Matches = () => {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
-                  Send message
+                  {t.matches.sendMessage}
                 </button>
               </div>
             </div>
@@ -202,7 +204,7 @@ const Matches = () => {
           <div key={`empty-${i}`} className="match-card match-card--empty">
             <div className="match-card-empty-inner">
               <div className="match-card-empty-plus">+</div>
-              <p className="match-card-empty-text">1 more match available</p>
+              <p className="match-card-empty-text">{t.matches.oneMoreAvailable}</p>
             </div>
           </div>
         ))}

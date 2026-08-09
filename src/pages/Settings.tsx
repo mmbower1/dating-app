@@ -2,6 +2,8 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
+import { LANGUAGES } from '../i18n/translations';
 import api from '../api/axios';
 
 interface PreviousMatch {
@@ -15,6 +17,7 @@ interface PreviousMatch {
 const Settings = () => {
   const { user, logout, updateUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState(user?.email ?? '');
@@ -30,8 +33,8 @@ const Settings = () => {
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [disabling, setDisabling] = useState(false);
-  const [clearingPassed, setClearingPassed] = useState(false);
-  const [clearPassedMsg, setClearPassedMsg] = useState('');
+  // const [clearingPassed, setClearingPassed] = useState(false);
+  // const [clearPassedMsg, setClearPassedMsg] = useState('');
   const [showBlockList, setShowBlockList] = useState(false);
   const [previousMatches, setPreviousMatches] = useState<PreviousMatch[]>([]);
   const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
@@ -62,9 +65,9 @@ const Settings = () => {
     try {
       await api.patch('/users/me/email', { email });
       updateUser({ email });
-      setEmailMsg('Email updated!');
+      setEmailMsg(t.settings.emailUpdated);
     } catch {
-      setEmailMsg('Failed to update email.');
+      setEmailMsg(t.settings.emailFailed);
     }
   };
 
@@ -72,11 +75,11 @@ const Settings = () => {
     e.preventDefault();
     setPwMsg('');
     setPwError('');
-    if (newPw !== confirmPw) { setPwError('Passwords do not match.'); return; }
-    if (newPw.length < 6) { setPwError('Password must be at least 6 characters.'); return; }
+    if (newPw !== confirmPw) { setPwError(t.settings.passwordsDontMatch); return; }
+    if (newPw.length < 6) { setPwError(t.settings.passwordTooShort); return; }
     try {
       await api.patch('/users/me/password', { currentPassword: currentPw, newPassword: newPw });
-      setPwMsg('Password updated!');
+      setPwMsg(t.settings.passwordUpdated);
       setCurrentPw(''); setNewPw(''); setConfirmPw('');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -84,18 +87,18 @@ const Settings = () => {
     }
   };
 
-  const clearPassed = async () => {
-    setClearingPassed(true);
-    setClearPassedMsg('');
-    try {
-      await api.delete('/users/me/passed');
-      setClearPassedMsg('Done — previously passed profiles will reappear in discover.');
-    } catch {
-      setClearPassedMsg('Something went wrong. Try again.');
-    } finally {
-      setClearingPassed(false);
-    }
-  };
+  // const clearPassed = async () => {
+  //   setClearingPassed(true);
+  //   setClearPassedMsg('');
+  //   try {
+  //     await api.delete('/users/me/passed');
+  //     setClearPassedMsg('Done — previously passed profiles will reappear in discover.');
+  //   } catch {
+  //     setClearPassedMsg('Something went wrong. Try again.');
+  //   } finally {
+  //     setClearingPassed(false);
+  //   }
+  // };
 
   const toggleDisable = async () => {
     setDisabling(true);
@@ -127,12 +130,12 @@ const Settings = () => {
             <polyline points="15 18 9 12 15 6"/>
           </svg>
         </button>
-        <h2 className="settings-title">Settings</h2>
+        <h2 className="settings-title">{t.settings.title}</h2>
       </div>
 
       {/* ── Appearance ─────────────────────── */}
       <section className="settings-section">
-        <p className="settings-section-label">Appearance</p>
+        <p className="settings-section-label">{t.settings.appearance}</p>
         <button className="settings-row-btn" onClick={toggleTheme}>
           {theme === 'dark' ? (
             <>
@@ -143,67 +146,87 @@ const Settings = () => {
                 <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
                 <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
               </svg>
-              Light mode
+              {t.settings.lightMode}
             </>
           ) : (
             <>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
               </svg>
-              Dark mode
+              {t.settings.darkMode}
             </>
           )}
           <svg className="settings-row-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6"/>
           </svg>
         </button>
+
+        <div className="settings-divider" />
+
+        <div className="settings-language-row">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <span className="settings-language-label">{t.settings.language}</span>
+          <select
+            className="settings-language-select"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as Parameters<typeof setLanguage>[0])}
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code}>{lang.label}</option>
+            ))}
+          </select>
+        </div>
       </section>
 
       {/* ── Account ────────────────────────── */}
       <section className="settings-section">
-        <p className="settings-section-label">Account</p>
+        <p className="settings-section-label">{t.settings.account}</p>
 
         <form className="settings-form" onSubmit={saveEmail}>
-          <label className="field-label">Email address</label>
+          <label className="field-label">{t.settings.emailAddress}</label>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           {emailMsg && <p className="settings-msg">{emailMsg}</p>}
-          <button type="submit" className="settings-save-btn">Update email</button>
+          <button type="submit" className="settings-save-btn">{t.settings.updateEmail}</button>
         </form>
 
         <div className="settings-divider" />
 
         <form className="settings-form" onSubmit={savePassword}>
-          <label className="field-label">Change password</label>
+          <label className="field-label">{t.settings.changePassword}</label>
           <input
             type="password"
-            placeholder="Current password"
+            placeholder={t.settings.currentPassword}
             value={currentPw}
             onChange={(e) => setCurrentPw(e.target.value)}
             required
           />
           <input
             type="password"
-            placeholder="New password"
+            placeholder={t.settings.newPassword}
             value={newPw}
             onChange={(e) => setNewPw(e.target.value)}
             required
           />
           <input
             type="password"
-            placeholder="Confirm new password"
+            placeholder={t.settings.confirmNewPassword}
             value={confirmPw}
             onChange={(e) => setConfirmPw(e.target.value)}
             required
           />
           {pwError && <p className="settings-error">{pwError}</p>}
           {pwMsg && <p className="settings-msg">{pwMsg}</p>}
-          <button type="submit" className="settings-save-btn">Update password</button>
+          <button type="submit" className="settings-save-btn">{t.settings.updatePassword}</button>
         </form>
       </section>
 
       {/* ── Block a previous match ─────────── */}
       <section className="settings-section blocked-section">
-        <p className="settings-section-label">Block a previous match</p>
+        <p className="settings-section-label">{t.settings.blockPreviousMatch}</p>
         <button
           className="settings-row-btn block-dropdown-btn"
           onClick={() => setShowBlockList((v) => !v)}
@@ -212,7 +235,7 @@ const Settings = () => {
             <circle cx="12" cy="12" r="10"/>
             <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
           </svg>
-          Previous matches
+          {t.settings.previousMatches}
           <svg
             className="settings-row-chevron"
             width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -224,7 +247,7 @@ const Settings = () => {
         {showBlockList && (
           <div className="block-dropdown-list">
             {previousMatches.length === 0 ? (
-              <p className="settings-disable-note">No previous matches.</p>
+              <p className="settings-disable-note">{t.settings.noPreviousMatches}</p>
             ) : (
               previousMatches.map((u) => (
                 <div key={u.userId} className="blocked-row">
@@ -235,9 +258,9 @@ const Settings = () => {
                   )}
                   <span className="blocked-name">{u.name}</span>
                   {blockedIds.has(u.userId) ? (
-                    <button className="unblock-btn" onClick={() => handleUnblock(u.userId)}>Unblock</button>
+                    <button className="unblock-btn" onClick={() => handleUnblock(u.userId)}>{t.settings.unblock}</button>
                   ) : (
-                    <button className="unmatched-block-btn" onClick={() => handleBlock(u.userId)}>Block</button>
+                    <button className="unmatched-block-btn" onClick={() => handleBlock(u.userId)}>{t.settings.block}</button>
                   )}
                 </div>
               ))
@@ -248,7 +271,7 @@ const Settings = () => {
 
       {/* ── Visibility ─────────────────────── */}
       <section className="settings-section">
-        <p className="settings-section-label">Visibility</p>
+        <p className="settings-section-label">{t.settings.visibility}</p>
 
         {/* Reset passed profiles — hidden for now
         <button
@@ -288,36 +311,34 @@ const Settings = () => {
               </>
             )}
           </svg>
-          {user?.accountDisabled ? 'Re-enable account' : 'Disable account'}
+          {user?.accountDisabled ? t.settings.reEnableAccount : t.settings.disableAccount}
           <span className="settings-disable-badge">
-            {user?.accountDisabled ? 'Hidden from discover' : 'Visible'}
+            {user?.accountDisabled ? t.settings.hiddenFromDiscover : t.settings.visible}
           </span>
         </button>
         {user?.accountDisabled && (
-          <p className="settings-disable-note">Your profile is hidden. No one can discover you until you re-enable.</p>
+          <p className="settings-disable-note">{t.settings.profileHidden}</p>
         )}
       </section>
 
       {/* ── Danger zone ────────────────────── */}
       <section className="settings-section settings-section--danger">
-        <p className="settings-section-label">Danger zone</p>
+        <p className="settings-section-label">{t.settings.dangerZone}</p>
         <button className="settings-delete-btn" onClick={() => setShowDeleteConfirm(true)}>
-          Delete account
+          {t.settings.deleteAccount}
         </button>
       </section>
 
-      <button className="logout-btn" style={{ marginTop: 8 }} onClick={logout}>Sign out</button>
+      <button className="logout-btn" style={{ marginTop: 8 }} onClick={logout}>{t.settings.signOut}</button>
 
       {/* Delete confirmation modal */}
       {showDeleteConfirm && (
         <div className="modal-overlay" onClick={() => setShowDeleteConfirm(false)}>
           <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">Delete account?</h3>
-            <p className="modal-body">
-              This permanently removes your profile, photos, and all matches. This cannot be undone.
-            </p>
+            <h3 className="modal-title">{t.settings.deleteConfirmTitle}</h3>
+            <p className="modal-body">{t.settings.deleteConfirmBody}</p>
             <p className="modal-body" style={{ marginTop: 8 }}>
-              Type <strong>DELETE</strong> to confirm.
+              {t.settings.deleteConfirmType} <strong>DELETE</strong> {t.settings.deleteConfirmToConfirm}
             </p>
             <input
               className="modal-confirm-input"
@@ -329,14 +350,14 @@ const Settings = () => {
             />
             <div className="modal-actions">
               <button className="modal-cancel" onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }}>
-                Cancel
+                {t.settings.cancel}
               </button>
               <button
                 className="modal-confirm-delete"
                 disabled={deleteInput !== 'DELETE' || deleting}
                 onClick={deleteAccount}
               >
-                {deleting ? 'Deleting…' : 'Delete forever'}
+                {deleting ? t.settings.deleting : t.settings.deleteForever}
               </button>
             </div>
           </div>

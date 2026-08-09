@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import { useLanguage } from '../context/LanguageContext';
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
@@ -21,6 +22,7 @@ const EyeIcon = ({ open }: { open: boolean }) =>
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +37,7 @@ const Login = () => {
       await login(email, password);
       navigate('/');
     } catch {
-      setError('Invalid email or password.');
+      setError(t.login.error);
     } finally {
       setLoading(false);
     }
@@ -50,13 +52,13 @@ const Login = () => {
         {/* Top: logo + back */}
         <div className="login-top">
           <Logo size="sm" showText={true} />
-          <button className="login-back-pill" onClick={() => navigate('/')}>← Back</button>
+          <button className="login-back-pill" onClick={() => navigate('/')}>{t.login.back}</button>
         </div>
 
         {/* Middle: branding (mobile only — fills the top half) */}
         <div className="login-branding">
-          <h1 className="login-headline">Welcome<br />back.</h1>
-          <p className="login-tagline">Good to see you here.</p>
+          <h1 className="login-headline" style={{ whiteSpace: 'pre-line' }}>{t.login.headline}</h1>
+          <p className="login-tagline">{t.login.tagline}</p>
         </div>
 
         {/* Bottom: form */}
@@ -66,7 +68,7 @@ const Login = () => {
               <input
                 className="login-field"
                 type="email"
-                placeholder="Email"
+                placeholder={t.login.email}
                 value={email}
                 autoComplete="email"
                 onChange={e => setEmail(e.target.value)}
@@ -77,7 +79,7 @@ const Login = () => {
                 <input
                   className="login-field"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Password"
+                  placeholder={t.login.password}
                   value={password}
                   autoComplete="current-password"
                   onChange={e => setPassword(e.target.value)}
@@ -96,26 +98,26 @@ const Login = () => {
 
             {error && <p className="login-error">{error}</p>}
 
-            <Link to="/forgot-password" className="login-forgot">Forgot password?</Link>
+            <Link to="/forgot-password" className="login-forgot">{t.login.forgotPassword}</Link>
 
             <button
               type="submit"
               className="login-submit-btn"
               disabled={loading || !email || !password}
             >
-              {loading ? 'Signing in…' : 'Log in'}
+              {loading ? t.login.signingIn : t.login.logIn}
             </button>
           </form>
 
           <p className="login-create-hint">
-            No account?{' '}
+            {t.login.noAccount}{' '}
             <span className="login-create-link" onClick={() => navigate('/register')}>
-              Create one
+              {t.login.createOne}
             </span>
           </p>
           <p className="login-legal">
-            By continuing you agree to our{' '}
-            <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+            {t.login.byContinuing}{' '}
+            <a href="/terms">{t.login.terms}</a> {t.login.and} <a href="/privacy">{t.login.privacy}</a>.
           </p>
         </div>
       </div>

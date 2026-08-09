@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { useLanguage } from '../context/LanguageContext';
 import FiltersModal from '../components/FiltersModal';
 import ProfileCard from '../components/ProfileCard';
 import type { User } from '../types';
@@ -26,6 +27,7 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 const MatchCelebration = ({ matchedProfile, onDone }: { matchedProfile: User; onDone: () => void }) => {
+  const { t } = useLanguage();
   const [showClose, setShowClose] = useState(false);
 
   useEffect(() => {
@@ -59,12 +61,12 @@ const MatchCelebration = ({ matchedProfile, onDone }: { matchedProfile: User; on
           </div>
         </div>
 
-        <h1 className="match-celebration-title">It's a match!</h1>
-        <p className="match-celebration-sub">You and <strong>{matchedProfile.name}</strong> liked each other.</p>
+        <h1 className="match-celebration-title">{t.home.itsAMatch}</h1>
+        <p className="match-celebration-sub">{t.home.youLikedEachOther.replace('{name}', matchedProfile.name)}</p>
         <button className="match-celebration-btn" onClick={onDone}>
-          Send a message
+          {t.home.sendMessage}
         </button>
-        <p className="match-celebration-skip">Tap anywhere to continue</p>
+        <p className="match-celebration-skip">{t.home.tapToContinue}</p>
       </div>
     </div>
   );
@@ -73,6 +75,7 @@ const MatchCelebration = ({ matchedProfile, onDone }: { matchedProfile: User; on
 const Home = () => {
   const { user } = useAuth();
   const socket = useSocket();
+  const { t } = useLanguage();
   const [candidates, setCandidates] = useState<User[]>([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -219,17 +222,15 @@ const Home = () => {
     }
   };
 
-  if (loading) return <div className="page-center">Finding people near you...</div>;
+  if (loading) return <div className="page-center">{t.home.loading}</div>;
 
   if (locked) {
     return (
       <div className="page-center locked-state">
-        <h2 className="locked-title">You have 2 active connections!</h2>
-        <p className="locked-body">
-          Lockheart is built for genuine connections. Focus on your matches before exploring more.
-        </p>
+        <h2 className="locked-title">{t.home.locked}</h2>
+        <p className="locked-body">{t.home.lockedSub}</p>
         <button className="locked-cta" onClick={() => navigate('/matches')}>
-          Go to your matches
+          {t.nav.messages}
         </button>
       </div>
     );
@@ -268,8 +269,8 @@ const Home = () => {
 
         {!profile ? (
           <div className="page-center" style={{ flex: 1 }}>
-            <p>No more profiles right now.</p>
-            <p>Check back later!</p>
+            <p>{t.home.noMore}</p>
+            <p>{t.home.noMoreSub}</p>
           </div>
         ) : (
           <ProfileCard
