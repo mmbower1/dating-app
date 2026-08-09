@@ -2433,6 +2433,137 @@ form button[type="submit"]:disabled {
   to   { transform: scale(1);   opacity: 1; }
 }
 
+/* Liked Me section */
+.liked-me-section {
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 24px;
+}
+
+.liked-me-heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.liked-me-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: default;
+}
+
+.liked-me-photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.liked-me-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.liked-me-initial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.liked-me-info {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.liked-me-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.liked-me-bio {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 3px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.liked-me-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.liked-me-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+.liked-me-btn:disabled { opacity: 0.5; cursor: default; }
+.liked-me-btn:not(:disabled):hover { transform: scale(1.1); }
+
+.liked-me-btn--pass {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+}
+
+.liked-me-btn--like {
+  background: var(--gradient);
+  color: #fff;
+}
+
+.liked-me-preview-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.liked-me-btn--lg {
+  width: auto;
+  border-radius: 24px;
+  padding: 0 24px;
+  height: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  gap: 8px;
+  flex-direction: row;
+}
+
 /* Profile modal */
 .match-profile-modal {
   position: relative;

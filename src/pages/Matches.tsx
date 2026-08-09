@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import type { Match } from '../types';
+import type { Match, User } from '../types';
 import { useAuth } from '../context/AuthContext';
 import ProfileCard from '../components/ProfileCard';
 
@@ -37,31 +37,48 @@ const Matches = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [matches, setMatches] = useState<Match[]>([]);
+  const [likedMe, setLikedMe] = useState<User[]>([]);
+  const [likedMeAction, setLikedMeAction] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showProfile, setShowProfile] = useState<string | null>(null);
+  const [likedMePreview, setLikedMePreview] = useState<User | null>(null);
 
   useEffect(() => {
-    api.get<Match[]>('/matches')
-      .then((res) => setMatches(res.data))
-      .finally(() => setLoading(false));
+    Promise.all([
+      api.get<Match[]>('/matches'),
+      api.get<User[]>('/matches/liked-me'),
+    ]).then(([matchRes, likedRes]) => {
+      setMatches(matchRes.data);
+      setLikedMe(likedRes.data);
+    }).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="page-center">Loading...</div>;
+  const handleLikeBack = async (target: User) => {
+    setLikedMeAction(target._id);
+    try {
+      await api.post(`/matches/like/${target._id}`);
+      setLikedMe((prev) => prev.filter((u) => u._id !== target._id));
+      const res = await api.get<Match[]>('/matches');
+      setMatches(res.data);
+    } catch {
+      // locked (2 active matches) — still remove from liked-me view
+      setLikedMe((prev) => prev.filter((u) => u._id !== target._id));
+    } finally {
+      setLikedMeAction(null);
+    }
+  };
 
-  if (matches.length === 0) {
-    return (
-      <div className="page-center">
-        <div className="no-match-icon">
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M32 56S6 38.5 6 20.5C6 13.1 11.8 7 19 7c4.8 0 9 2.6 11.5 6.5L32 16l1.5-2.5C36 9.6 40.2 7 45 7c7.2 0 13 6.1 13 13.5C58 38.5 32 56 32 56Z" fill="none" stroke="white" strokeWidth="3" strokeLinejoin="round"/>
-          </svg>
-        </div>
-        <p className="no-match-title">No matches yet</p>
-        <p className="no-match-sub">The right person is worth the wait.</p>
-        <p className="no-match-note">Once you have 2 active matches, swiping pauses so you can give them your full attention.</p>
-      </div>
-    );
-  }
+  const handlePass = async (target: User) => {
+    setLikedMeAction(target._id);
+    try {
+      await api.post(`/matches/pass/${target._id}`);
+    } finally {
+      setLikedMe((prev) => prev.filter((u) => u._id !== target._id));
+      setLikedMeAction(null);
+    }
+  };
+
+  if (loading) return <div className="page-center">Loading...</div>;
 
   const emptySlots = MAX_MATCHES - matches.length;
   const profileMatch = showProfile ? matches.find((m) => m._id === showProfile) : null;
@@ -69,7 +86,68 @@ const Matches = () => {
 
   return (
     <div className="matches-page">
-      <h2>Your Matches</h2>
+
+      {/* ── Liked You ── */}
+      {likedMe.length > 0 && (
+        <div className="liked-me-section">
+          <h3 className="liked-me-heading">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Liked You
+          </h3>
+          {likedMe.map((person) => (
+            <div key={person._id} className="liked-me-card">
+              <div className="liked-me-photo" onClick={() => setLikedMePreview(person)}>
+                {person.photos[0]
+                  ? <img src={person.photos[0]} alt={person.name} />
+                  : <div className="liked-me-initial">{person.name[0]}</div>}
+              </div>
+              <div className="liked-me-info" onClick={() => setLikedMePreview(person)}>
+                <span className="liked-me-name">{person.name}, {person.age}</span>
+                {person.bio && <p className="liked-me-bio">{person.bio}</p>}
+              </div>
+              <div className="liked-me-actions">
+                <button
+                  className="liked-me-btn liked-me-btn--pass"
+                  disabled={likedMeAction === person._id}
+                  onClick={() => handlePass(person)}
+                  aria-label="Pass"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+                <button
+                  className="liked-me-btn liked-me-btn--like"
+                  disabled={likedMeAction === person._id}
+                  onClick={() => handleLikeBack(person)}
+                  aria-label="Like back"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <h2>{matches.length === 0 && likedMe.length === 0 ? '' : 'Your Matches'}</h2>
+
+      {matches.length === 0 && likedMe.length === 0 && (
+        <div className="page-center">
+          <div className="no-match-icon">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 56S6 38.5 6 20.5C6 13.1 11.8 7 19 7c4.8 0 9 2.6 11.5 6.5L32 16l1.5-2.5C36 9.6 40.2 7 45 7c7.2 0 13 6.1 13 13.5C58 38.5 32 56 32 56Z" fill="none" stroke="white" strokeWidth="3" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <p className="no-match-title">No matches yet</p>
+          <p className="no-match-sub">The right person is worth the wait.</p>
+          <p className="no-match-note">Once you have 2 active matches, swiping pauses so you can give them your full attention.</p>
+        </div>
+      )}
 
       <div className="matches-grid">
         {matches.map((match) => {
@@ -138,6 +216,38 @@ const Matches = () => {
           </div>
           <div className="preview-scroll">
             <ProfileCard profile={profileOther} />
+          </div>
+        </div>
+      )}
+
+      {likedMePreview && (
+        <div className="preview-overlay">
+          <div className="preview-overlay-header">
+            <span className="preview-overlay-label">{likedMePreview.name}'s profile</span>
+            <button className="preview-close-btn" onClick={() => setLikedMePreview(null)}>✕ Close</button>
+          </div>
+          <div className="preview-scroll">
+            <ProfileCard profile={likedMePreview} />
+          </div>
+          <div className="liked-me-preview-actions">
+            <button
+              className="liked-me-btn liked-me-btn--pass liked-me-btn--lg"
+              onClick={() => { handlePass(likedMePreview); setLikedMePreview(null); }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Pass
+            </button>
+            <button
+              className="liked-me-btn liked-me-btn--like liked-me-btn--lg"
+              onClick={() => { handleLikeBack(likedMePreview); setLikedMePreview(null); }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              Like back
+            </button>
           </div>
         </div>
       )}
