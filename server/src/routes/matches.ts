@@ -18,10 +18,10 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
     const activeMatchCount = await Match.countDocuments({ 'users.userId': req.userId, active: true });
     if (activeMatchCount >= 2) { res.status(403).json({ message: 'Swiping is locked while you have 2 active matches.' }); return; }
 
-    const UserModel = getUserModel(req.userGender!);
-    const me = await UserModel.findById(req.userId);
+    const me = await findUserById(req.userId!);
     const target = await findUserById(req.params.targetId as string);
     if (!me || !target) { res.status(404).json({ message: 'User not found' }); return; }
+    const UserModel = getUserModel(me.gender);
 
     const comment = typeof req.body.comment === 'string' ? req.body.comment.trim() : '';
     const section = typeof req.body.section === 'string' ? req.body.section.trim() : '';
@@ -124,9 +124,9 @@ router.post('/pass/:targetId', protect, async (req: AuthRequest, res: Response):
     const activeMatchCount = await Match.countDocuments({ 'users.userId': req.userId, active: true });
     if (activeMatchCount >= 2) { res.status(403).json({ message: 'Swiping is locked while you have 2 active matches.' }); return; }
 
-    const UserModel = getUserModel(req.userGender!);
-    const me = await UserModel.findById(req.userId);
+    const me = await findUserById(req.userId!);
     if (!me) { res.status(404).json({ message: 'User not found' }); return; }
+    const UserModel = getUserModel(me.gender);
 
     me.passedUsers.push(new mongoose.Types.ObjectId(req.params.targetId as string));
     await me.save();
@@ -139,8 +139,9 @@ router.post('/pass/:targetId', protect, async (req: AuthRequest, res: Response):
 // Undo a pass — remove target from passedUsers
 router.delete('/pass/:targetId', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const UserModel = getUserModel(req.userGender!);
-    await UserModel.findByIdAndUpdate(req.userId, {
+    const meUnpass = await findUserById(req.userId!);
+    if (!meUnpass) { res.status(404).json({ message: 'User not found' }); return; }
+    await getUserModel(meUnpass.gender).findByIdAndUpdate(req.userId, {
       $pull: { passedUsers: new mongoose.Types.ObjectId(req.params.targetId as string) },
     });
     res.json({ success: true });
@@ -309,7 +310,9 @@ router.patch('/:matchId/exit', protect, async (req: AuthRequest, res: Response):
     match.endReason = 'graceful_exit';
     await match.save();
 
-    const UserModel = getUserModel(req.userGender!);
+    const meForExit = await findUserById(req.userId!);
+    if (!meForExit) { res.status(404).json({ message: 'User not found' }); return; }
+    const UserModel = getUserModel(meForExit.gender);
 
     // Check if the unmatcher ever sent a message in this conversation
     const sentAMessage = await Message.exists({
