@@ -42,17 +42,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const stored = localStorage.getItem('token');
     if (!stored) { setLoading(false); return; }
-    // Verify the token and refresh user data in the background
+    // Verify the token and refresh user data in the background.
+    // Only clear auth on 401 (invalid/expired token) — ignore other errors (server down, etc.)
     api.get<User>('/auth/me')
       .then((res) => {
         setUser(res.data);
         localStorage.setItem(CACHED_USER_KEY, JSON.stringify(res.data));
       })
-      .catch(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem(CACHED_USER_KEY);
-        setToken(null);
-        setUser(null);
+      .catch((err: unknown) => {
+        const status = (err as { response?: { status?: number } })?.response?.status;
+        if (status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem(CACHED_USER_KEY);
+          setToken(null);
+          setUser(null);
+        }
+        // On 404/500/network error — keep the cached user so the app stays usable
       })
       .finally(() => setLoading(false));
   }, []);

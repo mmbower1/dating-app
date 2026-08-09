@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import { getUserModel, MaleUser, FemaleUser, OtherUser } from '../models/User';
+import { getUserModel, findUserById, MaleUser, FemaleUser, OtherUser } from '../models/User';
 import type { AuthRequest } from '../middleware/auth';
 import { checkStaleMatches } from '../utils/ghostCheck';
 
@@ -120,10 +120,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const UserModel = getUserModel(req.userGender!);
     // Run ghost check in background — don't await so it doesn't slow down app load
     checkStaleMatches(req.userId!, req.userGender!).catch(() => {});
-    const user = await UserModel.findById(req.userId).select('-password -likedUsers -passedUsers -blockedUsers');
+    const user = await findUserById(req.userId!);
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;
