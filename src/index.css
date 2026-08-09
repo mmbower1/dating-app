@@ -3913,11 +3913,9 @@ form button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #fff;
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 50px;
   padding: 6px 12px;
 }
@@ -3925,7 +3923,7 @@ form button[type="submit"]:disabled {
 .welcome-lang-select {
   background: transparent;
   border: none;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -3935,8 +3933,8 @@ form button[type="submit"]:disabled {
 }
 
 .welcome-lang-select option {
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
 .welcome-get-app-btn {
