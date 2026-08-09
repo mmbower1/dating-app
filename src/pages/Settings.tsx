@@ -250,6 +250,7 @@ const Settings = () => {
       <section className="settings-section">
         <p className="settings-section-label">Visibility</p>
 
+        {/* Reset passed profiles — hidden for now
         <button
           className="settings-row-btn"
           onClick={clearPassed}
@@ -264,6 +265,7 @@ const Settings = () => {
           </svg>
         </button>
         {clearPassedMsg && <p className="settings-disable-note">{clearPassedMsg}</p>}
+        */}
 
         <div className="settings-divider" />
 
