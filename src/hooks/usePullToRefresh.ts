@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-const THRESHOLD = 72;
-const MAX_PULL = THRESHOLD + 20;
+const THRESHOLD = 130;
+const MAX_PULL = THRESHOLD + 24;
 
 function scrolledFromTop(target: EventTarget | null): number {
   let node = target as HTMLElement | null;
