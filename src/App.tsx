@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { usePullToRefresh } from './hooks/usePullToRefresh';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { SocketProvider } from './context/SocketContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -138,55 +137,11 @@ const ScrollToTop = () => {
   return null;
 };
 
-const SIZE = 28;
-const STROKE = 3;
-const R = (SIZE - STROKE) / 2;
-const CIRC = 2 * Math.PI * R;
-
-const PullIndicator = () => {
-  const { user } = useAuth();
-  const { pathname } = useLocation();
-  const allowed = new Set(['/', '/matches', '/profile']);
-  const enabled = !!user && allowed.has(pathname);
-
-  const refresh = useCallback(() => window.location.reload(), []);
-  const { wrapRef, circleRef, refreshing } = usePullToRefresh(refresh, enabled);
-
-  if (!user) return null;
-
-  return (
-    <div
-      ref={wrapRef}
-      className="ptr-indicator"
-      style={{ opacity: 0, transform: 'translateY(0px)' }}
-    >
-      <svg
-        width={SIZE} height={SIZE}
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className={refreshing ? 'ptr-spinning' : ''}
-      >
-        <circle
-          ref={circleRef}
-          cx={SIZE / 2} cy={SIZE / 2} r={R}
-          fill="none"
-          stroke="var(--accent)"
-          strokeWidth={STROKE}
-          strokeDasharray={CIRC}
-          strokeDashoffset={CIRC}
-          strokeLinecap="round"
-          style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
-        />
-      </svg>
-    </div>
-  );
-};
-
 const ThemedApp = () => {
   const { theme } = useTheme();
   return (
     <div className="app" data-theme={theme}>
       <ScrollToTop />
-      <PullIndicator />
       <TopHeader />
       <Routes>
         <Route path="/terms" element={<Terms />} />
