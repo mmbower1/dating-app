@@ -57,27 +57,25 @@ const Welcome = () => {
         <div className="welcome-content-panel">
           <div className="welcome-top">
             <Logo size="sm" showText={true} />
-            <div className="welcome-top-right">
-              <div className="welcome-lang-picker">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="2" y1="12" x2="22" y2="12"/>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-                <select
-                  className="welcome-lang-select"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value as typeof language)}
-                >
-                  {LANGUAGES.map((l) => (
-                    <option key={l.code} value={l.code}>{l.label}</option>
-                  ))}
-                </select>
-              </div>
-              {canInstall && (
-                <button className="welcome-get-app-btn" onClick={handleInstall}>{t.welcome.getApp}</button>
-              )}
+            <div className="welcome-lang-picker">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <select
+                className="welcome-lang-select"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as typeof language)}
+              >
+                {LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>{l.label}</option>
+                ))}
+              </select>
             </div>
+            {canInstall && (
+              <button className="welcome-get-app-btn" onClick={handleInstall}>{t.welcome.getApp}</button>
+            )}
           </div>
 
           <div className="welcome-bottom">
