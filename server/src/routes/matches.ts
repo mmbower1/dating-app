@@ -26,20 +26,38 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
     const comment = typeof req.body.comment === 'string' ? req.body.comment.trim() : '';
     const section = typeof req.body.section === 'string' ? req.body.section.trim() : '';
 
-    me.likedUsers.push(target._id as mongoose.Types.ObjectId);
-    await me.save();
-
     const myIdStr = (me._id as mongoose.Types.ObjectId).toString();
+    const alreadyLiked = me.likedUsers.some((id) => id.toString() === (target._id as mongoose.Types.ObjectId).toString());
+    if (!alreadyLiked) {
+      me.likedUsers.push(target._id as mongoose.Types.ObjectId);
+      await me.save();
+    }
+
     const mutualLike = target.likedUsers.some((id) => id.toString() === myIdStr);
     if (mutualLike) {
-      // Mark the current user (me, second liker) as having seen the celebration already
-      const match = await Match.create({
-        users: [
-          { userId: me._id, model: getModelName(me.gender), name: me.name, photo: me.photos[0] ?? '' },
-          { userId: target._id, model: getModelName(target.gender), name: target.name, photo: target.photos[0] ?? '' },
-        ],
-        celebrationSeenBy: [new mongoose.Types.ObjectId(req.userId as string)],
-      });
+      // Reactivate an expired match if one exists, otherwise create a fresh one
+      let match = await Match.findOneAndUpdate(
+        { 'users.userId': { $all: [me._id, target._id] }, active: false },
+        {
+          $set: {
+            active: true,
+            endReason: null,
+            conversationEndedAt: null,
+            lastMessageAt: null,
+          },
+          $addToSet: { celebrationSeenBy: new mongoose.Types.ObjectId(req.userId as string) },
+        },
+        { new: true }
+      );
+      if (!match) {
+        match = await Match.create({
+          users: [
+            { userId: me._id, model: getModelName(me.gender), name: me.name, photo: me.photos[0] ?? '' },
+            { userId: target._id, model: getModelName(target.gender), name: target.name, photo: target.photos[0] ?? '' },
+          ],
+          celebrationSeenBy: [new mongoose.Types.ObjectId(req.userId as string)],
+        });
+      }
 
       const { io } = await import('../index');
       const matchRoomId = (match._id as mongoose.Types.ObjectId).toString();
@@ -114,7 +132,8 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
     }
   } catch (err) {
     console.error('POST /like error:', err);
-    res.status(500).json({ message: 'Server error', error: String(err) });
+    const errMsg = err instanceof Error ? `${err.name}: ${err.message}` : JSON.stringify(err);
+    res.status(500).json({ message: 'Server error', error: errMsg });
   }
 });
 
