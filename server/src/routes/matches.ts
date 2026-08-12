@@ -547,12 +547,15 @@ async function expireStaleMatches(userId: string) {
   );
 
   // Clear likedUsers so expired partners can rediscover each other
-  const modelMap = { MaleUser, FemaleUser, OtherUser };
+  const modelMap: Record<string, typeof MaleUser> = { MaleUser, FemaleUser, OtherUser };
   for (const match of stale) {
     const [a, b] = match.users;
+    const ModelA = modelMap[a.model];
+    const ModelB = modelMap[b.model];
+    if (!ModelA || !ModelB) continue;
     await Promise.all([
-      modelMap[a.model].findByIdAndUpdate(a.userId, { $pull: { likedUsers: b.userId } }),
-      modelMap[b.model].findByIdAndUpdate(b.userId, { $pull: { likedUsers: a.userId } }),
+      ModelA.findByIdAndUpdate(a.userId, { $pull: { likedUsers: b.userId } }),
+      ModelB.findByIdAndUpdate(b.userId, { $pull: { likedUsers: a.userId } }),
     ]);
   }
 }
