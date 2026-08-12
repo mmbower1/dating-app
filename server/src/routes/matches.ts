@@ -221,28 +221,34 @@ router.patch('/:matchId/celebration-seen', protect, async (req: AuthRequest, res
   }
 });
 
-// Who liked me — returns at most 1 user who liked me but I haven't responded to yet
+// Who liked me — returns all users who liked me but I haven't responded to yet
 router.get('/liked-me', protect, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const me = await findUserById(req.userId!);
     if (!me) { res.status(404).json({ message: 'User not found' }); return; }
 
     const exclude = new Set([
-      ...me.likedUsers.map((id) => id.toString()),
       ...me.passedUsers.map((id) => id.toString()),
       ...me.blockedUsers.map((id) => id.toString()),
       req.userId!,
     ]);
 
+    // Also exclude anyone I already have an active match with
+    const activeMatches = await Match.find({ 'users.userId': req.userId!, active: true }).select('users');
+    for (const m of activeMatches) {
+      for (const u of m.users) {
+        if (u.userId.toString() !== req.userId!) exclude.add(u.userId.toString());
+      }
+    }
+
     const fields = 'name age photos bio accountabilityScore gender pronouns zodiacSign height location';
     const [males, females, others] = await Promise.all([
-      MaleUser.find({ likedUsers: me._id, _id: { $nin: [...exclude] } }).select(fields).limit(2),
-      FemaleUser.find({ likedUsers: me._id, _id: { $nin: [...exclude] } }).select(fields).limit(2),
-      OtherUser.find({ likedUsers: me._id, _id: { $nin: [...exclude] } }).select(fields).limit(2),
+      MaleUser.find({ likedUsers: me._id, _id: { $nin: [...exclude] } }).select(fields).limit(20),
+      FemaleUser.find({ likedUsers: me._id, _id: { $nin: [...exclude] } }).select(fields).limit(20),
+      OtherUser.find({ likedUsers: me._id, _id: { $nin: [...exclude] } }).select(fields).limit(20),
     ]);
 
-    const result = [...males, ...females, ...others].slice(0, 1);
-    res.json(result);
+    res.json([...males, ...females, ...others]);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
@@ -529,10 +535,26 @@ async function recalculateScore(userId: string, gender: string) {
 
 async function expireStaleMatches(userId: string) {
   const threshold = new Date(Date.now() - 72 * 60 * 60 * 1000);
+  const stale = await Match.find(
+    { 'users.userId': userId, active: true, lastMessageAt: null, createdAt: { $lt: threshold } }
+  ).select('users');
+
+  if (stale.length === 0) return;
+
   await Match.updateMany(
     { 'users.userId': userId, active: true, lastMessageAt: null, createdAt: { $lt: threshold } },
     { $set: { active: false, endReason: 'expired', conversationEndedAt: new Date() } }
   );
+
+  // Clear likedUsers so expired partners can rediscover each other
+  const modelMap = { MaleUser, FemaleUser, OtherUser };
+  for (const match of stale) {
+    const [a, b] = match.users;
+    await Promise.all([
+      modelMap[a.model].findByIdAndUpdate(a.userId, { $pull: { likedUsers: b.userId } }),
+      modelMap[b.model].findByIdAndUpdate(b.userId, { $pull: { likedUsers: a.userId } }),
+    ]);
+  }
 }
 
 export { recalculateScore, expireStaleMatches };
