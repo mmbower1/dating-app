@@ -66,12 +66,10 @@ const Matches = () => {
       setMatches(res.data);
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
-      const data = (err as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
-      console.error('like-back error', status, data, err);
       if (status === 403) {
         setLikedMeError('You have 2 active matches — close one before liking someone new.');
       } else {
-        setLikedMeError(`Something went wrong (${status ?? 'network'}): ${data?.error ?? data?.message ?? 'Please try again.'}`);
+        setLikedMeError('Something went wrong. Please try again.');
       }
     } finally {
       setLikedMeAction(null);

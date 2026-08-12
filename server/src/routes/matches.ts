@@ -131,9 +131,7 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
       res.json({ matched: false });
     }
   } catch (err) {
-    console.error('POST /like error:', err);
-    const errMsg = err instanceof Error ? `${err.name}: ${err.message}` : JSON.stringify(err);
-    res.status(500).json({ message: 'Server error', error: errMsg });
+    res.status(500).json({ message: 'Server error', error: err });
   }
 });
 
