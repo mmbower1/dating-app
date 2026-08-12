@@ -384,7 +384,17 @@ const Chat = () => {
 
       {match?.active && (() => {
         const iConfirmed = user ? metConfirmations.includes(user._id) : false;
-        const otherConfirmed = metConfirmations.length > 0 && !iConfirmed && metConfirmations.length >= 1;
+        const otherConfirmed = metConfirmations.length > 0 && !iConfirmed;
+
+        // Eligibility: match must be ≥6 days old AND have ≥7 real messages combined
+        const SIX_DAYS_MS = 6 * 24 * 60 * 60 * 1000;
+        const matchAgeMs = match.createdAt ? Date.now() - new Date(match.createdAt).getTime() : 0;
+        const realMessageCount = messages.filter(
+          (m) => m.type === 'text' || m.type === 'opening_move'
+        ).length;
+        const eligible = matchAgeMs >= SIX_DAYS_MS && realMessageCount >= 7;
+
+        // Always show if a confirmation is already in progress
         if (iConfirmed && metConfirmations.length < 2) {
           return (
             <div className="met-banner met-banner--waiting">
@@ -402,7 +412,8 @@ const Chat = () => {
             </div>
           );
         }
-        if (!iConfirmed) {
+        // Only show the prompt if both conditions are met
+        if (!iConfirmed && eligible) {
           return (
             <div className="met-banner">
               <span>Did you meet in person?</span>
