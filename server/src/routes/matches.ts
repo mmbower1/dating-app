@@ -23,8 +23,8 @@ router.post('/like/:targetId', protect, async (req: AuthRequest, res: Response):
     if (!me || !target) { res.status(404).json({ message: 'User not found' }); return; }
     const UserModel = getUserModel(me.gender);
 
-    const comment = typeof req.body.comment === 'string' ? req.body.comment.trim() : '';
-    const section = typeof req.body.section === 'string' ? req.body.section.trim() : '';
+    const comment = typeof req.body?.comment === 'string' ? req.body.comment.trim() : '';
+    const section = typeof req.body?.section === 'string' ? req.body.section.trim() : '';
 
     const myIdStr = (me._id as mongoose.Types.ObjectId).toString();
     const alreadyLiked = me.likedUsers.some((id) => id.toString() === (target._id as mongoose.Types.ObjectId).toString());
